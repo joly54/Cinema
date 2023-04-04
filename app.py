@@ -34,7 +34,7 @@ def handle_error(e):
     code = 500
     message = 'Internal server error'
 
-    # Check if the error has a status code
+
     if hasattr(e, 'code'):
         code = e.code
         message = e.description
