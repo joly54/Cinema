@@ -10,6 +10,7 @@ from flask_restful import Api, Resource
 from email.message import EmailMessage
 from flask_sqlalchemy import SQLAlchemy
 
+
 app = Flask(__name__)
 api = Api(app)
 
@@ -19,9 +20,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
 db = SQLAlchemy(app)
+try:
+    with open('days.json') as f:
+        days = json.load(f)
+except:
+    pass
 
 
-# Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
@@ -107,6 +112,7 @@ class Register(Resource):
             return {'message': 'User registered successfully', 'token': token}, 201
         return {'error': 'User already exists'}, 409
 
+
 class FogotPassword(Resource):
     def post(self):
         username = request.args.get('username')
@@ -115,6 +121,8 @@ class FogotPassword(Resource):
             return {'error': 'User not found'}, 404
         send_email(username, user.secret_code)
         return {'message': 'Email sent successfully'}, 200
+
+
 class ResetPassword(Resource):
     def post(self):
         username = request.args.get('username')
@@ -129,12 +137,25 @@ class ResetPassword(Resource):
         db.session.commit()
         return {'message': 'Password reset successfully'}, 200
 
+
+class Display(Resource):
+    def get(self):
+        users = User.query.all()
+        for user in users:
+            print(
+                f"Username: {user.username} Password: {user.password} Token: {user.token} Secret code: {user.secret_code}")
+        return {'message': 'Data displayed successfully'}, 200
+
+
 api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
+api.add_resource(Display, '/display')
 
 if __name__ == '__main__':
+
+
     with app.app_context():
         db.create_all()
     app.run(debug=True)
