@@ -77,12 +77,7 @@ def after_request(response):
     return response
 
 
-@app.errorhandler(Exception)
-def handle_error(e):
-    code = 500
-    message = 'Internal server error' + str(e)
 
-    return make_response(jsonify({'message': message}), code)
 
 
 class Login(Resource):
@@ -145,6 +140,52 @@ class Display(Resource):
             print(
                 f"Username: {user.username} Password: {user.password} Token: {user.token} Secret code: {user.secret_code}")
         return {'message': 'Data displayed successfully'}, 200
+class getDay(Resource):
+    def get(self):
+        date = request.args.get('date')
+        print(days)
+        if date in days:
+            return {"message": "succes", "day": days[date]}, 200
+        else:
+            return {'message': 'Date not found'}, 404
+class fullSchedule(Resource):
+    def get(self):
+        return days, 200
+
+class buyTicket(Resource):
+    def post(self):
+        #get arguments from header
+        token = request.headers.get('token')
+        date = request.headers.get('date')
+        title = request.headers.get('title')
+        time = request.headers.get('time')
+        number = int(request.headers.get('number'))
+        print(type(number))
+        print(f"token: {token} date: {date} title: {title} time: {time} number: {number}")
+        user = User.query.filter_by(token=token).first()
+        if user is None:
+            return {'error': 'User not found'}, 404
+        if token != user.token:
+            return {'error': 'Wrong token'}, 400
+        if date in days:
+            for film in days[date]['films']:
+                if title == film['title']:
+                    if time ==film["beginTime"]:
+                        if number in film["aviableTikets"]:
+                            film["aviableTikets"].remove(number)
+                            with open('days.json', 'w') as f:
+                                json.dump(days, f)
+                            return {'message': 'Ticket bought successfully'}, 200
+                        else:
+                            return {'message': 'Seat not found'}, 404
+                    else:
+                        return {'message': 'Time not found'}, 404
+            else:
+                return {'message': 'Title not found'}, 404
+        else:
+            return {'message': 'Date not found'}, 404
+
+
 
 
 api.add_resource(Login, '/login')
@@ -152,6 +193,9 @@ api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
 api.add_resource(Display, '/display')
+api.add_resource(getDay, '/getDay')
+api.add_resource(fullSchedule, '/fullSchedule')
+api.add_resource(buyTicket, '/buyTicket')
 
 if __name__ == '__main__':
     with app.app_context():
