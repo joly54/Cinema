@@ -8,6 +8,7 @@ import config
 from flask import Flask, jsonify, make_response, request
 from flask_restful import Api, Resource
 from email.message import EmailMessage
+import qrcode
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -52,6 +53,26 @@ def send_email(username, code):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
+        server.send_message(msg)
+def sendTiket(username, id):
+    sender_email = config.sender_email
+    password = config.password
+    receiver_email = username
+    subject = "Your ticket"
+    #add image to email
+    body = "Your ticket is attached"
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = subject
+    msg['To'] = receiver_email
+    msg['From'] = sender_email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_email, password)
+        with open(f"{id}.png", 'rb') as f:
+            file_data = f.read()
+            file_name = f.name
+        msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
         server.send_message(msg)
 
 
@@ -175,7 +196,19 @@ class buyTicket(Resource):
                             film["aviableTikets"].remove(number)
                             with open('days.json', 'w') as f:
                                 json.dump(days, f)
-                            return {'message': 'Ticket bought successfully'}, 200
+                            id= get_random_string(16)
+                            data={
+                                "date": date,
+                                "title": title,
+                                "time": time,
+                                "number": number,
+                                "id": id
+                            }
+                            img = qrcode.make(data)
+                            type(img)  # qrcode.image.pil.PilImage
+                            img.save(id + '.png')
+                            sendTiket(user.username, id)
+                            return {'message': 'Ticket bought successfully', "data": data}, 200
                         else:
                             return {'message': 'Seat not found'}, 404
                     else:
