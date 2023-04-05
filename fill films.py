@@ -62,6 +62,7 @@ film5 = Film(title="The Social Network", duration=120, trailer="https://www.yout
 
 day4 = Day(date="2023-04-08", films=[film1, film2, film3, film4, film5])
 days = [day1, day2, day3, day4]
+#
 import json
 with open('days.json', 'w') as f:
     json.dump(days, f)

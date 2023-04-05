@@ -154,8 +154,6 @@ api.add_resource(ResetPassword, '/reset-password')
 api.add_resource(Display, '/display')
 
 if __name__ == '__main__':
-
-
     with app.app_context():
         db.create_all()
     app.run(debug=True)
