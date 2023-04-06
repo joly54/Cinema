@@ -147,4 +147,7 @@ for day /getDay?date=2023-04-08
 
 for all /fullSchedule
 ```
-My tikets `/getTikets?username=email`
+My tikets
+
+```/getTikets?username=email```
+
