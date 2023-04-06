@@ -5,7 +5,7 @@ import re
 import ssl
 import smtplib
 import config
-from flask import Flask, jsonify, make_response, request
+from flask import Flask, jsonify, make_response, request, send_file
 from flask_restful import Api, Resource
 from email.message import EmailMessage
 import qrcode
@@ -22,6 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
 db = SQLAlchemy(app)
+base_url = "http://127.0.0.1:5000"
 try:
     with open('days.json') as f:
         days = json.load(f)
@@ -139,7 +140,8 @@ class Register(Resource):
             user = User(username=username, password=password, token=token, secret_code=secret_code)
             db.session.add(user)
             db.session.commit()
-            return {'message': 'User registered successfully', 'token': token}, 201
+            resp = make_response(jsonify({'message': 'Registered successfully'}), 200)
+            resp.set_cookie('token', token)
         return {'error': 'User already exists'}, 409
 
 
@@ -189,7 +191,7 @@ class fullSchedule(Resource):
 
 class buyTicket(Resource):
     def post(self):
-        #get arguments from header
+        #get get token from cookie
         token = request.headers.get('token')
         date = request.headers.get('date')
         title = request.headers.get('title')
@@ -255,17 +257,23 @@ class getTikets(Resource):
         for tiket in tikets:
             print(
                 f"Username: {tiket.username} Date: {tiket.date} Title: {tiket.title} Time: {tiket.time} Number: {tiket.number} Id: {tiket.id}")
-        #create dict with all tikets
-        tiketsDict = {}
+        #create list with all tikets
+        tiketslist = []
         for tiket in tikets:
-            tiketsDict[tiket.date] = {
+            tiketslist.append({
                 "date": tiket.date,
                 "title": tiket.title,
                 "time": tiket.time,
                 "number": tiket.number,
-                "id": tiket.id
-            }
-        return tiketsDict, 200
+                "id": tiket.id,
+                "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
+            })
+        return {"message": "succes", "tikets": tiketslist}, 200
+
+@app.route('/tikets/<id>.png')
+def serve_image(id):
+    filename = "tikets\\" + id + '.png'
+    return send_file(filename, mimetype='image/png')
 
 
 
@@ -280,7 +288,6 @@ api.add_resource(fullSchedule, '/fullSchedule')
 api.add_resource(buyTicket, '/buyTicket')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
-
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
