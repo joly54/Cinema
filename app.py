@@ -257,7 +257,6 @@ class getTikets(Resource):
         for tiket in tikets:
             print(
                 f"Username: {tiket.username} Date: {tiket.date} Title: {tiket.title} Time: {tiket.time} Number: {tiket.number} Id: {tiket.id}")
-        #create list with all tikets
         tiketslist = []
         for tiket in tikets:
             tiketslist.append({

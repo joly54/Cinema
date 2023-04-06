@@ -142,7 +142,7 @@ Answer /buyTicket
 
 Aviable metods for schedule
 
-`for day /getDay?date=2023-04-08
+```for day /getDay?date=2023-04-08
 
 for all /fullSchedule
-`
+```
