@@ -70,3 +70,79 @@ Response:
 `{
 "message": "Password reset successfully"
 }`
+
+Bought tiket
+
+Endpoint
+The API endpoint for the buyTicket resource is /buy-ticket.
+
+Parameters
+The buyTicket resource expects the following headers:
+
+token: A token generated when the user logs in to the system.
+date: The date of the movie show in the format 'YYYY-MM-DD'.
+title: The title of the movie.
+time: The time of the movie show in the format 'HH:MM'.
+number: The number of the seat the user wants to purchase.
+username: The username of the user making the purchase.
+Response
+The buyTicket resource returns a JSON response that contains a message field and a data field if the ticket purchase was successful.
+
+The message field contains a string that describes the outcome of the ticket purchase. The possible messages are:
+
+Ticket bought successfully: The ticket purchase was successful.
+Seat not found: The specified seat is not available for purchase.
+Time not found: The specified movie show time is not available for the specified movie.
+Title not found: The specified movie title is not available on the specified date.
+Date not found: The specified date is not available for any movie.
+The data field contains a dictionary with the following fields:
+
+date: The date of the movie show in the format 'YYYY-MM-DD'.
+title: The title of the movie.
+time: The time of the movie show in the format 'HH:MM'.
+number: The number of the seat the user purchased.
+id: A unique identifier for the ticket.
+Example usage
+Here is an example of how to use the buyTicket API class:
+
+```
+import requests
+
+# Set the API endpoint URL
+url = 'http://localhost:5000/buy-ticket'
+
+# Set the headers
+headers = {
+    'token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhZG1pbiIsInBhc3N3b3JkIjoiYmFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.kG-PxH-kWnX9kTxp6gNEFYyRMT6OWaUJ7fU3qMjmzgQ',
+    'date': '2023-04-07',
+    'title': 'Avengers: Endgame',
+    'time': '19:00',
+    'number': '7',
+    'username': email
+}
+
+# Send a POST request to the API endpoint
+response = requests.post(url, headers=headers)
+
+# Print the response
+print(response.json())
+```
+
+Answer /buyTicket
+`{
+    "message": "Ticket bought successfully",
+    "data": {
+        "date": "2023-04-08",
+        "title": "Avengers: Endgame",
+        "time": "20:00",
+        "number": 3,
+        "id": "MjM4NzE4NTM2OTQ="
+    }
+}`
+
+Aviable metods for schedule
+
+`for day /getDay?date=2023-04-08
+
+for all /fullSchedule
+`
