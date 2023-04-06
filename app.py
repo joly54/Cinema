@@ -17,6 +17,7 @@ api = Api(app)
 
 # Configuration for the database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tikets.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
@@ -37,6 +38,16 @@ class User(db.Model):
 
     def __repr__(self):
         return f"User(username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}')"
+
+class Tiket(db.Model):
+    id = db.Column(db.String(255), primary_key=True)
+    date = db.Column(db.String(255), nullable=False)
+    time = db.Column(db.String(255), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    number = db.Column(db.Integer, nullable=False)
+    username = db.Column(db.String(255), nullable=False)
+    def __repr__(self):
+        return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}')"
 
 
 def send_email(username, code):
@@ -69,7 +80,7 @@ def sendTiket(username, id):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
-        with open(f"{id}.png", 'rb') as f:
+        with open(f"tikets/{id}.png", 'rb') as f:
             file_data = f.read()
             file_name = f.name
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
@@ -108,7 +119,10 @@ class Login(Resource):
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
             return {'error': 'Wrong username or password'}, 400
-        return {'message': 'Logged in successfully', 'token': user.token}, 200
+        #set cookie
+        resp = make_response(jsonify({'message': 'Logged in successfully'}), 200)
+        resp.set_cookie('token', user.token)
+        return resp
 
 
 class Register(Resource):
@@ -181,12 +195,13 @@ class buyTicket(Resource):
         title = request.headers.get('title')
         time = request.headers.get('time')
         number = int(request.headers.get('number'))
+        username = request.headers.get('username')
         print(type(number))
         print(f"token: {token} date: {date} title: {title} time: {time} number: {number}")
         user = User.query.filter_by(token=token).first()
         if user is None:
             return {'error': 'User not found'}, 404
-        if token != user.token:
+        if token != user.token or username != user.username:
             return {'error': 'Wrong token'}, 400
         if date in days:
             for film in days[date]['films']:
@@ -206,7 +221,14 @@ class buyTicket(Resource):
                             }
                             img = qrcode.make(data)
                             type(img)  # qrcode.image.pil.PilImage
-                            img.save(id + '.png')
+                            import os
+                            if not os.path.exists("tikets"):
+                                os.mkdir("tikets")
+                            img.save("tikets/" + id + '.png')
+                            #add to db tiket
+                            tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=id)
+                            db.session.add(tiket)
+                            db.session.commit()
                             sendTiket(user.username, id)
                             return {'message': 'Ticket bought successfully', "data": data}, 200
                         else:
@@ -217,6 +239,33 @@ class buyTicket(Resource):
                 return {'message': 'Title not found'}, 404
         else:
             return {'message': 'Date not found'}, 404
+class DisplayTikets(Resource):
+    def get(self):
+        #display all data from tikets
+        tikets = Tiket.query.all()
+        for tiket in tikets:
+            print(
+                f"Username: {tiket.username} Date: {tiket.date} Title: {tiket.title} Time: {tiket.time} Number: {tiket.number} Id: {tiket.id}")
+        return {'message': 'Data displayed successfully'}, 200
+class getTikets(Resource):
+    def get(self):
+        username = request.args.get('username')
+        #get all tikets from db
+        tikets = Tiket.query.filter_by(username=username).all()
+        for tiket in tikets:
+            print(
+                f"Username: {tiket.username} Date: {tiket.date} Title: {tiket.title} Time: {tiket.time} Number: {tiket.number} Id: {tiket.id}")
+        #create dict with all tikets
+        tiketsDict = {}
+        for tiket in tikets:
+            tiketsDict[tiket.date] = {
+                "date": tiket.date,
+                "title": tiket.title,
+                "time": tiket.time,
+                "number": tiket.number,
+                "id": tiket.id
+            }
+        return tiketsDict, 200
 
 
 
@@ -229,6 +278,8 @@ api.add_resource(Display, '/display')
 api.add_resource(getDay, '/getDay')
 api.add_resource(fullSchedule, '/fullSchedule')
 api.add_resource(buyTicket, '/buyTicket')
+api.add_resource(DisplayTikets, '/displayTikets')
+api.add_resource(getTikets, '/getTikets')
 
 if __name__ == '__main__':
     with app.app_context():
