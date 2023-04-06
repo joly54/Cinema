@@ -146,3 +146,4 @@ Aviable metods for schedule
 
 for all /fullSchedule
 ```
+My tikets /getTikets?username=email

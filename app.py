@@ -219,7 +219,8 @@ class buyTicket(Resource):
                                 "title": title,
                                 "time": time,
                                 "number": number,
-                                "id": id
+                                "id": id,
+                                "urltoqr": base_url + "/tikets/" + id + '.png'
                             }
                             img = qrcode.make(data)
                             type(img)  # qrcode.image.pil.PilImage
