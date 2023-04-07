@@ -1,5 +1,4 @@
 import json
-import os
 import random
 import string
 import re
@@ -11,23 +10,25 @@ from flask_restful import Api, Resource
 from email.message import EmailMessage
 import qrcode
 from flask_sqlalchemy import SQLAlchemy
-import requests as rq
+
+
 app = Flask(__name__)
 api = Api(app)
 
 # Configuration for the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tikets.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///base.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
 db = SQLAlchemy(app)
 base_url = "http://127.0.0.1:5000"
-with open("days.json") as f:
-    days = json.load(f)
-@app.errorhandler(Exception)
-def handle_all_errors(error):
-    return jsonify({'error': 'Something went wrong ' + error}), 500
+try:
+    with open('days.json') as f:
+        days = json.load(f)
+except:
+    pass
+
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
@@ -178,10 +179,7 @@ class Display(Resource):
 class getDay(Resource):
     def get(self):
         date = request.args.get('date')
-        res = rq.get("https://raw.githubusercontent.com/joly54/Cinema/api/days.json")
-        days = res.json()
-        with open("days.json", "w") as f:
-            json.dump(days, f)
+        print(days)
         if date in days:
             return {"message": "succes", "day": days[date]}, 200
         else:
@@ -270,18 +268,12 @@ class getTikets(Resource):
                 "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
             })
         return {"message": "succes", "tikets": tiketslist}, 200
-class Save(Resource):
-    def get(self):
-        res = rq.get("https://raw.githubusercontent.com/joly54/Cinema/api/days.json")
-        days = res.json()
-        print(days)
-        send_email("danyla958@gmail.com", str(len(days)))
-        return {'message': 'Data loaded', "Days" : days}, 200
 
 @app.route('/tikets/<id>.png')
 def serve_image(id):
     filename = "tikets\\" + id + '.png'
     return send_file(filename, mimetype='image/png')
+
 
 
 
@@ -295,8 +287,7 @@ api.add_resource(fullSchedule, '/fullSchedule')
 api.add_resource(buyTicket, '/buyTicket')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
-api.add_resource(Save, '/load')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=False)
+    app.run(debug=True)
