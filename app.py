@@ -1,27 +1,36 @@
 import json
+import os
 import random
 import string
 import re
 import ssl
 import smtplib
+
+from flask_sqlalchemy import SQLAlchemy
+
 import config
 from flask import Flask, jsonify, make_response, request, send_file
 from flask_restful import Api, Resource
 from email.message import EmailMessage
 import qrcode
-from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
 api = Api(app)
 
 # Configuration for the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///base.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username="testaccjgh",
+    password="gitignore",
+    hostname="testaccjgh.mysql.pythonanywhere-services.com",
+    databasename="testaccjgh$default",
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialize the database
 db = SQLAlchemy(app)
-base_url = "http://127.0.0.1:5000"
+base_url = "http://testaccjgh.pythonanywhere.com"
 try:
     with open('days.json') as f:
         days = json.load(f)
@@ -80,7 +89,7 @@ def sendTiket(username, id):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
-        with open(f"tikets/{id}.png", 'rb') as f:
+        with open(f"mysite/tikets/{id}.png", 'rb') as f:
             file_data = f.read()
             file_name = f.name
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
@@ -226,7 +235,7 @@ class buyTicket(Resource):
                             import os
                             if not os.path.exists("tikets"):
                                 os.mkdir("tikets")
-                            img.save("tikets/" + id + '.png')
+                            img.save("mysite/tikets/" + id + '.png')
                             #add to db tiket
                             tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=id)
                             db.session.add(tiket)
@@ -269,10 +278,10 @@ class getTikets(Resource):
             })
         return {"message": "succes", "tikets": tiketslist}, 200
 
-@app.route('/tikets/<id>.png')
-def serve_image(id):
-    filename = "tikets\\" + id + '.png'
-    return send_file(filename, mimetype='image/png')
+class serve_image(Resource):
+    def get(self, id):
+        filename = "tikets/" + id
+        return send_file(filename, mimetype='image/png')
 
 
 
@@ -287,6 +296,7 @@ api.add_resource(fullSchedule, '/fullSchedule')
 api.add_resource(buyTicket, '/buyTicket')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
+api.add_resource(serve_image, '/tikets/<id>')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
