@@ -15,7 +15,7 @@ import random
 def rand():
     list = []
     for i in range(1, 49):
-        if(random.randint(0, 1) == 1):
+        if(random.randint(0, random.randint(0,4)) == 1):
             list.append(i)
     return list
 

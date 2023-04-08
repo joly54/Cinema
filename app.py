@@ -19,7 +19,6 @@ import qrcode
 app = Flask(__name__)
 api = Api(app)
 
-# Configuration for the database
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username="testaccjgh",
     password=config.dbpass,
@@ -29,7 +28,6 @@ SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostnam
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# Initialize the database
 db = SQLAlchemy(app)
 base_url = "http://testaccjgh.pythonanywhere.com"
 try:
@@ -78,13 +76,19 @@ def send_email(username, code):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         server.send_message(msg)
-def sendTiket(username, id):
+def sendTiket(username, tiket):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
     subject = "Your ticket"
-    #add image to email
-    body = "Your ticket is attached"
+
+    body = """
+    Your ticket is attached to this email.
+    film: {}
+    date: {}
+    time: {}
+    Seats number: {}
+    """.format(tiket.title, tiket.date, tiket.time, tiket.number)
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject
@@ -93,7 +97,7 @@ def sendTiket(username, id):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
-        with open(f"mysite/tikets/{id}.png", 'rb') as f:
+        with open(f"mysite/tikets/{tiket.id}.png", 'rb') as f:
             file_data = f.read()
             file_name = f.name
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
@@ -106,7 +110,7 @@ def is_email(username):
 
 
 def get_random_string(length):
-    # choose from all lowercase letter
+
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
@@ -132,7 +136,7 @@ class Login(Resource):
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
             return {'message': 'Wrong username or password'}, 400
-        #set cookie
+
         user.token = get_random_string(32)
         user.sesionValidTo = int(systime.time()) + 3600*24
         db.session.commit()
@@ -199,7 +203,7 @@ class ConfirmEmail(Resource):
         if user is None:
             return {'message': 'User not found'}, 404
         if code == "-1":
-            #send status
+
             if user.isEmailConfirmed:
                 return {'message': 'Email confirmed'}, 200
             else:
@@ -261,7 +265,7 @@ class fullSchedule(Resource):
 
 class buyTicket(Resource):
     def post(self):
-        #get get token from cookie
+
         token = request.headers.get('token')
         date = request.headers.get('date')
         title = request.headers.get('title')
@@ -296,16 +300,16 @@ class buyTicket(Resource):
                                 "urltoqr": base_url + "/tikets/" + id + '.png'
                             }
                             img = qrcode.make(data)
-                            type(img)  # qrcode.image.pil.PilImage
+                            type(img)
                             import os
                             if not os.path.exists("tikets"):
                                 os.mkdir("tikets")
                             img.save("mysite/tikets/" + id + '.png')
-                            #add to db tiket
+
                             tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=id)
                             db.session.add(tiket)
                             db.session.commit()
-                            sendTiket(user.username, id)
+                            sendTiket(user.username, tiket)
                             return {'message': 'Ticket bought successfully', "data": data}, 200
                         else:
                             return {'message': 'Seat not found'}, 404
@@ -317,7 +321,7 @@ class buyTicket(Resource):
             return {'message': 'Date not found'}, 404
 class DisplayTikets(Resource):
     def get(self):
-        #display all data from tikets
+
         tikets = Tiket.query.all()
         for tiket in tikets:
             print(
@@ -326,11 +330,14 @@ class DisplayTikets(Resource):
 class getTikets(Resource):
     def get(self):
         username = request.args.get('username')
-        #get all tikets from db
+        token = request.headers.get('token')
+
         tikets = Tiket.query.filter_by(username=username).all()
-        for tiket in tikets:
-            print(
-                f"Username: {tiket.username} Date: {tiket.date} Title: {tiket.title} Time: {tiket.time} Number: {tiket.number} Id: {tiket.id}")
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        if user.token != token:
+            return {'message': 'Wrong token or sessoin expired'}, 400
         tiketslist = []
         for tiket in tikets:
             tiketslist.append({
@@ -348,6 +355,30 @@ class serve_image(Resource):
         filename = "tikets/" + id
         return send_file(filename, mimetype='image/png')
 
+class checkToken(Resource):
+    def get(self):
+        token = request.args.get('token')
+        username = request.args.get('username')
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
+            return {'message': 'Token not valid'}, 200
+        return {'message': 'Token valid'}, 200
+class ResendEmailValidationCode(Resource):
+    def get(self):
+        username = request.args.get('username')
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        if user.isEmailConfirmed == True:
+            return {'message': 'Email already confirmed'}, 400
+        user.codeToConfirmEmail = get_random_string(16)
+        db.session.commit()
+        sendValidationCode(username, user.codeToConfirmEmail)
+        return {'message': 'Email sent successfully'}, 200
+
+
 
 
 
@@ -364,6 +395,8 @@ api.add_resource(getTikets, '/getTikets')
 api.add_resource(serve_image, '/tikets/<id>')
 api.add_resource(ConfirmEmail, '/confirmEmail')
 api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
+api.add_resource(checkToken, '/checkToken')
+api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
