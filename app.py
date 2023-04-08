@@ -5,6 +5,7 @@ import string
 import re
 import ssl
 import smtplib
+import time as systime
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -44,9 +45,12 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     token = db.Column(db.String(255), nullable=False)
     secret_code = db.Column(db.String(8), nullable=False)
+    sesionValidTo = db.Column(db.Integer, nullable=False)
+    codeToConfirmEmail = db.Column(db.String(16), nullable=False)
+    isEmailConfirmed = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
-        return f"User(username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}')"
+        return f"User(username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}', sesionValidTo='{self.sesionValidTo}', codeToConfirmEmail='{self.codeToConfirmEmail}', isEmailConfirmed='{self.isEmailConfirmed}')"
 
 class Tiket(db.Model):
     id = db.Column(db.String(255), primary_key=True)
@@ -127,9 +131,12 @@ class Login(Resource):
         password = request.args.get('password')
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
-            return {'error': 'Wrong username or password'}, 400
+            return {'message': 'Wrong username or password'}, 400
         #set cookie
-        resp = make_response(jsonify({'message': 'Logged in successfully'}), 200)
+        user.token = get_random_string(32)
+        user.sesionValidTo = int(systime.time()) + 3600*24
+        db.session.commit()
+        resp = make_response(jsonify({'message': 'Logged in successfully', "token": user.token, "validDue": user.sesionValidTo}), 200)
         resp.set_cookie('token', user.token)
         return resp
 
@@ -140,25 +147,78 @@ class Register(Resource):
         password = request.args.get('password')
         print(password)
         if username is None or password is None or not is_email(username):
-            return {'error': 'Bad request'}, 400
+            return {'message': 'Bad request'}, 400
         user = User.query.filter_by(username=username).first()
         if user is None:
             token = get_random_string(32)
             secret_code = get_random_string(8)
-            user = User(username=username, password=password, token=token, secret_code=secret_code)
+            user = User(username=username,
+                        password=password,
+                        token=token,
+                        secret_code=secret_code,
+                        sesionValidTo=int(systime.time()) + 3600*24,
+                        codeToConfirmEmail=get_random_string(16),
+                        isEmailConfirmed=False)
             db.session.add(user)
             db.session.commit()
-            resp = make_response(jsonify({'message': 'Registered successfully'}), 200)
+            resp = make_response(jsonify({'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}), 200)
             resp.set_cookie('token', token)
-        return {'error': 'User already exists'}, 409
-
-
+            return resp
+        return {'message': 'User already exists'}, 409
+class isEmailConfirmed(Resource):
+    def post(self):
+        username = request.args.get('username')
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        if user.isEmailConfirmed:
+            return {'message': 'Email confirmed'}, 400
+        return {'message': 'Email not confirmed'}, 200
+def sendValidationCode(username, code):
+    sender_email = config.sender_email
+    password = config.password
+    receiver_email = username
+    subject = "Validation code"
+    body = f"To confirm your email tap to link {base_url}/confirmEmail?username={username}&code={code}"
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = subject
+    msg['To'] = receiver_email
+    msg['From'] = sender_email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_email, password)
+        server.send_message(msg)
+class ConfirmEmail(Resource):
+    def get(self):
+        username = request.args.get('username')
+        code = request.args.get('code')
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        if code == "-1":
+            #send status
+            if user.isEmailConfirmed:
+                return {'message': 'Email confirmed'}, 200
+            else:
+                return {'message': 'Email not confirmed'}, 200
+        if user.isEmailConfirmed:
+            return {'message': 'Email already confirmed'}, 400
+        if code is None:
+            sendValidationCode(username, user.codeToConfirmEmail)
+            return {'message': 'Email sent successfully'}, 200
+        if user.codeToConfirmEmail != code:
+            return {'message': 'Wrong code'}, 400
+        if code == user.codeToConfirmEmail:
+            user.isEmailConfirmed = True
+            db.session.commit()
+            return {'message': 'Email confirmed'}, 200
 class FogotPassword(Resource):
     def post(self):
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
         if user is None:
-            return {'error': 'User not found'}, 404
+            return {'message': 'User not found'}, 404
         send_email(username, user.secret_code)
         return {'message': 'Email sent successfully'}, 200
 
@@ -170,9 +230,9 @@ class ResetPassword(Resource):
         secret_code = request.args.get('secret_code')
         user = User.query.filter_by(username=username).first()
         if user is None:
-            return {'error': 'User not found'}, 404
+            return {'message': 'User not found'}, 404
         if user.secret_code != secret_code:
-            return {'error': 'Wrong secret code'}, 400
+            return {'message': 'Wrong secret code'}, 400
         user.password = password
         db.session.commit()
         return {'message': 'Password reset successfully'}, 200
@@ -208,11 +268,14 @@ class buyTicket(Resource):
         username = request.headers.get('username')
         print(type(number))
         print(f"token: {token} date: {date} title: {title} time: {time} number: {number}")
-        user = User.query.filter_by(token=token).first()
+        user = User.query.filter_by(username=username).first()
         if user is None:
-            return {'error': 'User not found'}, 404
-        if token != user.token or username != user.username:
-            return {'error': 'Wrong token'}, 400
+            return {'message': 'User not found'}, 404
+        print(f"Curent time: {int(systime.time())} Valid to: {user.sesionValidTo}")
+        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
+            return {'message': 'Wrong token or session expired'}, 400
+        if user.isEmailConfirmed == False:
+            return {'message': 'Email not confirmed'}, 400
         if date in days:
             for film in days[date]['films']:
                 if title == film['title']:
@@ -297,6 +360,7 @@ api.add_resource(buyTicket, '/buyTicket')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
 api.add_resource(serve_image, '/tikets/<id>')
+api.add_resource(ConfirmEmail, '/confirmEmail')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
