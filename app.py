@@ -1,22 +1,20 @@
 import json
-import os
 import random
-import string
 import re
-import ssl
 import smtplib
+import ssl
+import string
 import time as systime
+from email.message import EmailMessage
+import config
 
+import qrcode
+from flask import Flask, jsonify, make_response, request, send_file, redirect, url_for
+from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 
-import config
-from flask import Flask, jsonify, make_response, request, send_file
-from flask_restful import Api, Resource
-from email.message import EmailMessage
-import qrcode
 
-
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 api = Api(app)
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
@@ -50,6 +48,7 @@ class User(db.Model):
     def __repr__(self):
         return f"User(username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}', sesionValidTo='{self.sesionValidTo}', codeToConfirmEmail='{self.codeToConfirmEmail}', isEmailConfirmed='{self.isEmailConfirmed}')"
 
+
 class Tiket(db.Model):
     id = db.Column(db.String(255), primary_key=True)
     date = db.Column(db.String(255), nullable=False)
@@ -57,6 +56,7 @@ class Tiket(db.Model):
     title = db.Column(db.String(255), nullable=False)
     number = db.Column(db.Integer, nullable=False)
     username = db.Column(db.String(255), nullable=False)
+
     def __repr__(self):
         return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}')"
 
@@ -76,6 +76,8 @@ def send_email(username, code):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         server.send_message(msg)
+
+
 def sendTiket(username, tiket):
     sender_email = config.sender_email
     password = config.password
@@ -110,7 +112,6 @@ def is_email(username):
 
 
 def get_random_string(length):
-
     letters = string.ascii_lowercase
     result_str = ''.join(random.choice(letters) for i in range(length))
     return result_str
@@ -126,9 +127,6 @@ def after_request(response):
     return response
 
 
-
-
-
 class Login(Resource):
     def post(self):
         username = request.args.get('username')
@@ -138,9 +136,10 @@ class Login(Resource):
             return {'message': 'Wrong username or password'}, 400
 
         user.token = get_random_string(32)
-        user.sesionValidTo = int(systime.time()) + 3600*24
+        user.sesionValidTo = int(systime.time()) + 3600 * 24
         db.session.commit()
-        resp = make_response(jsonify({'message': 'Logged in successfully', "token": user.token, "validDue": user.sesionValidTo}), 200)
+        resp = make_response(
+            jsonify({'message': 'Logged in successfully', "token": user.token, "validDue": user.sesionValidTo}), 200)
         resp.set_cookie('token', user.token)
         return resp
 
@@ -160,15 +159,18 @@ class Register(Resource):
                         password=password,
                         token=token,
                         secret_code=secret_code,
-                        sesionValidTo=int(systime.time()) + 3600*24,
+                        sesionValidTo=int(systime.time()) + 3600 * 24,
                         codeToConfirmEmail=get_random_string(16),
                         isEmailConfirmed=False)
             db.session.add(user)
             db.session.commit()
-            resp = make_response(jsonify({'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}), 200)
+            resp = make_response(
+                jsonify({'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}), 200)
             resp.set_cookie('token', token)
             return resp
         return {'message': 'User already exists'}, 409
+
+
 class isEmailConfirmed(Resource):
     def get(self):
         username = request.args.get('username')
@@ -178,12 +180,14 @@ class isEmailConfirmed(Resource):
         if user.isEmailConfirmed:
             return {'message': 'Email confirmed'}, 200
         return {'message': 'Email not confirmed'}, 200
+
+
 def sendValidationCode(username, code):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
-    subject = "Validation code"
-    body = f"To confirm your email tap to link {base_url}/confirmEmail?username={username}&code={code}, make shure " \
+    subject = "Vereficvation code"
+    body = f"To confirm your email tap to link {base_url}/userConfirmEmail?username={username}&code={code}, make shure " \
            f"that you going by full link, or enter code {code} in app, if you didn't register in app, just ignore " \
            f"this message"
     msg = EmailMessage()
@@ -195,6 +199,8 @@ def sendValidationCode(username, code):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         server.send_message(msg)
+
+
 class ConfirmEmail(Resource):
     def get(self):
         username = request.args.get('username')
@@ -219,6 +225,8 @@ class ConfirmEmail(Resource):
             user.isEmailConfirmed = True
             db.session.commit()
             return {'message': 'Email confirmed'}, 200
+
+
 class FogotPassword(Resource):
     def post(self):
         username = request.args.get('username')
@@ -251,6 +259,8 @@ class Display(Resource):
             print(
                 f"Username: {user.username} Password: {user.password} Token: {user.token} Secret code: {user.secret_code}")
         return {'message': 'Data displayed successfully'}, 200
+
+
 class getDay(Resource):
     def get(self):
         date = request.args.get('date')
@@ -259,9 +269,12 @@ class getDay(Resource):
             return {"message": "succes", "day": days[date]}, 200
         else:
             return {'message': 'Date not found'}, 404
+
+
 class fullSchedule(Resource):
     def get(self):
         return days, 200
+
 
 class buyTicket(Resource):
     def post(self):
@@ -285,13 +298,13 @@ class buyTicket(Resource):
         if date in days:
             for film in days[date]['films']:
                 if title == film['title']:
-                    if time ==film["beginTime"]:
+                    if time == film["beginTime"]:
                         if number in film["aviableTikets"]:
                             film["aviableTikets"].remove(number)
                             with open('days.json', 'w') as f:
                                 json.dump(days, f)
-                            id= get_random_string(16)
-                            data={
+                            id = get_random_string(16)
+                            data = {
                                 "date": date,
                                 "title": title,
                                 "time": time,
@@ -319,14 +332,17 @@ class buyTicket(Resource):
                 return {'message': 'Title not found'}, 404
         else:
             return {'message': 'Date not found'}, 404
+
+
 class DisplayTikets(Resource):
     def get(self):
-
         tikets = Tiket.query.all()
         for tiket in tikets:
             print(
                 f"Username: {tiket.username} Date: {tiket.date} Title: {tiket.title} Time: {tiket.time} Number: {tiket.number} Id: {tiket.id}")
         return {'message': 'Data displayed successfully'}, 200
+
+
 class getTikets(Resource):
     def get(self):
         username = request.args.get('username')
@@ -350,10 +366,12 @@ class getTikets(Resource):
             })
         return {"message": "succes", "tikets": tiketslist}, 200
 
+
 class serve_image(Resource):
     def get(self, id):
         filename = "tikets/" + id
         return send_file(filename, mimetype='image/png')
+
 
 class checkToken(Resource):
     def get(self):
@@ -365,6 +383,8 @@ class checkToken(Resource):
         if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
             return {'message': 'Token not valid'}, 200
         return {'message': 'Token valid'}, 200
+
+
 class ResendEmailValidationCode(Resource):
     def get(self):
         username = request.args.get('username')
@@ -379,7 +399,18 @@ class ResendEmailValidationCode(Resource):
         return {'message': 'Email sent successfully'}, 200
 
 
-
+class userConfirmEmail(Resource):
+    def get(self):
+        username = request.args.get('username')
+        code = request.args.get('code')
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return redirect(url_for('static', filename='fail.html'))
+        if user.codeToConfirmEmail != code or user.isEmailConfirmed == True:
+            return redirect(url_for('static', filename='fail.html'))
+        user.isEmailConfirmed = True
+        db.session.commit()
+        return redirect(url_for('static', filename='succes.html'))
 
 
 api.add_resource(Login, '/login')
@@ -397,6 +428,7 @@ api.add_resource(ConfirmEmail, '/confirmEmail')
 api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
 api.add_resource(checkToken, '/checkToken')
 api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
+api.add_resource(userConfirmEmail, '/userConfirmEmail')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
