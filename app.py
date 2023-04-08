@@ -22,7 +22,7 @@ api = Api(app)
 # Configuration for the database
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
     username="testaccjgh",
-    password="gitignore",
+    password=config.dbpass,
     hostname="testaccjgh.mysql.pythonanywhere-services.com",
     databasename="testaccjgh$default",
 )
@@ -166,20 +166,22 @@ class Register(Resource):
             return resp
         return {'message': 'User already exists'}, 409
 class isEmailConfirmed(Resource):
-    def post(self):
+    def get(self):
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
         if user is None:
             return {'message': 'User not found'}, 404
         if user.isEmailConfirmed:
-            return {'message': 'Email confirmed'}, 400
+            return {'message': 'Email confirmed'}, 200
         return {'message': 'Email not confirmed'}, 200
 def sendValidationCode(username, code):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
     subject = "Validation code"
-    body = f"To confirm your email tap to link {base_url}/confirmEmail?username={username}&code={code}"
+    body = f"To confirm your email tap to link {base_url}/confirmEmail?username={username}&code={code}, make shure " \
+           f"that you going by full link, or enter code {code} in app, if you didn't register in app, just ignore " \
+           f"this message"
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject
@@ -361,6 +363,7 @@ api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
 api.add_resource(serve_image, '/tikets/<id>')
 api.add_resource(ConfirmEmail, '/confirmEmail')
+api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
