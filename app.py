@@ -35,6 +35,20 @@ try:
 except:
     pass
 
+#add error handler
+@app.errorhandler(404)
+def not_found(error):
+    html = render_template('404.html')
+    return make_response(html, 404)
+#add error handler for all error
+@app.errorhandler(Exception)
+def handle_exception(e):
+    if(e.code == 404):
+        html = render_template('404.html')
+        return make_response(html, 404)
+    else:
+        html = render_template('fail.html', message="Something went wrong. Please try again later." , description="Error: " + str(e))
+        return make_response(html, 500)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -212,12 +226,10 @@ def sendValidationCode(username, code):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
-    subject = "Vereficvation code"
-    body = f"To confirm your email tap to link {base_url}/userConfirmEmail?username={username}&code={code}, make shure " \
-           f"that you going by full link, or enter code {code} in app, if you didn't register in app, just ignore " \
-           f"this message"
+    subject = "Verification code"
+    body = f"To confirm your email, click on the link <a href='{base_url}/userConfirmEmail?username={username}&code={code}'>{base_url}/userConfirmEmail?username={username}&code={code}</a>, or enter code <strong>{code}</strong> in the app. If you didn't register in the app, just ignore this message."
     msg = EmailMessage()
-    msg.set_content(body)
+    msg.set_content(body, subtype='html')
     msg['Subject'] = subject
     msg['To'] = receiver_email
     msg['From'] = sender_email
@@ -225,6 +237,7 @@ def sendValidationCode(username, code):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         server.send_message(msg)
+
 
 
 class ConfirmEmail(Resource):
