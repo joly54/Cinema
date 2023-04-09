@@ -6,15 +6,15 @@ import ssl
 import string
 import time as systime
 from email.message import EmailMessage
-import config
 
 import qrcode
-from flask import Flask, jsonify, make_response, request, send_file, redirect, url_for
+from flask import Flask, jsonify, make_response, request, send_file, render_template, Response
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 
+import config
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, template_folder="static")
 api = Api(app)
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
@@ -25,9 +25,10 @@ SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostnam
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+#app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-base_url = "http://testaccjgh.pythonanywhere.com"
+base_url = "http://127.0.0.1:5000"
 try:
     with open('days.json') as f:
         days = json.load(f)
@@ -101,8 +102,32 @@ def sendTiket(username, tiket):
         server.login(sender_email, password)
         with open(f"mysite/tikets/{tiket.id}.png", 'rb') as f:
             file_data = f.read()
-            file_name = f.name
+            file_name = f"{tiket.title} {tiket.time} Seats: {tiket.number} {tiket.date}.png"
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
+        server.send_message(msg)
+def sendManyTikets(username, tikets):
+    sender_email = config.sender_email
+    password = config.password
+    receiver_email = username
+    subject = "Your tickets"
+
+    body = """
+    Your tickets are attached to this email.
+    """
+    msg = EmailMessage()
+    msg.set_content(body)
+    msg['Subject'] = subject
+    msg['To'] = receiver_email
+    msg['From'] = sender_email
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.login(sender_email, password)
+        for tiket in tikets:
+            with open(f"mysite/tikets/{tiket['id']}.png", 'rb') as f:
+
+                file_data = f.read()
+                file_name = f"{tiket['title']} {tiket['time']} Seats: {tiket['number']} {tiket['date']}.png"
+            msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
         server.send_message(msg)
 
 
@@ -119,6 +144,7 @@ def get_random_string(length):
 
 @app.after_request
 def after_request(response):
+
     try:
         db.session.commit()
     except Exception as e:
@@ -346,13 +372,14 @@ class DisplayTikets(Resource):
 class getTikets(Resource):
     def get(self):
         username = request.args.get('username')
-        token = request.headers.get('token')
+        token = request.args.get('token')
 
         tikets = Tiket.query.filter_by(username=username).all()
         user = User.query.filter_by(username=username).first()
         if user is None:
             return {'message': 'User not found'}, 404
-        if user.token != token:
+        print(f"username: {username} token: {token} user.token: {user.token}")
+        if user.token != token or int(systime.time()) > user.sesionValidTo:
             return {'message': 'Wrong token or sessoin expired'}, 400
         tiketslist = []
         for tiket in tikets:
@@ -405,12 +432,70 @@ class userConfirmEmail(Resource):
         code = request.args.get('code')
         user = User.query.filter_by(username=username).first()
         if user is None:
-            return redirect(url_for('static', filename='fail.html'))
+            html = render_template("fail.html", message="Something Went Wrong", description="User not found")
+            return Response(html, status=404, content_type="text/html")
         if user.codeToConfirmEmail != code or user.isEmailConfirmed == True:
-            return redirect(url_for('static', filename='fail.html'))
+            html = render_template("fail.html", message="Something Went Wrong", description="Wrong code or email "
+                                                                                            "already confirmed")
+            return Response(html, status=404, content_type="text/html")
         user.isEmailConfirmed = True
         db.session.commit()
-        return redirect(url_for('static', filename='succes.html'))
+        html = render_template("succes.html")
+        return Response(html, status=200, content_type="text/html")
+class BuyManyTikets(Resource):
+    def post(self):
+
+        token = request.headers.get('token')
+        date = request.headers.get('date')
+        title = request.headers.get('title')
+        time = request.headers.get('time')
+        numbers = json.loads(request.headers.get('number'))
+        username = request.headers.get('username')
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        print(f"Curent time: {int(systime.time())} Valid to: {user.sesionValidTo}")
+        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
+            return {'message': 'Wrong token or session expired'}, 400
+        if user.isEmailConfirmed == False:
+            return {'message': 'Email not confirmed'}, 400
+        if date in days:
+            for film in days[date]['films']:
+                if title == film['title']:
+                    if time == film["beginTime"]:
+                        if all(item in film['aviableTikets'] for item in numbers):
+                            tikets = []
+                            for number in numbers:
+                                film['aviableTikets'].remove(number)
+                                tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=get_random_string(16))
+                                data = {
+                                    "username": tiket.username,
+                                    "date": tiket.date,
+                                    "title": tiket.title,
+                                    "time": tiket.time,
+                                    "number": tiket.number,
+                                    "id": tiket.id,
+                                    "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
+                                }
+                                tikets.append(data)
+                                img = qrcode.make(data)
+                                type(img)
+                                import os
+                                if not os.path.exists("tikets"):
+                                    os.mkdir("tikets")
+                                img.save("mysite/tikets/" + tiket.id + '.png')
+                                db.session.add(tiket)
+                            db.session.commit()
+                            sendManyTikets(username, tikets)
+                            return {'message': 'Ticket bought successfully', "data": tikets}, 200
+                        else:
+                            return {'message': 'Seat not found'}, 404
+                    else:
+                        return {'message': 'Time not found'}, 404
+            else:
+                return {'message': 'Title not found'}, 404
+        else:
+            return {'message': 'Date not found'}, 404
 
 
 api.add_resource(Login, '/login')
@@ -429,6 +514,7 @@ api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
 api.add_resource(checkToken, '/checkToken')
 api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 api.add_resource(userConfirmEmail, '/userConfirmEmail')
+api.add_resource(BuyManyTikets, '/buyManyTikets')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
