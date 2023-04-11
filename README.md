@@ -3,21 +3,21 @@
 This API provides functionality for user registration, login, password reset, and email verification. The API is implemented using the Flask web framework, Flask-RESTful extension, Flask-SQLAlchemy extension, and email. Message module. The API can be tested using the Python requests library or any other RESTful API client.
 
 Endpoints:
-`
-Login: /login
-Register: /register
-Forgot Password: /forgot-password
-Reset Password: /reset-password
-Get Day: /getDay
-Full Schedule: /fullSchedule
-Buy Ticket: /buyTicket
-Display Tickets: /displayTikets
-Get Tickets: /getTikets
-Confirm Email: /confirmEmail
-Is Email Confirmed: /isEmailConfirmed
-Check Token: /checkToken
-Resend Email Validation Code: /resendEmailValidationCode
-`
+
+`Login: /login  
+Register: /register  
+Forgot Password: /forgot-password  
+Reset Password: /reset-password  
+Get Day: /getDay  
+Full Schedule: /fullSchedule  
+Buy Ticket: /buyTicket  
+Display Tickets: /displayTikets  
+Get Tickets: /getTikets  
+Confirm Email: /confirmEmail  
+Is Email Confirmed: /isEmailConfirmed  
+Check Token: /checkToken  
+Resend Email Validation Code: /resendEmailValidationCode  `
+
 
 Base URL: `testaccjgh.pythonanywhere.com`
 
