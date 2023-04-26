@@ -19,7 +19,7 @@ Check Token: /checkToken
 Resend Email Validation Code: /resendEmailValidationCode 
 
 
-Base URL: `testaccjgh.pythonanywhere.com`
+Base URL: `https://vincinemaApi.pythonanywhere.com`
 
 **/login:**
 This endpoint is used to authenticate a user and generate a session token.
