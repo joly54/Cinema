@@ -18,28 +18,22 @@ app = Flask(__name__, template_folder="static")
 api = Api(app)
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="testaccjgh",
+    username="vincinemaApi",
     password=config.dbpass,
-    hostname="testaccjgh.mysql.pythonanywhere-services.com",
-    databasename="testaccjgh$default",
+    hostname="vincinemaApi.mysql.pythonanywhere-services.com",
+    databasename="vincinemaApi$default",
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 #app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-base_url = "http://127.0.0.1:5000"
+base_url = "vincinemaApi.pythonanywhere.com"
 try:
     with open('days.json') as f:
         days = json.load(f)
 except:
     pass
-
-#add error handler
-@app.errorhandler(404)
-def not_found(error):
-    html = render_template('404.html')
-    return make_response(html, 404)
 #add error handler for all error
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -114,7 +108,7 @@ def sendTiket(username, tiket):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
-        with open(f"mysite/tikets/{tiket.id}.png", 'rb') as f:
+        with open(f"api/tikets/{tiket.id}.png", 'rb') as f:
             file_data = f.read()
             file_name = f"{tiket.title} {tiket.time} Seats: {tiket.number} {tiket.date}.png"
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
@@ -137,7 +131,7 @@ def sendManyTikets(username, tikets):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         for tiket in tikets:
-            with open(f"mysite/tikets/{tiket['id']}.png", 'rb') as f:
+            with open(f"api/tikets/{tiket['id']}.png", 'rb') as f:
 
                 file_data = f.read()
                 file_name = f"{tiket['title']} {tiket['time']} Seats: {tiket['number']} {tiket['date']}.png"
@@ -356,7 +350,7 @@ class buyTicket(Resource):
                             import os
                             if not os.path.exists("tikets"):
                                 os.mkdir("tikets")
-                            img.save("mysite/tikets/" + id + '.png')
+                            img.save("api/tikets/" + id + '.png')
 
                             tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=id)
                             db.session.add(tiket)
@@ -496,7 +490,7 @@ class BuyManyTikets(Resource):
                                 import os
                                 if not os.path.exists("tikets"):
                                     os.mkdir("tikets")
-                                img.save("mysite/tikets/" + tiket.id + '.png')
+                                img.save("api/tikets/" + tiket.id + '.png')
                                 db.session.add(tiket)
                             db.session.commit()
                             sendManyTikets(username, tikets)
