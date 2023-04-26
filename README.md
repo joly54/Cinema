@@ -4,7 +4,7 @@ This API provides functionality for user registration, login, password reset, an
 
 Endpoints:
 
-`Login: /login  
+Login: /login  
 Register: /register  
 Forgot Password: /forgot-password  
 Reset Password: /reset-password  
@@ -16,7 +16,7 @@ Get Tickets: /getTikets
 Confirm Email: /confirmEmail  
 Is Email Confirmed: /isEmailConfirmed  
 Check Token: /checkToken  
-Resend Email Validation Code: /resendEmailValidationCode  `
+Resend Email Validation Code: /resendEmailValidationCode 
 
 
 Base URL: `testaccjgh.pythonanywhere.com`
