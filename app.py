@@ -28,7 +28,7 @@ app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 #app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-base_url = "vincinemaApi.pythonanywhere.com"
+base_url = "https://vincinemaApi.pythonanywhere.com"
 try:
     with open('days.json') as f:
         days = json.load(f)
@@ -108,7 +108,7 @@ def sendTiket(username, tiket):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
-        with open(f"api/tikets/{tiket.id}.png", 'rb') as f:
+        with open(f"tikets/{tiket.id}.png", 'rb') as f:
             file_data = f.read()
             file_name = f"{tiket.title} {tiket.time} Seats: {tiket.number} {tiket.date}.png"
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
@@ -131,7 +131,7 @@ def sendManyTikets(username, tikets):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         for tiket in tikets:
-            with open(f"api/tikets/{tiket['id']}.png", 'rb') as f:
+            with open(f"tikets/{tiket['id']}.png", 'rb') as f:
 
                 file_data = f.read()
                 file_name = f"{tiket['title']} {tiket['time']} Seats: {tiket['number']} {tiket['date']}.png"
@@ -350,7 +350,7 @@ class buyTicket(Resource):
                             import os
                             if not os.path.exists("tikets"):
                                 os.mkdir("tikets")
-                            img.save("api/tikets/" + id + '.png')
+                            img.save("tikets/" + id + '.png')
 
                             tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=id)
                             db.session.add(tiket)
@@ -403,7 +403,7 @@ class getTikets(Resource):
 
 class serve_image(Resource):
     def get(self, id):
-        filename = "tikets/" + id
+        filename = "/home/vincinemaApi/tikets/" + id
         return send_file(filename, mimetype='image/png')
 
 
@@ -490,7 +490,7 @@ class BuyManyTikets(Resource):
                                 import os
                                 if not os.path.exists("tikets"):
                                     os.mkdir("tikets")
-                                img.save("api/tikets/" + tiket.id + '.png')
+                                img.save("tikets/" + tiket.id + '.png')
                                 db.session.add(tiket)
                             db.session.commit()
                             sendManyTikets(username, tikets)
