@@ -43,7 +43,7 @@ function Profile() {
                         <p>Title: {ticket.title}</p>
                         <p>Date: {ticket.date}</p>
                         <p>Time: {ticket.time}</p>
-                        <p>Number: {ticket.number}</p>
+                        <p>Number: {ticket.number}</p>git push
                         <button className="btn" onClick={() => window.open(ticket.urltoqr)}>Get qr code</button>
                     </div>
                 ))}
