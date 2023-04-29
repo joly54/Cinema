@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 import { useNavigate } from 'react-router-dom';
+import {toast, ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Login(
@@ -10,8 +11,10 @@ function Login(
         handleLogin,
     }
 ) {
+
     return (
         <div className="container">
+            <ToastContainer />
             <h1 className="title">Login</h1>
             <div className="form">
                 <div className="form-group">

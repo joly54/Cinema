@@ -1,15 +1,8 @@
 import React from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import './Navbar.css';
-function Navbar({loggedIn}) {
+function Navbar({loggedIn, handleLogout}) {
     const navigate = useNavigate();
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('validDue');
-        localStorage.removeItem('username');
-        navigate('/login', { replace: true })
-
-    };
 
     return (
         <nav>
