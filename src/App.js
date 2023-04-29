@@ -5,11 +5,11 @@ import Films from './components/Films';
 import Schedule from './components/Schedule';
 import Login from "./components/Login";
 
-
+export let islogin = false;
 function App() {
   return (
       <Router>
-        <Navbar />
+          <Navbar loggedIn={islogin} />
         <Routes>
           <Route path="/" element={<Schedule />} />
           <Route path="/films" element={<Films />} />

@@ -1,24 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import './Navbar.css';
-
-function Navbar() {
-    const [loggedIn, setLoggedIn] = useState(false);
-
-    useEffect(() => {
-        const validDue = localStorage.getItem('validDue');
-        if (validDue && validDue >= Date.now() / 1000) {
-            setLoggedIn(true);
-        } else {
-            setLoggedIn(false);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [localStorage.getItem('validDue')]);
-
+import {islogin} from "../App";
+function Navbar({loggedIn}) {
+    const navigate = useNavigate();
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('validDue');
-        setLoggedIn(false);
+        localStorage.removeItem('username');
+        islogin = false;
+        navigate('/login', { replace: true })
+
     };
 
     return (

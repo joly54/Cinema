@@ -1,19 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-function Schedule() {
+function CinemaSchedule() {
+    const [schedule, setSchedule] = useState(null);
+
+    useEffect(() => {
+        async function fetchData() {
+            const response = await fetch('http://vincinemaapi.pythonanywhere.com//fullSchedule');
+            const data = await response.json();
+            setSchedule(data);
+        }
+        fetchData();
+    }, []);
+
+    function handleSelectFilm(date, index) {
+        const updatedSchedule = { ...schedule };
+        updatedSchedule[date].films.forEach((film, i) => {
+            film.selected = i === index;
+        });
+        setSchedule(updatedSchedule);
+    }
+
+    if (!schedule) {
+        return <div>Loading...</div>;
+    }
+
     return (
-        <div>
-            <h1>Schedule</h1>
-            <p>Here's my schedule for this week:</p>
-            <ul>
-                <li>Monday: Work from 9am-5pm</li>
-                <li>Tuesday: Gym from 6am-7am, Meeting from 10am-11am, Dinner with friends at 7pm</li>
-                <li>Wednesday: Work from 9am-3pm, Doctor's appointment at 4pm</li>
-                <li>Thursday: Work from 9am-12pm, Lunch with coworker at 1pm, Work from 2pm-5pm</li>
-                <li>Friday: Work from 9am-12pm, Yoga from 1pm-2pm, Work from 3pm-5pm</li>
-            </ul>
+        <div className="Schedule">
+            <h1>Cinema Schedule</h1>
+            {Object.entries(schedule).map(([date, { films }]) => (
+                <div key={date}>
+                    <h2>{date}</h2>
+                    <div className="movie-list">
+                        {films.map((film, index) => (
+                            <div
+                                key={index}
+                                className={`movie${film.selected ? ' selected' : ''}`}
+                                onClick={() => handleSelectFilm(date, index)}
+                            >
+                                <h3>{film.title}</h3>
+                                <p>Duration: {film.duration} min</p>
+                                <p>Available tickets: {film.aviableTikets.length}</p>
+                                <p>Begin time: {film.beginTime}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
         </div>
     );
 }
 
-export default Schedule;
+export default CinemaSchedule;

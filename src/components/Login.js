@@ -2,25 +2,31 @@ import React, { useState } from 'react';
 import './login.css';
 import {baseurl} from './Profile';
 import { useNavigate } from 'react-router-dom';
+import {islogin} from "../App";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Login() {
-    useNavigate();
+    const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    function hendleLogin() {
+    function handleLogin() {
         const options = {method: 'POST'};
         fetch(`${baseurl}login?username=${username}&password=${password}`, options)
             .then(response => {
                 if (response.status === 200) {
                     response.json().then(data => {
-                            localStorage.setItem('token', data.token);
-                            localStorage.setItem('validDue', data.validDue);
-                            document.location.href = '/profile';
+                            localStorage.setItem('token', data['token']);
+                            localStorage.setItem('validDue', data['validDue']);
+                            localStorage.setItem('username', username);
+                            //document.location.href = '/profile';
+                        islogin = true;
+                        navigate.navigate('/profile');
                         }
                     )
                 } else {
-                    alert("Wrong username or password")
+                    toast.error("Wrong username or password");
                 }
             })
             .catch(err => console.error(err));
@@ -28,6 +34,7 @@ function Login() {
 
     return (
         <div className="container">
+            <ToastContainer />
             <h1 className="title">Login</h1>
             <div className="form">
                 <div className="form-group">
@@ -50,7 +57,7 @@ function Login() {
                         onChange={(e) => setPassword(e.target.value)}
                     />
                 </div>
-                <button className="btn" onClick={hendleLogin}>Log in</button>
+                <button className="btn" onClick={handleLogin}>Log in</button>
             </div>
         </div>
     );
