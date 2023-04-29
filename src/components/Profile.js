@@ -10,7 +10,7 @@ function Profile() {
     const navigate = useNavigate();
     token = localStorage.getItem('token');
     const validDue = localStorage.getItem('validDue');
-    if(validDue < Date.now()/1000){
+    if(validDue < Date.now() / 1000 || !token){
         localStorage.removeItem('token');
         localStorage.removeItem('validDue');
         navigate("/login")
@@ -23,8 +23,8 @@ function Profile() {
         const fetchData = async () => {
             const result = await axios.get(`${baseurl}userinfo?username=perepelukdanilo@gmail.com&token=${token}`);
             setEmail(result.data.username);
-            setStatus(result.data.isEmailConfirmed ? "Email confirmed" : "Email not confirmed");
-            setTickets(result.data.tikets);
+            setStatus(result.data['isEmailConfirmed'] ? "Email confirmed" : "Email not confirmed");
+            setTickets(result.data['tikets']);
             console.log(tickets);
         };
         fetchData();
