@@ -1,22 +1,63 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Profile from './components/Profile';
-import Films from './components/Films';
-import Schedule from './components/Schedule';
+import React from "react";
+import {
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Profile from "./components/Profile";
 import Login from "./components/Login";
+import { useState } from "react";
+import * as api from "./utils/api";
 
-export let islogin = false;
 function App() {
+  const navigate = useNavigate();
+
+  const [loggedIn, setLoggedIn] = React.useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleEmailChange = (email) => {
+    setEmail(email);
+  };
+
+  const handlePasswordChange = (passwordValue) => {
+    setPassword(passwordValue);
+  };
+
+  function handleLogin() {
+    api.login(email, password);
+    setLoggedIn(true);
+    navigate("/profile");
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("validDue");
+    localStorage.removeItem("username");
+    navigate("/login", { replace: true });
+  }
+
   return (
-      <Router>
-          <Navbar loggedIn={islogin} />
-        <Routes>
-          <Route path="/" element={<Schedule />} />
-          <Route path="/films" element={<Films />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
-        </Routes>
-      </Router>
+    <div>
+      <Navbar loggedIn={loggedIn} handleLogout={handleLogout} />
+      <Routes>
+        {/*<Route path="/" element={<Schedule />} />
+          <Route path="/films" element={<Films />} />*/}
+        <Route path="/profile" element={<Profile email={email} />} />
+        <Route
+          path="/login"
+          element={
+            <Login
+              handleEmailChange={handleEmailChange}
+              handlePasswordChange={handlePasswordChange}
+              handleLogin={handleLogin}
+            />
+          }
+        />
+      </Routes>
+    </div>
   );
 }
 

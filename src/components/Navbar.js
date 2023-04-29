@@ -1,42 +1,32 @@
-import React from 'react';
-import {Link, useNavigate} from 'react-router-dom';
-import './Navbar.css';
-import {islogin} from "../App";
-function Navbar({loggedIn}) {
-    const navigate = useNavigate();
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('validDue');
-        localStorage.removeItem('username');
-        islogin = false;
-        navigate('/login', { replace: true })
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Navbar.css";
 
-    };
-
-    return (
-        <nav>
-            <ul>
-                <li>
-                    <Link to="/profile">My Profile</Link>
-                </li>
-                <li>
-                    <Link to="/films">Films</Link>
-                </li>
-                <li>
-                    <Link to="/">Schedule</Link>
-                </li>
-                <li>
-                    {loggedIn ? (
-                        <Link to="/login" onClick={handleLogout}>
-                            Log out
-                        </Link>
-                    ) : (
-                        <Link to="/login">Log in</Link>
-                    )}
-                </li>
-            </ul>
-        </nav>
-    );
+function Navbar({ loggedIn, handleLogout }) {
+  return (
+    <nav>
+      <ul>
+        <li>
+          <Link to="/profile">My Profile</Link>
+        </li>
+        <li>
+          <Link to="/films">Films</Link>
+        </li>
+        <li>
+          <Link to="/">Schedule</Link>
+        </li>
+        <li>
+          {loggedIn ? (
+            <Link to="/login" onClick={handleLogout}>
+              Log out
+            </Link>
+          ) : (
+            <Link to="/login">Log in</Link>
+          )}
+        </li>
+      </ul>
+    </nav>
+  );
 }
 
 export default Navbar;

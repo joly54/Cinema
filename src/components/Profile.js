@@ -1,28 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './Profile.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./Profile.css";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { baseurl } from "../utils/api";
 
-export const baseurl = "https://vincinemaApi.pythonanywhere.com/";
-let token = "";
+function Profile({ email }) {
+  const [status, setStatus] = useState("");
+  const [tickets, setTickets] = useState([]);
 
-function Profile() {
-    const [email, setEmail] = useState("");
-    const [status, setStatus] = useState("");
-    const [tickets, setTickets] = useState([]);
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  const validDue = localStorage.getItem("validDue");
 
-    token = localStorage.getItem('token');
-    const validDue = localStorage.getItem('validDue');
-
-    useEffect(() => {
-        const fetchData = async () => {
+  useEffect(() => {
+      /*ТУТ БУДЕТ ПАДАТЬ ЕБАНАЯ ОШИБКА И РАЗЛОГИН ПОТОМУ ЧТО КАКАЯ ТО ВОНЮЧКА СДЕЛАЛА АСИНХРОННУЮ ФУНКЦИЮ ДЛЯ ЗАЩИЩЕННОГО РОУТА -_-*/
+    const fetchData = async () => {
             try {
-                const response = await axios.get(`${baseurl}userinfo?username=perepelukdanilo@gmail.com&token=${token}`);
-                setEmail(response.data.username);
+                const response = await axios.get(`${baseurl}userinfo?username=${email}&token=${token}`);
                 setStatus(response.data['isEmailConfirmed'] ? "Email confirmed" : "Email not confirmed");
                 setTickets(response.data['tikets']);
                 console.log(tickets);
@@ -31,40 +28,40 @@ function Profile() {
                 if (error.response.status !== 200) {
                     localStorage.removeItem('token');
                     localStorage.removeItem('validDue');
-                    localStorage.removeItem('username');
+                    localStorage.removeItem('email');
                     navigate("/login");
                 }
             }
         };
         fetchData();
-    }, [navigate]);
+  }, [navigate]);
 
-    function confirmEmail() {
-        fetch(baseurl + `resendEmailValidationCode?username=${email}f`)
-            .then((response) => {
-                if (response.status === 200) {
-                    toast.success("Email was sent!"); // add toast notification
-                } else {
-                    toast.error("Error sending email."); // add error toast notification
-                }
-            })
-            .catch((error) => {
-                toast.error("Error sending email."); // add error toast notification
-            });
-    }
+  function confirmEmail() {
+    fetch(baseurl + `resendEmailValidationCode?username=${email}f`)
+      .then((response) => {
+        if (response.status === 200) {
+          toast.success("Email was sent!"); // add toast notification
+        } else {
+          toast.error("Error sending email."); // add error toast notification
+        }
+      })
+      .catch((error) => {
+        toast.error("Error sending email."); // add error toast notification
+      });
+  }
 
-    return (
-        <div className="profile-container">
-            <ToastContainer />
-            <div className="profile-header">
-                <h2>{email}</h2>
-                {status === "Email not confirmed" ? (
+  return (
+    <div className="profile-container">
+      <ToastContainer />
+      <div className="profile-header">
+        <h2>{email}</h2>
+        {/*{status === "Email not confirmed" ? (
                     <button className="btn" onClick={confirmEmail}>
                         Confirm email
                     </button>
-                ) : null}
-            </div>
-            <div className="profile-content">
+                ) : null}*/}
+      </div>
+      {/*<div className="profile-content">
                 <h3>My Tickets</h3>
                 {tickets &&
                     tickets.map((ticket) => (
@@ -81,9 +78,9 @@ function Profile() {
                             </button>
                         </div>
                     ))}
-            </div>
-        </div>
-    );
+            </div>*/}
+    </div>
+  );
 }
 
 export default Profile;
