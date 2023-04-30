@@ -1,11 +1,11 @@
-import {BrowserRouter as Router, Routes, Route, useNavigate} from 'react-router-dom';
+import {Routes, Route, useNavigate} from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Profile from './components/Profile';
 import Films from './components/Films';
 import Schedule from './components/Schedule';
 import Login from "./components/Login";
 import {toast, ToastContainer} from "react-toastify";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +14,25 @@ function App() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(false);
+    let validDue = localStorage.getItem('validDue');
+    //alert(validDue)
+    useEffect(() =>{
+        if (validDue) {
+            let now = new Date();
+            let validDueDate = new Date(validDue);
+            if (now > validDueDate) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                localStorage.removeItem('validDue');
+                setIsLogin(false);
+                navigate('/login');
+            } else {
+                setIsLogin(true);
+            }
+        } else {
+            setIsLogin(false);
+        }
+    }, [navigate, validDue])
     function handleChangeUsername(value){
         setUsername(value);
     }
@@ -26,7 +45,6 @@ function App() {
             password
         ).then(
             (res) => {
-                //alert(res.status)
                 res.json().then(data => {
                     console.log(data);
                     if (res.ok) {
@@ -34,15 +52,30 @@ function App() {
                         localStorage.setItem('token', data['token']);
                         localStorage.setItem('username', username);
                         localStorage.setItem('validDue', data['validDue']);
+                        toast.success(data['message'], {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: true
+                        })
                         navigate('/profile');
+                    } else{
+                        toast.error(data['message'], {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: true
+                        })
                     }
             }
                 )}
         ).catch(
             (err) => {
-                console.log(err);
-                //make toast
-                //toast.error('Login failed');
+                console.log(err)
             }
         )
     }

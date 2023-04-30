@@ -1,64 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import './Profile.css';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as api from '../utils/Api';
 
 export const baseurl = "https://vincinemaApi.pythonanywhere.com/";
-let token = "";
 
 function Profile() {
-    const [email, setEmail] = useState("");
+    const navigate = useNavigate()
+    const [email] = useState(localStorage.getItem('username') === null ? "null" : localStorage.getItem('username'));
     const [status, setStatus] = useState("");
     const [tickets, setTickets] = useState([]);
+    const token = localStorage.getItem('token');
 
-    const navigate = useNavigate();
-
-    token = localStorage.getItem('token');
-    const validDue = localStorage.getItem('validDue');
+    //const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`${baseurl}userinfo?username=perepelukdanilo@gmail.com&token=${token}`);
-                setEmail(response.data.username);
-                setStatus(response.data['isEmailConfirmed'] ? "Email confirmed" : "Email not confirmed");
-                setTickets(response.data['tikets']);
-                console.log(tickets);
-            } catch (error) {
-                console.log(error.response.status);
-                if (error.response.status !== 200) {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('validDue');
-                    localStorage.removeItem('username');
-                    navigate("/login");
-                }
-            }
-        };
-        fetchData();
-    }, [navigate]);
+        api.userInfo(email, token)
+            .then((response) => {
+                console.log(response)
+                if (response.ok) {
+                    response.json()
+                        .then(data => {
+                            console.log(data);
+                            setStatus(data["isEmailConfirmed"]);
+                            //alert(data["isEmailConfirmed"]);
+                            setTickets(data["tikets"]);
+                        })
+                } else {
+                    navigate('/login', { replace: true })
 
+                }
+            })
+
+    }, [email, navigate, token])
     function confirmEmail() {
-        fetch(baseurl + `resendEmailValidationCode?username=${email}f`)
+        fetch(baseurl + `resendEmailValidationCode?username=${email}`)
             .then((response) => {
                 if (response.status === 200) {
-                    toast.success("Email was sent!"); // add toast notification
+                    toast.success("Email was sent!");
                 } else {
-                    toast.error("Error sending email."); // add error toast notification
+                    toast.error("Error sending email.");
                 }
             })
             .catch((error) => {
-                toast.error("Error sending email."); // add error toast notification
+                toast.error("Error sending email." + error);
             });
     }
 
     return (
         <div className="profile-container">
-            <ToastContainer />
+            <ToastContainer/>
             <div className="profile-header">
                 <h2>{email}</h2>
-                {status === "Email not confirmed" ? (
+                {status === false ? (
                     <button className="btn" onClick={confirmEmail}>
                         Confirm email
                     </button>

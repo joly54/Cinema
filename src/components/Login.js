@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './login.css';
-import { useNavigate } from 'react-router-dom';
-import {toast, ToastContainer} from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Login(
