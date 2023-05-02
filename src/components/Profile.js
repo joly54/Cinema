@@ -5,7 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as api from '../utils/Api';
 
-export const baseurl = "https://vincinemaApi.pythonanywhere.com/";
+export const baseurl = "https://vincinemaApi.pythonanywhere.com";
 
 function Profile() {
     const navigate = useNavigate()

@@ -8,6 +8,7 @@ import {toast, ToastContainer} from "react-toastify";
 import React, {useEffect, useState} from "react";
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
+import Register from "./components/Register";
 
 function App() {
     const navigate = useNavigate();
@@ -79,6 +80,22 @@ function App() {
             }
         )
     }
+
+    function handleRegister(){
+        api.register(
+            username,
+            password
+        ).then(
+            (res) => {
+                res.json().then(data =>{
+                        console.log(data);
+
+                    }
+                )
+            }
+        )
+    }
+
     function handleLogout(){
         localStorage.removeItem('token');
         localStorage.removeItem('username');
@@ -91,10 +108,11 @@ function App() {
           <ToastContainer />
           <Navbar loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>
-          <Route path="/" element={<Schedule />} />
-          <Route path="/films" element={<Films />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
+            <Route path="/" element={<Schedule />} />
+            <Route path="/films" element={<Films />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
+            <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
         </Routes>
       </div>
   );

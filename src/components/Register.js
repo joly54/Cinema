@@ -1,19 +1,18 @@
 import React from 'react';
-import './login.css';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './login.css'
 
-function Login(
+function Register(
     {
         handleChangeUsername,
         handleChangePassword,
-        handleLogin,
+        handleRegister
     }
 ) {
-
-    return (
+    return(
         <div className="container">
-            <h1 className="title">Login</h1>
+            <h1 className="title">Register</h1>
             <div className="form">
                 <div className="form-group">
                     <label htmlFor="username">Username</label>
@@ -33,10 +32,10 @@ function Login(
                         onChange={(e) => handleChangePassword(e.target.value)}
                     />
                 </div>
-                <button className="btn" onClick={handleLogin}>Log in</button>
+                <button className="btn" onClick={handleRegister}>Register</button>
             </div>
         </div>
-    );
+    )
 }
 
-export default Login;
+export default Register;

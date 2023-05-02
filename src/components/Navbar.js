@@ -25,6 +25,13 @@ function Navbar({loggedIn, handleLogout}) {
                         <Link to="/login">Log in</Link>
                     )}
                 </li>
+                <li>
+                    {!loggedIn ? (
+                        <Link to="/register">Register</Link>
+                    ) : (
+                        <div></div>
+                    )}
+                </li>
             </ul>
         </nav>
     );
