@@ -71,10 +71,6 @@ h2 {
     font-size: 1.5rem;
     margin-bottom: 30px;
 }
-.movie:nth-child(1) {
-    background-image: url('pictures/avengers_logo.jpg');
-
-}
 
 p, h3 {
     color: lightgrey;

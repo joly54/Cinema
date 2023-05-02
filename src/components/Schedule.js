@@ -3,12 +3,35 @@ import './Schedule.css'
 
 function CinemaSchedule() {
     const [schedule, setSchedule] = useState(null);
+    const [previews, setPreviews] = useState([]);
+    let preview = []
+
 
     useEffect(() => {
         async function fetchData() {
             const response = await fetch('http://vincinemaapi.pythonanywhere.com//fullSchedule');
             const data = await response.json();
             setSchedule(data);
+            let keys = Object.keys(data)
+            keys.forEach(function(key) {
+                const films = data[key]["films"]
+                films.forEach(function (film){
+                    preview.push(film['trailer'])
+                    }
+                )
+            });
+            //delete all repeated elements
+            preview = [...new Set(preview)];
+            preview = preview.map(function (item){
+                return "https://img.youtube.com/vi/" + item.split('v=')[1] + "/maxresdefault.jpg"
+            })
+            preview.forEach(
+                function (item){
+                    console.log(item)
+                }
+            )
+            setPreviews(preview)
+
         }
         fetchData();
     }, []);
@@ -34,10 +57,12 @@ function CinemaSchedule() {
                     <div className="movie-list">
                         {films.map((film, index) => (
                             <div
+                                style={{ backgroundImage: `url(${previews[index]})` }}
                                 key={index}
                                 className={`movie${film.selected ? ' selected' : ''}`}
                                 onClick={() => handleSelectFilm(date, index)}
                             >
+                                {/*<img src={previews[index]} alt={previews[index]} />*/}
                                 <h3>{film.title}</h3>
                                 <p>Duration: {film.duration} min</p>
                                 <p>Available tickets: {film.aviableTikets.length}</p>
