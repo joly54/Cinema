@@ -9,19 +9,20 @@
     padding: 20px;
     box-sizing: border-box;
   }
-  
+
   .movie-list {
+
     margin-bottom: 20px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: stretch;
     width: 100%;
-    margin: 0;
     padding: 0;
   }
-  
+
   .movie {
+    position: relative;
     width: calc(45% - 28px);
     margin: 0 15px 28px;
     padding: 20px;
@@ -29,35 +30,36 @@
     background-color: #f2f2f2;
     border: 1px solid #ddd;
     border-radius: 5px;
-  }
+    width: 35%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 
 h1 {
     font-size: 2.5rem;
 }
-
-/* .movie-list {
-     
-} */
-
-/* .movie {
-    background-color: #eee;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    margin: 0.5rem;
-    padding: 0.5rem;
-    transition: all 0.3s ease;
-    width: 150px;
-} */
 
 .movie:hover {
     background-color: #ccc;
     color: white;
 }
 
+.movie:hover::before {
+    background-color: #ccc;
+    color: white;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* цвет затемнения и уровень прозрачности */
+    z-index: 1; /* чтобы затемнение было поверх картинки */
+}
+
 .selected {
-    background-color: #ff8c00;
+    background-color: #ccc;
     color: white;
 }
 
@@ -67,5 +69,16 @@ h1 {
 
 h2 {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 30px;
 }
+.movie:nth-child(1) {
+    background-image: url('pictures/avengers_logo.jpg');
+
+}
+
+p, h3 {
+    color: lightgrey;
+}
+
+
+
