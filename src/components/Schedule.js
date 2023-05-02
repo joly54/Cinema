@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './Schedule.css'
 
 function CinemaSchedule() {
     const [schedule, setSchedule] = useState(null);
@@ -26,28 +27,28 @@ function CinemaSchedule() {
 
     return (
         <div className="Schedule">
-            <h1>Cinema Schedule</h1>
-            {Object.entries(schedule).map(([date, { films }]) => (
-                <div key={date}>
-                    <h2>{date}</h2>
-                    <div className="movie-list">
-                        {films.map((film, index) => (
-                            <div
-                                key={index}
-                                className={`movie${film.selected ? ' selected' : ''}`}
-                                onClick={() => handleSelectFilm(date, index)}
-                            >
-                                <h3>{film.title}</h3>
-                                <p>Duration: {film.duration} min</p>
-                                <p>Available tickets: {film.aviableTikets.length}</p>
-                                <p>Begin time: {film.beginTime}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
+          <h1>Cinema Schedule</h1>
+          {Object.entries(schedule).map(([date, { films }], index) => (
+            <div key={date} className={`row${index % 2 === 0 ? ' even' : ' odd'}`}>
+              <h2>{date}</h2>
+              <div className="movie-list">
+                {films.map((film, index) => (
+                  <div
+                    key={index}
+                    className={`movie${film.selected ? ' selected' : ''}`}
+                    onClick={() => handleSelectFilm(date, index)}
+                  >
+                    <h3>{film.title}</h3>
+                    <p>Duration: {film.duration} min</p>
+                    <p>Available tickets: {film.aviableTikets.length}</p>
+                    <p>Begin time: {film.beginTime}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
-    );
+      );
 }
 
 export default CinemaSchedule;
