@@ -36,7 +36,10 @@ function Login(
                 </div>
                 <div className="row">
                     <button className="btn" onClick={handleLogin}>Log in</button>
-                    <p className="text-btn" onClick={navigate("/forgot-password")}>
+                    <p className="text-btn" onClick={() =>{
+                       navigate('/forgot-password')
+                    }
+                    }>
                         Forgot password?
                     </p>
                 </div>
