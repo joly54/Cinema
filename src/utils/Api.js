@@ -11,5 +11,5 @@ export const userInfo = (username, token) => {
 }
 
 export const register = (username, password) => {
-    return fetch(`${baseurl}/register?username=${username}&password=${password}`)
+    return fetch(`${baseurl}/register?username=${username}&password=${password}`, {method: 'POST'})
 }

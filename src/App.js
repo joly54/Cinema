@@ -89,7 +89,30 @@ function App() {
             (res) => {
                 res.json().then(data =>{
                         console.log(data);
-
+                        if(res.ok){
+                            setIsLogin(true);
+                            localStorage.setItem('token', data['token']);
+                            localStorage.setItem('username', username);
+                            localStorage.setItem('validDue', data['validDue']);
+                            toast.success(data['message'], {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true
+                            })
+                            navigate('/profile');
+                        }else {
+                            toast.error(data['message'], {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true
+                            })
+                        }
                     }
                 )
             }
