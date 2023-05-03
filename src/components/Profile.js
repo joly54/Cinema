@@ -36,7 +36,7 @@ function Profile() {
 
     }, [email, navigate, token])
     function confirmEmail() {
-        fetch(baseurl + `resendEmailValidationCode?username=${email}`)
+        fetch(baseurl + `/resendEmailValidationCode?username=${email}`)
             .then((response) => {
                 if (response.status === 200) {
                     toast.success("Email was sent!");
