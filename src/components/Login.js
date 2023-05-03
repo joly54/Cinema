@@ -33,7 +33,12 @@ function Login(
                         onChange={(e) => handleChangePassword(e.target.value)}
                     />
                 </div>
-                <button className="btn" onClick={handleLogin}>Log in</button>
+                <div className="row">
+                    <button className="btn" onClick={handleLogin}>Log in</button>
+                    <p className="text-btn" onClick="">
+                        Forgot password?
+                    </p>
+                </div>
             </div>
         </div>
     );

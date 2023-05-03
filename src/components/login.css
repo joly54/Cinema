@@ -57,3 +57,18 @@ input {
 .btn:hover {
     background-color: #e68100;
 }
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.text-btn{
+    padding-left: 1rem;
+    transition: color 0.5s;
+    user-select: none;
+}
+.text-btn:hover{
+    color: #ff8c00;
+}
