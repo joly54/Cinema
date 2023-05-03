@@ -7,6 +7,7 @@ class Film(TypedDict):
     trailer: str
     aviableTikets: list[int]
     beginTime: str
+    preview: str
 
 
 class Day(TypedDict):
@@ -63,7 +64,7 @@ film2 = Film(title="The Silence of the Lambs", duration=118,
              aviableTikets=rand(), beginTime="12:00")
 film3 = Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w",
              aviableTikets=rand(), beginTime="14:00")
-film4 = Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0",
+film4 = Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0",
              aviableTikets=rand(), beginTime="16:00")
 film5 = Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4",
              aviableTikets=rand(), beginTime="18:00")
@@ -72,37 +73,37 @@ day4 = Day(films=[film1, film2, film3, film4, film5])
 film1=Film(title="The Lord of the Rings: The Fellowship of the Ring", duration=178, trailer="https://www.youtube.com/watch?v=Pki6jbSbXIY", aviableTikets=rand(), beginTime="10:00")
 film2=Film(title="The Silence of the Lambs", duration=118, trailer="https://www.youtube.com/watch?v=RuX2MQeb8UM", aviableTikets=rand(), beginTime="12:00")
 film3=Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w", aviableTikets=rand(), beginTime="14:00")
-film4=Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
+film4=Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
 film5=Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4", aviableTikets=rand(), beginTime="18:00")
 day5 = Day(films=[film1, film2, film3, film4, film5])
 film1=Film(title="The Lord of the Rings: The Fellowship of the Ring", duration=178, trailer="https://www.youtube.com/watch?v=Pki6jbSbXIY", aviableTikets=rand(), beginTime="10:00")
 film2=Film(title="The Silence of the Lambs", duration=118, trailer="https://www.youtube.com/watch?v=RuX2MQeb8UM", aviableTikets=rand(), beginTime="12:00")
 film3=Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w", aviableTikets=rand(), beginTime="14:00")
-film4=Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
+film4=Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
 film5=Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4", aviableTikets=rand(), beginTime="18:00")
 day6 = Day(films=[film1, film2, film3, film4, film5])
 film1=Film(title="The Lord of the Rings: The Fellowship of the Ring", duration=178, trailer="https://www.youtube.com/watch?v=Pki6jbSbXIY", aviableTikets=rand(), beginTime="10:00")
 film2=Film(title="The Silence of the Lambs", duration=118, trailer="https://www.youtube.com/watch?v=RuX2MQeb8UM", aviableTikets=rand(), beginTime="12:00")
 film3=Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w", aviableTikets=rand(), beginTime="14:00")
-film4=Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
+film4=Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
 film5=Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4", aviableTikets=rand(), beginTime="18:00")
 day7 = Day(films=[film1, film2, film3, film4, film5])
 film1=Film(title="The Lord of the Rings: The Fellowship of the Ring", duration=178, trailer="https://www.youtube.com/watch?v=Pki6jbSbXIY", aviableTikets=rand(), beginTime="10:00")
 film2=Film(title="The Silence of the Lambs", duration=118, trailer="https://www.youtube.com/watch?v=RuX2MQeb8UM", aviableTikets=rand(), beginTime="12:00")
 film3=Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w", aviableTikets=rand(), beginTime="14:00")
-film4=Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
+film4=Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
 film5=Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4", aviableTikets=rand(), beginTime="18:00")
 day8 = Day(films=[film1, film2, film3, film4, film5])
 film1=Film(title="The Lord of the Rings: The Fellowship of the Ring", duration=178, trailer="https://www.youtube.com/watch?v=Pki6jbSbXIY", aviableTikets=rand(), beginTime="10:00")
 film2=Film(title="The Silence of the Lambs", duration=118, trailer="https://www.youtube.com/watch?v=RuX2MQeb8UM", aviableTikets=rand(), beginTime="12:00")
 film3=Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w", aviableTikets=rand(), beginTime="14:00")
-film4=Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
+film4=Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
 film5=Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4", aviableTikets=rand(), beginTime="18:00")
 day9 = Day(films=[film1, film2, film3, film4, film5])
 film1=Film(title="The Lord of the Rings: The Fellowship of the Ring", duration=178, trailer="https://www.youtube.com/watch?v=Pki6jbSbXIY", aviableTikets=rand(), beginTime="10:00")
 film2=Film(title="The Silence of the Lambs", duration=118, trailer="https://www.youtube.com/watch?v=RuX2MQeb8UM", aviableTikets=rand(), beginTime="12:00")
 film3=Film(title="The Usual Suspects", duration=106, trailer="https://www.youtube.com/watch?v=oiXdPolca5w", aviableTikets=rand(), beginTime="14:00")
-film4=Film(title="Avatar.jpg: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
+film4=Film(title="Avatar: The Way of Water", duration=150, trailer="https://www.youtube.com/watch?v=d9MyW72ELq0", aviableTikets=rand(), beginTime="16:00")
 film5=Film(title="The Social Network", duration=120, trailer="https://www.youtube.com/watch?v=lB95KLmpLR4", aviableTikets=rand(), beginTime="18:00")
 day10 = Day(films=[film1, film2, film3, film4, film5])
 days = {

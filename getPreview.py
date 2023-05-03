@@ -1,10 +1,21 @@
+import base64
 import json
 import urllib.request
 from urllib.parse import urlparse, parse_qs
 import os
 import requests
-
-
+def fixName(name):
+    name = name.replace(" ", "_")
+    name = name.replace(":", "_")
+    name = name.replace("?", "_")
+    name = name.replace("/", "_")
+    name = name.replace("\\", "_")
+    name = name.replace("*", "_")
+    name = name.replace("\"", "_")
+    name = name.replace("<", "_")
+    name = name.replace(">", "_")
+    name = name.replace("|", "_")
+    return name
 def dowloadImage(url, name):
     try:
         response = requests.get(url)
@@ -25,7 +36,14 @@ for i in range(len(urls)):
     urls[i][0] = parse_qs(urlparse(urls[i][0]).query)['v'][0]
 for i in range(len(urls)):
     urls[i][0] = "https://img.youtube.com/vi/" + urls[i][0] + "/maxresdefault.jpg"
-# sort by title
+    urls[i][1] = fixName(urls[i][1])
 urls.sort(key=lambda x: x[1])
 for url in urls:
     dowloadImage(url[0], "preview/" + url[1] + ".jpg")
+    #if last index
+    if url == urls[0]:
+        #open file and pring base64
+        with open("preview/" + url[1] + ".jpg", "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+            print(encoded_string)
+        break

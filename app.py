@@ -190,7 +190,7 @@ class Register(Resource):
         password = request.args.get('password')
         print(password)
         if username is None or password is None or not is_email(username):
-            return {'message': 'Bad request'}, 400
+            return {'message': 'Username not email'}, 400
         user = User.query.filter_by(username=username).first()
         if user is None:
             token = get_random_string(32)
