@@ -2,6 +2,7 @@ import React from 'react';
 import './login.css';
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useNavigate} from "react-router-dom";
 
 function Login(
     {
@@ -10,7 +11,7 @@ function Login(
         handleLogin,
     }
 ) {
-
+    const navigate = useNavigate();
     return (
         <div className="container">
             <h1 className="title">Login</h1>
@@ -35,7 +36,7 @@ function Login(
                 </div>
                 <div className="row">
                     <button className="btn" onClick={handleLogin}>Log in</button>
-                    <p className="text-btn" onClick="">
+                    <p className="text-btn" onClick={navigate("/forgot-password")}>
                         Forgot password?
                     </p>
                 </div>

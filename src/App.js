@@ -9,6 +9,7 @@ import React, {useEffect, useState} from "react";
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import Register from "./components/Register";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
     const navigate = useNavigate();
@@ -117,6 +118,9 @@ function App() {
                 )
             }
         )
+        function ResetPassword(){
+
+        }
     }
 
     function handleLogout(){
@@ -136,6 +140,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
+            <Route path="/forgot-password" element={<ForgotPassword handleChangeUsername={handleChangeUsername} />} />
         </Routes>
       </div>
   );

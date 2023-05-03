@@ -13,3 +13,7 @@ export const userInfo = (username, token) => {
 export const register = (username, password) => {
     return fetch(`${baseurl}/register?username=${username}&password=${password}`, {method: 'POST'})
 }
+
+export const forgotPassword = (username) => {
+    return fetch(`${baseurl}/forgot-password?username=${username}`, {method: 'POST'})
+}
