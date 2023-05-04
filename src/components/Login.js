@@ -1,7 +1,5 @@
 import React from 'react';
 import './login.css';
-import {ToastContainer} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import {useNavigate} from "react-router-dom";
 
 function Login(

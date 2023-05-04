@@ -8,7 +8,12 @@ function Navbar({loggedIn, handleLogout}) {
         <nav>
             <ul>
                 <li>
-                    <Link to="/profile">My Profile</Link>
+                    {loggedIn ? (
+                        <Link to="/profile">My Profile</Link>
+                    ) : (
+                        <div></div>
+                    )}
+
                 </li>
                 <li>
                     <Link to="/films">Films</Link>
