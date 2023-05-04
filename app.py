@@ -31,23 +31,38 @@ app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 base_url = "https://vincinemaApi.pythonanywhere.com"
-try:
-    with open('days.json') as f:
-        days = json.load(f)
-except:
-    pass
 
 
-# add error handler for all error
-@app.errorhandler(Exception)
-def handle_exception(e):
-    if (e.code == 404):
-        html = render_template('404.html')
-        return make_response(html, 404)
-    else:
-        html = render_template('fail.html', message="Something went wrong. Please try again later.",
-                               description="Error: " + str(e))
-        return make_response(html, 500)
+class Film(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), unique=False, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
+    trailer = db.Column(db.String(120), nullable=False)
+    description = db.Column(db.String(1000), nullable=False)
+
+    def __repr__(self):
+        return "Film: " + self.title + " " + self.trailer + " " + self.description
+
+
+class Sessions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), unique=False, nullable=False)
+    film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
+    film = db.relationship('Film', backref='sessions')
+    seats = db.Column(db.String(120), nullable=False)
+
+    def __repr__(self):
+        return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
+
+
+class Days(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    t_9 = db.Column(db.Integer, nullable=True)
+    t_12 = db.Column(db.Integer, nullable=True)
+    t_15 = db.Column(db.Integer, nullable=True)
+    t_18 = db.Column(db.Integer, nullable=True)
+    t_21 = db.Column(db.Integer, nullable=True)
 
 
 class User(db.Model):
@@ -75,7 +90,16 @@ class Tiket(db.Model):
     def __repr__(self):
         return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}')"
 
-
+@app.errorhandler(Exception)
+def handle_exception(e):
+    try:
+        if (e.code == 404):
+            html = render_template('404.html')
+            return make_response(html, 404)
+    except:
+        html = render_template('fail.html', message="Something went wrong. Please try again later.",
+                               description="Error: " + str(e))
+        return make_response(html, 500)
 def send_email(username, code):
     sender_email = config.sender_email
     password = config.password
@@ -91,6 +115,7 @@ def send_email(username, code):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         server.send_message(msg)
+
 
 
 def sendTiket(username, tiket):
@@ -299,77 +324,43 @@ class Display(Resource):
         return {'message': 'Data displayed successfully'}, 200
 
 
-class getDay(Resource):
-    def get(self):
-        date = request.args.get('date')
-        print(days)
-        if date in days:
-            return {"message": "succes", "day": days[date]}, 200
-        else:
-            return {'message': 'Date not found'}, 404
 
 
 class fullSchedule(Resource):
     def get(self):
-        return days, 200
+        # get all days
+        days = Days.query.all()
+        # get all sessions
+        sessions = Sessions.query.all()
+        # get all films
+        films = Film.query.all()
+        answer = []
+        for day in days:
+            answer.append({"date": day.date, "sessions": {}})
+            if day.t_9 is not None:
+                answer[-1]["sessions"]["09:00"] = {"title": sessions[day.t_9 - 1].title,
+                                                   "trailer": sessions[day.t_9 - 1].film.trailer,
+                                                   "seats": json.loads(sessions[day.t_9 - 1].seats)}
+            if day.t_12 is not None:
+                answer[-1]["sessions"]["12:00"] = {"title": sessions[day.t_12 - 1].title,
+                                                   "trailer": sessions[day.t_12 - 1].film.trailer,
+                                                   "seats": json.loads(sessions[day.t_12 - 1].seats)}
+            if day.t_15 is not None:
+                answer[-1]["sessions"]["15:00"] = {"title": sessions[day.t_15 - 1].title,
+                                                   "trailer": sessions[day.t_15 - 1].film.trailer,
+                                                   "seats": json.loads(sessions[day.t_15 - 1].seats)}
+            if day.t_18 is not None:
+                answer[-1]["sessions"]["18:00"] = {"title": sessions[day.t_18 - 1].title,
+                                                   "trailer": sessions[day.t_18 - 1].film.trailer,
+                                                   "seats": json.loads(sessions[day.t_18 - 1].seats)}
+            if day.t_21 is not None:
+                answer[-1]["sessions"]["21:00"] = {"title": sessions[day.t_21 - 1].title,
+                                                   "trailer": sessions[day.t_21 - 1].film.trailer,
+                                                   "seats": json.loads(sessions[day.t_21 - 1].seats)}
+
+        return answer, 200
 
 
-class buyTicket(Resource):
-    def post(self):
-
-        token = request.headers.get('token')
-        date = request.headers.get('date')
-        title = request.headers.get('title')
-        time = request.headers.get('time')
-        number = int(request.headers.get('number'))
-        username = request.headers.get('username')
-        print(type(number))
-        print(f"token: {token} date: {date} title: {title} time: {time} number: {number}")
-        user = User.query.filter_by(username=username).first()
-        if user is None:
-            return {'message': 'User not found'}, 404
-        print(f"Curent time: {int(systime.time())} Valid to: {user.sesionValidTo}")
-        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
-            return {'message': 'Wrong token or session expired'}, 400
-        if user.isEmailConfirmed == False:
-            return {'message': 'Email not confirmed'}, 400
-        if date in days:
-            for film in days[date]['films']:
-                if title == film['title']:
-                    if time == film["beginTime"]:
-                        if number in film["aviableTikets"]:
-                            film["aviableTikets"].remove(number)
-                            with open('days.json', 'w') as f:
-                                json.dump(days, f)
-                            id = get_random_string(16)
-                            data = {
-                                "date": date,
-                                "title": title,
-                                "time": time,
-                                "number": number,
-                                "id": id,
-                                "urltoqr": base_url + "/tikets/" + id + '.png'
-                            }
-                            img = qrcode.make(data)
-                            type(img)
-                            import os
-                            if not os.path.exists("tikets"):
-                                os.mkdir("tikets")
-                            img.save("tikets/" + id + '.png')
-
-                            tiket = Tiket(username=username, date=date, title=title, time=time, number=number, id=id)
-                            db.session.add(tiket)
-                            db.session.commit()
-                            sendTiket(user.username, tiket)
-                            return {'message': 'Ticket bought successfully', "data": data}, 200
-                        else:
-                            return {'message': 'Seat not found'}, 404
-                    else:
-                        return {'message': 'Time not found'}, 404
-            else:
-                return {'message': 'Title not found'}, 404
-        else:
-            return {'message': 'Date not found'}, 404
 
 
 class DisplayTikets(Resource):
@@ -456,61 +447,6 @@ class userConfirmEmail(Resource):
         return Response(html, status=200, content_type="text/html")
 
 
-class BuyManyTikets(Resource):
-    def post(self):
-
-        token = request.headers.get('token')
-        date = request.headers.get('date')
-        title = request.headers.get('title')
-        time = request.headers.get('time')
-        numbers = json.loads(request.headers.get('number'))
-        username = request.headers.get('username')
-        user = User.query.filter_by(username=username).first()
-        if user is None:
-            return {'message': 'User not found'}, 404
-        print(f"Curent time: {int(systime.time())} Valid to: {user.sesionValidTo}")
-        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
-            return {'message': 'Wrong token or session expired'}, 400
-        if user.isEmailConfirmed == False:
-            return {'message': 'Email not confirmed'}, 400
-        if date in days:
-            for film in days[date]['films']:
-                if title == film['title']:
-                    if time == film["beginTime"]:
-                        if all(item in film['aviableTikets'] for item in numbers):
-                            tikets = []
-                            for number in numbers:
-                                film['aviableTikets'].remove(number)
-                                tiket = Tiket(username=username, date=date, title=title, time=time, number=number,
-                                              id=get_random_string(16))
-                                data = {
-                                    "username": tiket.username,
-                                    "date": tiket.date,
-                                    "title": tiket.title,
-                                    "time": tiket.time,
-                                    "number": tiket.number,
-                                    "id": tiket.id,
-                                    "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
-                                }
-                                tikets.append(data)
-                                img = qrcode.make(data)
-                                type(img)
-                                import os
-                                if not os.path.exists("tikets"):
-                                    os.mkdir("tikets")
-                                img.save("tikets/" + tiket.id + '.png')
-                                db.session.add(tiket)
-                            db.session.commit()
-                            sendManyTikets(username, tikets)
-                            return {'message': 'Ticket bought successfully', "data": tikets}, 200
-                        else:
-                            return {'message': 'Seat not found'}, 404
-                    else:
-                        return {'message': 'Time not found'}, 404
-            else:
-                return {'message': 'Title not found'}, 404
-        else:
-            return {'message': 'Date not found'}, 404
 
 
 class UserInformation(Resource):
@@ -540,6 +476,72 @@ class UserInformation(Resource):
             }
             res['tikets'].append(data)
         return res, 200
+class BuyTikets(Resource):
+    def post(self):
+        username = request.headers.get('username')
+        token = request.headers.get('token')
+        date = request.headers.get('date')
+        title = request.headers.get('title')
+        time = request.headers.get('time')
+        seats = request.headers.get('seats')
+        if username is None or token is None or date is None or title is None or time is None or seats is None:
+            return {'message': 'Bad request'}, 400
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return {'message': 'User not found'}, 404
+        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
+            return {'message': 'Wrong token or ses_id expired'}, 400
+        day = Days.query.filter_by(date=date).first()
+        if day is None:
+            return {'message': 'Date not found'}, 404
+        ses_id = None
+        if time == "09:00":
+            ses_id = day.t_9
+        elif time == "12:00":
+            ses_id = day.t_12
+        elif time == "15:00":
+            ses_id = day.t_15
+        elif time == "18:00":
+            ses_id = day.t_18
+        elif time == "21:00":
+            ses_id = day.t_21
+        if ses_id is None:
+            return {'message': 'Time not found'}, 404
+        ses = Sessions.query.filter_by(id=ses_id).first()
+        if ses is None:
+            return {'message': 'Time not found'}, 404
+        if ses.title != title:
+            return {'message': 'Title not found'}, 404
+        seats = json.loads(seats)
+        aviable_seats = json.loads(ses.seats)
+        if all(elem in aviable_seats for elem in seats) == False:
+            return {'message': 'Seats not aviable'}, 400
+        tikets = []
+        for seat in seats:
+            tiket = Tiket(username=username, date=date, title=title, time=time, number=seat,
+                          id=get_random_string(16))
+            data = {
+                "username": tiket.username,
+                "date": tiket.date,
+                "title": tiket.title,
+                "time": tiket.time,
+                "number": tiket.number,
+                "id": tiket.id,
+                "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
+            }
+            img = qrcode.make(data)
+            img.save("tikets/" + tiket.id + '.png')
+            tikets.append(data)
+            db.session.add(tiket)
+            aviable_seats.remove(seat)
+        ses.seats = json.dumps(aviable_seats)
+        db.session.commit()
+        sendManyTikets(username, tikets)
+        return {"message": "Tikets bought successfully", "tikets": tikets}, 200
+
+
+
+
 
 
 api.add_resource(Login, '/login')
@@ -547,9 +549,7 @@ api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
 api.add_resource(Display, '/display')
-api.add_resource(getDay, '/getDay')
 api.add_resource(fullSchedule, '/fullSchedule')
-api.add_resource(buyTicket, '/buyTicket')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
 api.add_resource(serve_image, '/tikets/<id>')
@@ -558,8 +558,8 @@ api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
 api.add_resource(checkToken, '/checkToken')
 api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 api.add_resource(userConfirmEmail, '/userConfirmEmail')
-api.add_resource(BuyManyTikets, '/buyManyTikets')
 api.add_resource(UserInformation, '/userinfo')
+api.add_resource(BuyTikets, '/buyTikets')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

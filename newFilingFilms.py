@@ -4,9 +4,19 @@ import random
 from flask import Flask
 from flask_restful import Resource
 from flask_sqlalchemy import SQLAlchemy
+import config
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///base.db'
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username="vincinemaApi",
+    password=config.dbpass,
+    hostname="vincinemaApi.mysql.pythonanywhere-services.com",
+    #databasename="vincinemaApi$default",
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+#app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
@@ -65,7 +75,7 @@ class Schedule(Resource):
         for day in days:
             answer.append({"date": day.date, "sessions": {}})
             if day.t_9 is not None:
-                answer[-1]["sessions"]["9:00"] = {"title": sessions[day.t_9 - 1].title,
+                answer[-1]["sessions"]["09:00"] = {"title": sessions[day.t_9 - 1].title,
                                                   "trailer": sessions[day.t_9 - 1].film.trailer,
                                                   "seats": sessions[day.t_9 - 1].seats}
             if day.t_12 is not None:
