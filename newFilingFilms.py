@@ -11,11 +11,11 @@ SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostnam
     username="vincinemaApi",
     password=config.dbpass,
     hostname="vincinemaApi.mysql.pythonanywhere-services.com",
-    #databasename="vincinemaApi$default",
+    databasename="vincinemaApi$default",
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-#app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -37,10 +37,10 @@ class Sessions(db.Model):
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     film = db.relationship('Film', backref='sessions')
     seats = db.Column(db.String(120), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
-
 
 
 class Days(db.Model):
@@ -55,6 +55,8 @@ class Days(db.Model):
     def __repr__(self):
         return "Day: " + self.date + " " + str(self.t_9) + " " + str(self.t_12) + " " + str(self.t_15) + " " + str(
             self.t_18) + " " + str(self.t_21)
+
+
 def randSeats():
     list = []
     for i in range(1, 49):
@@ -76,8 +78,8 @@ class Schedule(Resource):
             answer.append({"date": day.date, "sessions": {}})
             if day.t_9 is not None:
                 answer[-1]["sessions"]["09:00"] = {"title": sessions[day.t_9 - 1].title,
-                                                  "trailer": sessions[day.t_9 - 1].film.trailer,
-                                                  "seats": sessions[day.t_9 - 1].seats}
+                                                   "trailer": sessions[day.t_9 - 1].film.trailer,
+                                                   "seats": sessions[day.t_9 - 1].seats}
             if day.t_12 is not None:
                 answer[-1]["sessions"]["12:00"] = {"title": sessions[day.t_12 - 1].title,
                                                    "trailer": sessions[day.t_12 - 1].film.trailer,
@@ -96,7 +98,6 @@ class Schedule(Resource):
                                                    "seats": sessions[day.t_21 - 1].seats}
 
         return answer
-
 
 
 app.add_url_rule('/', view_func=Schedule.as_view('schedule'))
@@ -254,12 +255,14 @@ def createSession(
         title,
         film_id,
         film,
-        seats
+        seats,
+        price,
 ):
     newSession = Sessions(title=title,
                           film_id=film_id,
                           film=film,
-                          seats=seats)
+                          seats=seats,
+                          price=price)
     db.session.add(newSession)
     db.session.commit()
     return newSession
@@ -273,7 +276,8 @@ def CreateAllSessions(films):
             title=films[index].title,
             film_id=films[index].id,
             film=films[index],
-            seats=str(randSeats())
+            seats=str(randSeats()),
+            price=random.randint(20, 50) * 10
         )
     return sessions
 
@@ -308,6 +312,7 @@ def CreateAllDays():
     ses = Sessions.query.all()
     pulsDay = 0
     while len(ses) > 0:
+        print(len(ses))
         createDay(
             date=getPlusedDay(pulsDay),
             t_9=(ses.pop().id if random.randint(0, 3) / 3.0 < 1 and len(ses) else None),

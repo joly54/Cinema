@@ -18,20 +18,22 @@ import config
 app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
-
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="vincinemaApi",
-    password=config.dbpass,
-    hostname="vincinemaApi.mysql.pythonanywhere-services.com",
-    databasename="vincinemaApi$default",
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+is_local = False
+if is_local:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+    base_url = "http://127.0.0.1:5000"
+else:
+    SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+        username="vincinemaApi",
+        password=config.dbpass,
+        hostname="vincinemaApi.mysql.pythonanywhere-services.com",
+        databasename="vincinemaApi$default",
+    )
+    base_url = "https://vincinemaApi.pythonanywhere.com"
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+    app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
-base_url = "https://vincinemaApi.pythonanywhere.com"
-
 
 class Film(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -50,7 +52,7 @@ class Sessions(db.Model):
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     film = db.relationship('Film', backref='sessions')
     seats = db.Column(db.String(120), nullable=False)
-
+    price = db.Column(db.Integer, nullable=False)
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
 
@@ -152,8 +154,8 @@ def sendManyTikets(username, tikets):
     receiver_email = username
     subject = "Your tickets"
 
-    body = """
-    Your tickets are attached to this email.
+    body = f"""
+    Your tikets for {tikets[0]['title']} {tikets[0]['date']} {tikets[0]['time']} are attached to this email.
     """
     msg = EmailMessage()
     msg.set_content(body)
@@ -166,7 +168,7 @@ def sendManyTikets(username, tikets):
         for tiket in tikets:
             with open(f"tikets/{tiket['id']}.png", 'rb') as f:
                 file_data = f.read()
-                file_name = f"{tiket['title']} {tiket['time']} Seats: {tiket['number']} {tiket['date']}.png"
+                file_name = f"Seats: {tiket['number']} {tiket['title']} {tiket['time']} {tiket['date']}.png"
             msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
         server.send_message(msg)
 
@@ -328,35 +330,41 @@ class Display(Resource):
 
 class fullSchedule(Resource):
     def get(self):
-        # get all days
         days = Days.query.all()
-        # get all sessions
         sessions = Sessions.query.all()
-        # get all films
-        films = Film.query.all()
         answer = []
         for day in days:
             answer.append({"date": day.date, "sessions": {}})
             if day.t_9 is not None:
                 answer[-1]["sessions"]["09:00"] = {"title": sessions[day.t_9 - 1].title,
                                                    "trailer": sessions[day.t_9 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_9 - 1].seats)}
+                                                   "seats": json.loads(sessions[day.t_9 - 1].seats),
+                                                   "session_id": sessions[day.t_9 - 1].id,
+                                                   "price": sessions[day.t_9 - 1].price}
             if day.t_12 is not None:
                 answer[-1]["sessions"]["12:00"] = {"title": sessions[day.t_12 - 1].title,
                                                    "trailer": sessions[day.t_12 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_12 - 1].seats)}
+                                                   "seats": json.loads(sessions[day.t_12 - 1].seats),
+                                                   "session_id": sessions[day.t_12 - 1].id,
+                                                   "price": sessions[day.t_12 - 1].price}
             if day.t_15 is not None:
                 answer[-1]["sessions"]["15:00"] = {"title": sessions[day.t_15 - 1].title,
                                                    "trailer": sessions[day.t_15 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_15 - 1].seats)}
+                                                   "seats": json.loads(sessions[day.t_15 - 1].seats),
+                                                   "session_id": sessions[day.t_15 - 1].id,
+                                                   "price": sessions[day.t_15 - 1].price}
             if day.t_18 is not None:
                 answer[-1]["sessions"]["18:00"] = {"title": sessions[day.t_18 - 1].title,
                                                    "trailer": sessions[day.t_18 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_18 - 1].seats)}
+                                                   "seats": json.loads(sessions[day.t_18 - 1].seats),
+                                                   "session_id": sessions[day.t_18 - 1].id,
+                                                   "price": sessions[day.t_18 - 1].price}
             if day.t_21 is not None:
                 answer[-1]["sessions"]["21:00"] = {"title": sessions[day.t_21 - 1].title,
                                                    "trailer": sessions[day.t_21 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_21 - 1].seats)}
+                                                   "seats": json.loads(sessions[day.t_21 - 1].seats),
+                                                   "session_id": sessions[day.t_21 - 1].id,
+                                                   "price": sessions[day.t_21 - 1].price}
 
         return answer, 200
 
@@ -539,6 +547,23 @@ class BuyTikets(Resource):
         sendManyTikets(username, tikets)
         return {"message": "Tikets bought successfully", "tikets": tikets}, 200
 
+class getSessionInfo(Resource):
+    def get(self):
+        ses_id= request.args.get('ses_id')
+        ses = Sessions.query.filter_by(id=ses_id).first()
+        if ses is None:
+            return {'message': 'Session not found'}, 404
+        ans = {}
+        ans['message'] = 'Success'
+        ans['title'] = ses.title
+        film = Film.query.filter_by(id=ses.film_id).first()
+        ans['title'] = film.title
+        ans['trailer'] = film.trailer
+        ans['seats'] = json.loads(ses.seats)
+        ans['description'] = film.description
+        ans['price'] = ses.price
+        return ans, 200
+
 
 
 
@@ -549,7 +574,7 @@ api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
 api.add_resource(Display, '/display')
-api.add_resource(fullSchedule, '/fullSchedule')
+api.add_resource(fullSchedule, '/schedule')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
 api.add_resource(serve_image, '/tikets/<id>')
@@ -560,6 +585,7 @@ api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 api.add_resource(userConfirmEmail, '/userConfirmEmail')
 api.add_resource(UserInformation, '/userinfo')
 api.add_resource(BuyTikets, '/buyTikets')
+api.add_resource(getSessionInfo, '/getSessionInfo')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
