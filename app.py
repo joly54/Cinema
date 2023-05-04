@@ -234,6 +234,7 @@ class Register(Resource):
             resp = make_response(
                 jsonify({'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}), 200)
             resp.set_cookie('token', token)
+            sendValidationCode(username, user.codeToConfirmEmail)
             return resp
         return {'message': 'User already exists'}, 409
 
