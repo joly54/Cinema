@@ -5,17 +5,22 @@ from flask import Flask
 from flask_restful import Resource
 from flask_sqlalchemy import SQLAlchemy
 import config
+from app import is_local
 
 app = Flask(__name__)
-SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="vincinemaApi",
-    password=config.dbpass,
-    hostname="vincinemaApi.mysql.pythonanywhere-services.com",
-    databasename="vincinemaApi$default",
-)
-app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+if is_local:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
+    base_url = "http://127.0.0.1:5000"
+else:
+    SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+        username="vincinemaApi",
+        password=config.dbpass,
+        hostname="vincinemaApi.mysql.pythonanywhere-services.com",
+        databasename="vincinemaApi$default",
+    )
+    base_url = "https://vincinemaApi.pythonanywhere.com"
+    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+    app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -26,6 +31,7 @@ class Film(db.Model):
     duration = db.Column(db.Integer, nullable=False)
     trailer = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return "Film: " + self.title + " " + self.trailer + " " + self.description
@@ -37,7 +43,6 @@ class Sessions(db.Model):
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     film = db.relationship('Film', backref='sessions')
     seats = db.Column(db.String(120), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
@@ -107,12 +112,13 @@ def createFilm(
         title,
         duration,
         trailer,
-        description
+        description,
 ):
     newFilm = Film(title=title,
                    duration=duration,
                    trailer=trailer,
-                   description=description)
+                   description=description,
+                   price=random.randint(20, 30)*10-1)
     db.session.add(newFilm)
     db.session.commit()
     return newFilm
@@ -256,13 +262,11 @@ def createSession(
         film_id,
         film,
         seats,
-        price,
 ):
     newSession = Sessions(title=title,
                           film_id=film_id,
                           film=film,
-                          seats=seats,
-                          price=price)
+                          seats=seats)
     db.session.add(newSession)
     db.session.commit()
     return newSession
@@ -277,7 +281,6 @@ def CreateAllSessions(films):
             film_id=films[index].id,
             film=films[index],
             seats=str(randSeats()),
-            price=random.randint(20, 50) * 10
         )
     return sessions
 
@@ -316,10 +319,10 @@ def CreateAllDays():
         createDay(
             date=getPlusedDay(pulsDay),
             t_9=(ses.pop().id if random.randint(0, 3) / 3.0 < 1 and len(ses) else None),
-            t_12=(ses.pop().id if random.randint(0, 1) / 3.0 < 1 and len(ses) else None),
-            t_15=(ses.pop().id if random.randint(0, 1) / 3.0 < 1 and len(ses) else None),
-            t_18=(ses.pop().id if random.randint(0, 1) / 3.0 < 1 and len(ses) else None),
-            t_21=(ses.pop().id if random.randint(0, 1) / 3.0 < 1 and len(ses) else None)
+            t_12=(ses.pop().id if random.randint(0, 3) / 3.0 < 1 and len(ses) else None),
+            t_15=(ses.pop().id if random.randint(0, 3) / 3.0 < 1 and len(ses) else None),
+            t_18=(ses.pop().id if random.randint(0, 3) / 3.0 < 1 and len(ses) else None),
+            t_21=(ses.pop().id if random.randint(0, 3) / 3.0 < 1 and len(ses) else None)
         )
         pulsDay += 1
 

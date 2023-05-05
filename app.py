@@ -18,7 +18,7 @@ import config
 app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
-is_local = False
+is_local = True
 if is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
     base_url = "http://127.0.0.1:5000"
@@ -35,12 +35,15 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+
 class Film(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), unique=False, nullable=False)
     duration = db.Column(db.Integer, nullable=False)
     trailer = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
+    price = db.Column(db.Integer, nullable=False)
+
 
     def __repr__(self):
         return "Film: " + self.title + " " + self.trailer + " " + self.description
@@ -52,7 +55,7 @@ class Sessions(db.Model):
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     film = db.relationship('Film', backref='sessions')
     seats = db.Column(db.String(120), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
 
@@ -92,6 +95,7 @@ class Tiket(db.Model):
     def __repr__(self):
         return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}')"
 
+
 @app.errorhandler(Exception)
 def handle_exception(e):
     try:
@@ -102,6 +106,8 @@ def handle_exception(e):
         html = render_template('fail.html', message="Something went wrong. Please try again later.",
                                description="Error: " + str(e))
         return make_response(html, 500)
+
+
 def send_email(username, code):
     sender_email = config.sender_email
     password = config.password
@@ -117,7 +123,6 @@ def send_email(username, code):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
         server.send_message(msg)
-
 
 
 def sendTiket(username, tiket):
@@ -327,49 +332,70 @@ class Display(Resource):
         return {'message': 'Data displayed successfully'}, 200
 
 
-
-
 class fullSchedule(Resource):
     def get(self):
         days = Days.query.all()
         sessions = Sessions.query.all()
         answer = []
         for day in days:
-            answer.append({"date": day.date, "sessions": {}})
+            answer.append({"date": day.date, "sessions": []})
             if day.t_9 is not None:
-                answer[-1]["sessions"]["09:00"] = {"title": sessions[day.t_9 - 1].title,
-                                                   "trailer": sessions[day.t_9 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_9 - 1].seats),
-                                                   "session_id": sessions[day.t_9 - 1].id,
-                                                   "price": sessions[day.t_9 - 1].price}
+                film = Film.query.filter_by(id=sessions[day.t_9 - 1].film_id).first()
+                answer[-1]["sessions"].append(
+                    {"time": "09:00",
+                     "title": sessions[day.t_9 - 1].title,
+                     "trailer": film.trailer,
+                     "seats": json.loads(sessions[day.t_9 - 1].seats),
+                     "session_id": sessions[day.t_9 - 1].id,
+                     "price" : film.price
+                     }
+                )
             if day.t_12 is not None:
-                answer[-1]["sessions"]["12:00"] = {"title": sessions[day.t_12 - 1].title,
-                                                   "trailer": sessions[day.t_12 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_12 - 1].seats),
-                                                   "session_id": sessions[day.t_12 - 1].id,
-                                                   "price": sessions[day.t_12 - 1].price}
+                film = Film.query.filter_by(id=sessions[day.t_12 - 1].film_id).first()
+                answer[-1]["sessions"].append(
+                    {"time": "12:00",
+                     "title": sessions[day.t_12 - 1].title,
+                     "trailer": film.trailer,
+                     "seats": json.loads(sessions[day.t_12 - 1].seats),
+                     "session_id": sessions[day.t_12 - 1].id,
+                     "price": film.price
+                     }
+                )
             if day.t_15 is not None:
-                answer[-1]["sessions"]["15:00"] = {"title": sessions[day.t_15 - 1].title,
-                                                   "trailer": sessions[day.t_15 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_15 - 1].seats),
-                                                   "session_id": sessions[day.t_15 - 1].id,
-                                                   "price": sessions[day.t_15 - 1].price}
+                film = Film.query.filter_by(id=sessions[day.t_15 - 1].film_id).first()
+                answer[-1]["sessions"].append(
+                    {"time": "15:00",
+                     "title": sessions[day.t_15 - 1].title,
+                     "trailer": film.trailer,
+                     "seats": json.loads(sessions[day.t_15 - 1].seats),
+                     "session_id": sessions[day.t_15 - 1].id,
+                     "price": film.price
+                     }
+                )
             if day.t_18 is not None:
-                answer[-1]["sessions"]["18:00"] = {"title": sessions[day.t_18 - 1].title,
-                                                   "trailer": sessions[day.t_18 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_18 - 1].seats),
-                                                   "session_id": sessions[day.t_18 - 1].id,
-                                                   "price": sessions[day.t_18 - 1].price}
+                film = Film.query.filter_by(id=sessions[day.t_18 - 1].film_id).first()
+                answer[-1]["sessions"].append(
+                    {"time": "18:00",
+                     "title": sessions[day.t_18 - 1].title,
+                     "trailer": film.trailer,
+                     "seats": json.loads(sessions[day.t_18 - 1].seats),
+                     "session_id": sessions[day.t_18 - 1].id,
+                     "price": film.price
+                     }
+                )
             if day.t_21 is not None:
-                answer[-1]["sessions"]["21:00"] = {"title": sessions[day.t_21 - 1].title,
-                                                   "trailer": sessions[day.t_21 - 1].film.trailer,
-                                                   "seats": json.loads(sessions[day.t_21 - 1].seats),
-                                                   "session_id": sessions[day.t_21 - 1].id,
-                                                   "price": sessions[day.t_21 - 1].price}
+                film = Film.query.filter_by(id=sessions[day.t_21 - 1].film_id).first()
+                answer[-1]["sessions"].append(
+                    {"time": "21:00",
+                     "title": sessions[day.t_21 - 1].title,
+                     "trailer": film.trailer,
+                     "seats": json.loads(sessions[day.t_21 - 1].seats),
+                     "session_id": sessions[day.t_21 - 1].id,
+                     "price": film.price
+                     }
+                )
 
         return answer, 200
-
-
 
 
 class DisplayTikets(Resource):
@@ -456,8 +482,6 @@ class userConfirmEmail(Resource):
         return Response(html, status=200, content_type="text/html")
 
 
-
-
 class UserInformation(Resource):
     def get(self):
         token = request.args.get('token')
@@ -485,6 +509,8 @@ class UserInformation(Resource):
             }
             res['tikets'].append(data)
         return res, 200
+
+
 class BuyTikets(Resource):
     def post(self):
         username = request.headers.get('username')
@@ -548,9 +574,10 @@ class BuyTikets(Resource):
         sendManyTikets(username, tikets)
         return {"message": "Tikets bought successfully", "tikets": tikets}, 200
 
+
 class getSessionInfo(Resource):
     def get(self):
-        ses_id= request.args.get('ses_id')
+        ses_id = request.args.get('ses_id')
         ses = Sessions.query.filter_by(id=ses_id).first()
         if ses is None:
             return {'message': 'Session not found'}, 404
@@ -564,10 +591,6 @@ class getSessionInfo(Resource):
         ans['description'] = film.description
         ans['price'] = ses.price
         return ans, 200
-
-
-
-
 
 
 api.add_resource(Login, '/login')
