@@ -1,56 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import './Schedule.css'
+import {Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Button} from '@material-ui/core';
+import * as api from '../utils/Api'
 
 function CinemaSchedule() {
-    const [schedule, setSchedule] = useState(null);
-
+    const [schedule, setSchedule] = useState([])
     useEffect(() => {
-        async function fetchData() {
-            const response = await fetch('http://vincinemaapi.pythonanywhere.com//fullSchedule');
-            const data = await response.json();
-            setSchedule(data);
-
-        }
-        fetchData();
-    }, []);
-
-    function handleSelectFilm(date, index) {
-        const updatedSchedule = { ...schedule };
-        updatedSchedule[date].films.forEach((film, i) => {
-            film.selected = i === index;
-        });
-        setSchedule(updatedSchedule);
-    }
-
-    if (!schedule) {
-        return <div>Loading...</div>;
-    }
-
+        api.schedule()
+            .then((res) => {
+                res.json().then(data => {
+                    console.log(data);
+                    if (res.ok) {
+                        console.log(data);
+                        setSchedule(data)
+                    } else {
+                        console.log(data);
+                    }
+                })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            })
+    },[])
+    schedule.map((item) => {
+        console.log(item);
+    })
     return (
-        <div className="Schedule">
-            <h1>Cinema Schedule</h1>
-            {Object.entries(schedule).map(([date, { films }], index) => (
-                <div key={date} className={`row${index % 2 === 0 ? ' even' : ' odd'}`}>
-                    <h2>{date}</h2>
-                    <div className="movie-list">
-                        {films.map((film, index) => (
-                            <div
-                                style={{ backgroundImage: `url(${"https://img.youtube.com/vi/" + film.trailer.split('v=')[1] + "/maxresdefault.jpg"})` }}
-                                key={index}
-                                className={`movie${film.selected ? ' selected' : ''}`}
-                                onClick={() => handleSelectFilm(date, index)}
-                            >
-                                <h3>{film.title}</h3>
-                                <p>Duration: {film.duration} min</p>
-                                <p>Available tickets: {film.aviableTikets.length}</p>
-                                <p>Begin time: {film.beginTime}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
+        schedule.map((day) => (
+            <>
+                <h2
+                style={{ textAlign: "center",
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                    margin: "2rem 0",
+                    color: "#ff8c00"
+                }}
+                >{day["date"]}</h2>
+                <Grid container spacing={4}>
+                    {day["sessions"].map((scheduleItem) => (
+                        <Grid item xs={12} md={6} lg={3} key={scheduleItem}>
+                            <Card>
+                                <CardActionArea>
+                                    <CardMedia
+                                        component="img"
+                                        image={"https://img.youtube.com/vi/" + scheduleItem["trailer"].split('v=')[1] + "/maxresdefault.jpg"}
+                                        title="Card image"
+                                        style={{ maxHeight: '200px' }}
+                                    />
+                                    <CardContent className="card-content">
+                                        <Typography gutterBottom variant="h5" component="h2" className="card-title">
+                                            {scheduleItem["title"]}
+                                        </Typography>
+                                        <Typography variant="body2" color="textSecondary" component="p">
+                                            {scheduleItem["description"]}
+                                        </Typography>
+                                        <Button variant="contained" color="primary" href="/"
+                                                style={{ backgroundColor: "#ff8c00",
+                                                    color: "#fff",
+                                                    padding: "0.5rem 1rem",
+                                                    border: "none",
+                                                    borderRadius: "0.3rem",
+                                                    cursor: "pointer",
+                                                    transition: "background-color 0.2s ease-in-out" }}>
+                                            Buy ticket for {scheduleItem["price"]}UAH
+                                        </Button>
+
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+            </>
+        ))
     );
+
 }
 
 export default CinemaSchedule;

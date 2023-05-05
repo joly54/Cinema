@@ -17,3 +17,6 @@ export const register = (username, password) => {
 export const forgotPassword = (username) => {
     return fetch(`${baseurl}/forgot-password?username=${username}`, {method: 'POST'})
 }
+export const schedule = () => {
+    return fetch(`${baseurl}/schedule`)
+}

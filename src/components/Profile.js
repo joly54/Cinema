@@ -14,8 +14,6 @@ function Profile() {
     const [tickets, setTickets] = useState([]);
     const token = localStorage.getItem('token');
 
-    //const navigate = useNavigate();
-
     useEffect(() => {
         api.userInfo(email, token)
             .then((response) => {
