@@ -26,6 +26,7 @@ def GetOutput():
     response = requests.get(api_base_url + "/consoles/{id}/get_latest_output/".format(id=bconsole["id"]),
                             headers={"Authorization": "Token " + api_token})
     if response.status_code == 200:
+        os.system("cls")
         print(f"{response.json()['output']}", end="")
     else:
         print("Error: Could not retrieve console output.")
@@ -72,4 +73,3 @@ while True:
         exit()
     else:
         SendInput(command)
-        os.system("cls")
