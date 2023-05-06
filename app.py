@@ -18,7 +18,8 @@ import config
 app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
-if config.is_local:
+is_local = config.is_local
+if not is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
     base_url = "http://127.0.0.1:5000"
 else:
@@ -597,7 +598,14 @@ class getSessionInfo(Resource):
         return ans, 200
 class dbinfo(Resource):
     def get(self):
-        return str(db.engine.table_names()), 200
+        metadata = db.MetaData()
+
+        # Reflect the database schema
+        metadata.reflect(bind=db.engine)
+
+        # Get all table names
+        table_names = metadata.tables.keys()
+        return str(table_names), 200
 
 
 api.add_resource(Login, '/login')
@@ -617,6 +625,7 @@ api.add_resource(userConfirmEmail, '/userConfirmEmail')
 api.add_resource(UserInformation, '/userinfo')
 api.add_resource(BuyTikets, '/buyTikets')
 api.add_resource(getSessionInfo, '/getSessionInfo')
+api.add_resource(dbinfo, '/dbinfo')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
