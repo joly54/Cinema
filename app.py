@@ -700,12 +700,12 @@ class GetSession(Resource):
             return {'message': 'Session not found'}, 404
         ans['message'] = 'Success'
         film = Film.query.filter_by(id=ses.film_id).first()
-        ans['title'] = film.title
+        ans['title'] = ses.title
         ans['trailer'] = film.trailer
         ans['seats'] = json.loads(ses.seats)
         ans['description'] = film.description
         ans['price'] = film.price
-        return ses, 200
+        return ans, 200
 
 
 api.add_resource(Login, '/login')
