@@ -18,8 +18,7 @@ import config
 app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
-is_local = True
-if is_local:
+if config.is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
     base_url = "http://127.0.0.1:5000"
 else:
@@ -347,7 +346,8 @@ class fullSchedule(Resource):
                      "trailer": film.trailer,
                      "seats": json.loads(sessions[day.t_9 - 1].seats),
                      "session_id": sessions[day.t_9 - 1].id,
-                     "price" : film.price
+                     "price" : film.price,
+                     "description": film.description
                      }
                 )
             if day.t_12 is not None:
@@ -358,7 +358,8 @@ class fullSchedule(Resource):
                      "trailer": film.trailer,
                      "seats": json.loads(sessions[day.t_12 - 1].seats),
                      "session_id": sessions[day.t_12 - 1].id,
-                     "price": film.price
+                     "price": film.price,
+                     "description": film.description
                      }
                 )
             if day.t_15 is not None:
@@ -369,7 +370,8 @@ class fullSchedule(Resource):
                      "trailer": film.trailer,
                      "seats": json.loads(sessions[day.t_15 - 1].seats),
                      "session_id": sessions[day.t_15 - 1].id,
-                     "price": film.price
+                     "price": film.price,
+                     "description": film.description
                      }
                 )
             if day.t_18 is not None:
@@ -380,7 +382,8 @@ class fullSchedule(Resource):
                      "trailer": film.trailer,
                      "seats": json.loads(sessions[day.t_18 - 1].seats),
                      "session_id": sessions[day.t_18 - 1].id,
-                     "price": film.price
+                     "price": film.price,
+                     "description": film.description
                      }
                 )
             if day.t_21 is not None:
@@ -391,7 +394,8 @@ class fullSchedule(Resource):
                      "trailer": film.trailer,
                      "seats": json.loads(sessions[day.t_21 - 1].seats),
                      "session_id": sessions[day.t_21 - 1].id,
-                     "price": film.price
+                     "price": film.price,
+                     "description": film.description
                      }
                 )
 
@@ -589,8 +593,11 @@ class getSessionInfo(Resource):
         ans['trailer'] = film.trailer
         ans['seats'] = json.loads(ses.seats)
         ans['description'] = film.description
-        ans['price'] = ses.price
+        ans['price'] = film.price
         return ans, 200
+class dbinfo(Resource):
+    def get(self):
+        return str(db.engine.table_names()), 200
 
 
 api.add_resource(Login, '/login')
