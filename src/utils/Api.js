@@ -20,3 +20,6 @@ export const forgotPassword = (username) => {
 export const schedule = () => {
     return fetch(`${baseurl}/schedule`)
 }
+export const checktoken = (username, token) => {
+    return fetch(`${baseurl}/checkToken?username=${username}&token=${token}`)
+}

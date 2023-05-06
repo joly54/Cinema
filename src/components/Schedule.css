@@ -1,31 +1,40 @@
-.card {
+card {
     display: none;
     padding: 10rem;
     border-radius: 8px;
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
     overflow: hidden;
 }
-.card:hover {
+card:hover {
     transform: translateY(-4px);
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
 }
-
-.card img {
+card{
+    display: none;
+}
+card img {
     object-fit: cover;
     height: 200px;
 }
+h2 {
+    textAlign: center;
+    fontSize: 2rem;
+    fontWeight: bold;
+    margin: 2rem 0;
+    color: #ff8c00
+}
 
-.card-content {
+card-content {
     padding: 16px;
 }
 
-.card-title {
+card-title {
     font-size: 24px;
     font-weight: 600;
     margin-bottom: 8px;
 }
 
-.card-text {
+card-text {
     font-size: 16px;
     line-height: 1.5;
     color: #666;

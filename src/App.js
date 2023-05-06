@@ -28,10 +28,32 @@ function App() {
                 localStorage.removeItem('validDue');
                 setIsLogin(false);
                 navigate('/login');
-            } else {
-                setIsLogin(true);
             }
         } else {
+            api.checktoken(localStorage.getItem("username"), localStorage.setItem("token"))
+                .then((res) => {
+                    res.json().then(data => {
+                        console.log(data);
+                        if (res.ok) {
+                            setIsLogin(true);
+                        } else{
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('username');
+                            localStorage.removeItem('validDue');
+                            setIsLogin(false);
+                            toast("Your session expired, please login again", {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true
+                            })
+                            navigate('/login');
+                        }
+                    }
+
+                )})
             setIsLogin(false);
         }
     }, [navigate, validDue])

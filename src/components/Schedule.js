@@ -29,14 +29,16 @@ function CinemaSchedule() {
         schedule.map((day) => (
             <>
                 <h2
-                style={{ textAlign: "center",
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    margin: "2rem 0",
-                    color: "#ff8c00"
+                style={{
+                    textAlign: "center",
                 }}
                 >{day["date"]}</h2>
-                <Grid container spacing={4}>
+                <Grid container spacing={4}
+                style={{
+                    padding: "0 2rem",
+                    alignContent: "center",
+                }}
+                >
                     {day["sessions"].map((scheduleItem) => (
                         <Grid item xs={12} md={6} lg={3} key={scheduleItem}>
                             <Card>
@@ -49,7 +51,7 @@ function CinemaSchedule() {
                                     />
                                     <CardContent className="card-content">
                                         <Typography gutterBottom variant="h5" component="h2" className="card-title">
-                                            {scheduleItem["title"]}
+                                            {scheduleItem["title"] + " " + scheduleItem["time"]}
                                         </Typography>
                                         <Typography variant="body2" color="textSecondary" component="p">
                                             {scheduleItem["description"]}
