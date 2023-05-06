@@ -10,50 +10,60 @@ import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import FilmPage from "./components/FilmPage";
 
 function App() {
+    const theme = createMuiTheme({
+        palette: {
+            primary: {
+                main: '#ff8c00',
+            },
+        },
+    });
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(false);
+    const [sessionId, setsession] = useState(null);
     let validDue = localStorage.getItem('validDue');
-    //alert(validDue)
     useEffect(() =>{
         if (validDue) {
-            let now = new Date();
-            let validDueDate = new Date(validDue);
-            if (now > validDueDate) {
+            let now = new Date()/1000
+            /*alert(now, validDue)
+            alert("now: " + now + " validDue: " + validDue)*/
+            if (now > validDue) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
                 localStorage.removeItem('validDue');
                 setIsLogin(false);
                 navigate('/login');
             }
-        } else {
-            api.checktoken(localStorage.getItem("username"), localStorage.setItem("token"))
+            api.checktoken(localStorage.getItem("username"), localStorage.getItem("token"))
                 .then((res) => {
                     res.json().then(data => {
-                        console.log(data);
-                        if (res.ok) {
-                            setIsLogin(true);
-                        } else{
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('username');
-                            localStorage.removeItem('validDue');
-                            setIsLogin(false);
-                            toast("Your session expired, please login again", {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true
-                            })
-                            navigate('/login');
+                            console.log(data);
+                            if (res.ok) {
+                                setIsLogin(true);
+                            } else{
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('username');
+                                localStorage.removeItem('validDue');
+                                setIsLogin(false);
+                                toast("Your session expired, please login again", {
+                                    position: "top-center",
+                                    autoClose: 5000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: false,
+                                    draggable: true
+                                })
+                                navigate('/login');
+                            }
                         }
-                    }
 
-                )})
+                    )})
+        } else {
             setIsLogin(false);
         }
     }, [navigate, validDue])
@@ -161,19 +171,26 @@ function App() {
         setIsLogin(false);
         navigate('/login');
     }
+    function handleSession(ses_id){
+        setsession(ses_id);
+        navigate('/sessionInfo');
+    }
   return (
+      <ThemeProvider theme={theme}>
       <div>
           <ToastContainer />
           <Navbar loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>
-            <Route path="/" element={<Schedule />} />
+            <Route path="/" element={<Schedule handleFilm={handleSession} />} />
             <Route path="/films" element={<Films />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgot-password" element={<ForgotPassword handleChangeUsername={handleChangeUsername} ResetPassword={ResetPassword} />} />
+            <Route path="/sessionInfo" element={<FilmPage ses_id={sessionId} />} />
         </Routes>
       </div>
+      </ThemeProvider>
   );
 }
 

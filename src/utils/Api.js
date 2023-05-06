@@ -23,3 +23,6 @@ export const schedule = () => {
 export const checktoken = (username, token) => {
     return fetch(`${baseurl}/checkToken?username=${username}&token=${token}`)
 }
+export const getSessionInfo = (ses_id) => {
+    return fetch(`${baseurl}/getSession?ses_id=${ses_id}`)
+}

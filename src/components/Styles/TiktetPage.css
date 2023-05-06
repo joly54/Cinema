@@ -1,0 +1,20 @@
+.square {
+    width: 1rem;
+    height: 1rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    margin: 0.1rem;
+}
+.aviable{
+    background-color: #e68100;
+}
+.aviable:hover{
+    transform: scale(1.05);
+}
+.selected{
+    background-color: #ffad48;
+}
+.occupied{
+    background-color: #afafaf;
+}

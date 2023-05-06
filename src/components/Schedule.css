@@ -1,5 +1,4 @@
 card {
-    display: none;
     padding: 10rem;
     border-radius: 8px;
     box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
@@ -8,9 +7,6 @@ card {
 card:hover {
     transform: translateY(-4px);
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
-}
-card{
-    display: none;
 }
 card img {
     object-fit: cover;
@@ -40,7 +36,7 @@ card-text {
     color: #666;
 }
 .btn {
-    background-color: #ff8c00;
+    background-color: red;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
@@ -49,3 +45,15 @@ card-text {
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 }
+.btn:hover {
+    background-color: red;
+}
+.BuyTicket {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    color: white;
+    font-weight: unset;
+}
+
