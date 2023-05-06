@@ -728,6 +728,7 @@ api.add_resource(getSessionInfo, '/getSessionInfo')
 api.add_resource(dbinfo, '/dbinfo')
 api.add_resource(getFilms, '/getFilms')
 api.add_resource(getSessions, '/getSessions')
+api.add_resource(GetSession, '/getSession')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
