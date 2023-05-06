@@ -606,6 +606,87 @@ class dbinfo(Resource):
         # Get all table names
         table_names = metadata.tables.keys()
         return str(table_names), 200
+class getFilms(Resource):
+    def get(self):
+        films = Film.query.all()
+        res = []
+        for film in films:
+            res.append({
+                "id": film.id,
+                "duration": film.duration,
+                "title": film.title,
+                "description": film.description,
+                "price": film.price,
+                "trailer": film.trailer,
+            })
+        return res, 200
+class getSessions(Resource):
+    def get(self):
+        id = request.args.get('film_id')
+        try:
+            id = int(id)
+        except:
+            return {'message': 'Bad request'}, 400
+        day = Days.query.all()
+        res = []
+        for d in day:
+            if d.t_9 is not None:
+                ses = Sessions.query.filter_by(id=d.t_9).first()
+                if ses is not None and ses.film_id == id:
+                    res.append({
+                        "title": ses.title,
+                        "ses_id": ses.id,
+                        "date": d.date,
+                        "time": "09:00",
+                        "seats": json.loads(ses.seats),
+                        "price": Film.query.filter_by(id=ses.film_id).first().price
+                    })
+            if d.t_12 is not None:
+                ses = Sessions.query.filter_by(id=d.t_12).first()
+                if ses is not None and ses.film_id == id:
+                    res.append({
+                        "title": ses.title,
+                        "ses_id": ses.id,
+                        "date": d.date,
+                        "time": "12:00",
+                        "seats": json.loads(ses.seats),
+                        "price": Film.query.filter_by(id=ses.film_id).first().price
+                    })
+            if d.t_15 is not None:
+                ses = Sessions.query.filter_by(id=d.t_15).first()
+                if ses is not None and ses.film_id == id:
+                    res.append({
+                        "title": ses.title,
+                        "ses_id": ses.id,
+                        "date": d.date,
+                        "time": "15:00",
+                        "seats": json.loads(ses.seats),
+                        "price": Film.query.filter_by(id=ses.film_id).first().price
+                    })
+            if d.t_18 is not None:
+                ses = Sessions.query.filter_by(id=d.t_18).first()
+                if ses is not None and ses.film_id == id:
+                    res.append({
+                        "title": ses.title,
+                        "ses_id": ses.id,
+                        "date": d.date,
+                        "time": "18:00",
+                        "seats": json.loads(ses.seats),
+                        "price": Film.query.filter_by(id=ses.film_id).first().price
+                    })
+            if d.t_21 is not None:
+                ses = Sessions.query.filter_by(id=d.t_21).first()
+                if ses is not None and ses.film_id == id:
+                    res.append({
+                        "title": ses.title,
+                        "ses_id": ses.id,
+                        "date": d.date,
+                        "time": "21:00",
+                        "seats": json.loads(ses.seats),
+                        "price": Film.query.filter_by(id=ses.film_id).first().price
+                    })
+        return res, 200
+
 
 
 api.add_resource(Login, '/login')
@@ -626,6 +707,8 @@ api.add_resource(UserInformation, '/userinfo')
 api.add_resource(BuyTikets, '/buyTikets')
 api.add_resource(getSessionInfo, '/getSessionInfo')
 api.add_resource(dbinfo, '/dbinfo')
+api.add_resource(getFilms, '/getFilms')
+api.add_resource(getSessions, '/getSessions')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
