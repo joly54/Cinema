@@ -44,7 +44,6 @@ class Film(db.Model):
     description = db.Column(db.String(1000), nullable=False)
     price = db.Column(db.Integer, nullable=False)
 
-
     def __repr__(self):
         return "Film: " + self.title + " " + self.trailer + " " + self.description
 
@@ -347,7 +346,7 @@ class fullSchedule(Resource):
                      "trailer": film.trailer,
                      "seats": json.loads(sessions[day.t_9 - 1].seats),
                      "session_id": sessions[day.t_9 - 1].id,
-                     "price" : film.price,
+                     "price": film.price,
                      "description": film.description
                      }
                 )
@@ -596,6 +595,8 @@ class getSessionInfo(Resource):
         ans['description'] = film.description
         ans['price'] = film.price
         return ans, 200
+
+
 class dbinfo(Resource):
     def get(self):
         metadata = db.MetaData()
@@ -606,6 +607,8 @@ class dbinfo(Resource):
         # Get all table names
         table_names = metadata.tables.keys()
         return str(table_names), 200
+
+
 class getFilms(Resource):
     def get(self):
         films = Film.query.all()
@@ -620,6 +623,8 @@ class getFilms(Resource):
                 "trailer": film.trailer,
             })
         return res, 200
+
+
 class getSessions(Resource):
     def get(self):
         id = request.args.get('film_id')
@@ -686,7 +691,21 @@ class getSessions(Resource):
                         "price": Film.query.filter_by(id=ses.film_id).first().price
                     })
         return res, 200
-
+class GetSession(Resource):
+    def get(self):
+        ses_id = request.args.get('ses_id')
+        ses = Sessions.query.filter_by(id=ses_id).first()
+        ans = {}
+        if ses is None:
+            return {'message': 'Session not found'}, 404
+        ans['message'] = 'Success'
+        film = Film.query.filter_by(id=ses.film_id).first()
+        ans['title'] = film.title
+        ans['trailer'] = film.trailer
+        ans['seats'] = json.loads(ses.seats)
+        ans['description'] = film.description
+        ans['price'] = film.price
+        return ses, 200
 
 
 api.add_resource(Login, '/login')
