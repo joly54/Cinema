@@ -58,19 +58,33 @@ function CinemaSchedule({
                                     }}
                                 >
                                     <CardActionArea
-                                    style={{height: "100%"}}
+                                    style={{
+                                        //height: "100%",
+                                    }}
                                     >
                                         <CardMedia
                                             component="img"
                                             image={scheduleItem["poster"]}
                                             title="Card image"
-                                            style={{ maxHeight: '200px' }}
+                                            style={{
+                                                height: "200px", // or any desired height
+                                                width: "100%",
+                                                objectFit: "cover",
+                                                borderRadius: "10px 10px 0 0",
+                                                objectPosition: "top"
+                                            }}
                                         />
                                         <CardContent className="card-content">
                                             <Typography gutterBottom variant="h5" component="h2" className="card-title" color = "textSecondary">
                                                 {scheduleItem["title"] + " " + scheduleItem["time"]}
                                             </Typography>
-                                            <Typography variant="body2" color="textSecondary" component="p">
+                                            <Typography variant="body2" color="textSecondary" component="p"
+                                            style={{
+                                                height: "100px",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                            }}
+                                            >
                                                 {scheduleItem["description"]}
                                             </Typography>
 
