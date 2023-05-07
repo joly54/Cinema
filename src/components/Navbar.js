@@ -21,7 +21,7 @@ function Navbar({loggedIn, handleLogout}) {
                 <li>
                     <Link to="/">Schedule</Link>
                 </li>
-                <li>
+                <li className="RightMenu">
                     {loggedIn ? (
                         <Link to="/login" onClick={handleLogout}>
                             Log out
@@ -30,7 +30,7 @@ function Navbar({loggedIn, handleLogout}) {
                         <Link to="/login">Log in</Link>
                     )}
                 </li>
-                <li>
+                <li className="RightMenu">
                     {!loggedIn ? (
                         <Link to="/register">Register</Link>
                     ) : (
