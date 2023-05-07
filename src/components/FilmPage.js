@@ -83,7 +83,7 @@ function FilmPage(ses_id){
                         }
                         >
                             {[...Array(7)].map((_, row) => (
-                                <Grid key={row} item xs={12} container justify="center">
+                                <Grid key={row} item xs={12} container justifyContent="center">
                                     {[...Array(7)].map((_, col) => (
                                         <div id={(row * 7) + col + 1} className={
                                             ( aviSeats.includes((row * 7) + col + 1) ? "aviable" : "occupied") + " square"
@@ -96,8 +96,10 @@ function FilmPage(ses_id){
                                                     color: "white",
                                                     textAlign: "center",
                                                     fontWeight: "bold",
-                                                    //center vertically
-                                                    justifyContent: "center",
+                                                    display: "flex",
+                                                    alignItems: "center", // Центрирование по вертикали
+                                                    height: "100%", // Задайте высоту для Typography
+                                                    justifyContent: "center"
                                                 }}
                                             >
                                                 {(row * 7) + col + 1}
