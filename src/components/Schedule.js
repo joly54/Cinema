@@ -62,7 +62,7 @@ function CinemaSchedule({
                                     >
                                         <CardMedia
                                             component="img"
-                                            image={"https://img.youtube.com/vi/" + scheduleItem["trailer"].split('v=')[1] + "/maxresdefault.jpg"}
+                                            image={scheduleItem["poster"]}
                                             title="Card image"
                                             style={{ maxHeight: '200px' }}
                                         />
