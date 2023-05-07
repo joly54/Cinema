@@ -12,6 +12,7 @@ import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import FilmPage from "./components/FilmPage";
+import "../src/components/Styles/App.css";
 
 function App() {
     const theme = createMuiTheme({

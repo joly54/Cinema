@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as api from '../utils/Api';
-
+import './Styles/scrollBar.css';
 export const baseurl = "https://vincinemaApi.pythonanywhere.com";
 
 function Profile() {

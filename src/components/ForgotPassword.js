@@ -1,6 +1,6 @@
 import React from 'react';
 import './Styles/login.css';
-
+import './Styles/scrollBar.css';
 function ForgotPassword(
     {
         ResetPassword,

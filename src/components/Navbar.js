@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import './Styles/Navbar.css';
+import './Styles/scrollBar.css';
 function Navbar({loggedIn, handleLogout}) {
     const navigate = useNavigate();
 

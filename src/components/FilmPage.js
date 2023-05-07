@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import * as api from "../utils/Api";
 import {Card, Grid, makeStyles, Typography} from "@material-ui/core";
 import "./Styles/TiktetPage.css";
-
+import './Styles/scrollBar.css';
 
 function FilmPage(ses_id){
     const navigate = useNavigate();
