@@ -33,6 +33,8 @@ function CinemaSchedule({
                     <h2
                         style={{
                             textAlign: "center",
+                            alignContent: "center",
+                            padding: "1rem",
                         }}
                     >{day["date"]}</h2>
 
@@ -41,19 +43,23 @@ function CinemaSchedule({
                               padding: "0 2rem",
                               alignContent: "center",
                               maxWidth: "100%",
-                          }}
-                    >
+                          }}>
                         {day["sessions"].map((scheduleItem) => (
                             <Grid item xs={12} md={6} lg={3} key={scheduleItem.id}>
                                 <Card
+                                    className="card"
                                     style={{
-                                        height: "100%",
+                                        borderRadius: "10px",
+                                        boxShadow: "0 0 10px rgba(0,0,0,0.5)",
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "space-between",
+                                        height: "100%",
                                     }}
                                 >
-                                    <CardActionArea>
+                                    <CardActionArea
+                                    style={{height: "100%"}}
+                                    >
                                         <CardMedia
                                             component="img"
                                             image={"https://img.youtube.com/vi/" + scheduleItem["trailer"].split('v=')[1] + "/maxresdefault.jpg"}
@@ -67,23 +73,25 @@ function CinemaSchedule({
                                             <Typography variant="body2" color="textSecondary" component="p">
                                                 {scheduleItem["description"]}
                                             </Typography>
-                                            <br></br>
-                                            <Button
-                                                className="btn"
-                                                variant="contained"
-                                                disableElevation
-                                                color="primary"
-                                                onClick={() => handleFilm(scheduleItem["session_id"])}
-                                                disabled={scheduleItem["seats"].length === 0}
-                                            >
-                                                <Typography variant="body2" component="p" className="BuyTicket">
-                                                    {scheduleItem["seats"].length === 0 ? "Sold out" : `Buy ticket ${scheduleItem["price"]} UAH`}
-                                                </Typography>
-                                            </Button>
 
 
                                         </CardContent>
                                     </CardActionArea>
+                                    <Button
+                                        className="btn"
+                                        variant="contained"
+                                        disableElevation
+                                        color="primary"
+                                        onClick={() => handleFilm(scheduleItem["session_id"])}
+                                        disabled={scheduleItem["seats"].length === 0}
+                                        style={{ width: "100%",
+                                            borderRadius: "0 0 10px 10px",
+                                    }}
+                                    >
+                                        <Typography variant="body2" component="p" className="BuyTicket">
+                                            {scheduleItem["seats"].length === 0 ? "Sold out" : `Buy ticket ${scheduleItem["price"]} UAH`}
+                                        </Typography>
+                                    </Button>
                                 </Card>
                             </Grid>
                         ))}

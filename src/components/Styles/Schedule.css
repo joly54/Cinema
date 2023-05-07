@@ -36,17 +36,17 @@ card-text {
     color: #666;
 }
 .btn {
-    background-color: red;
+    background-color: #ff8c00;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 0.3rem;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
 }
 .btn:hover {
-    background-color: red;
+    transition: background-color 0.2s ease-in-out;
+
 }
 .BuyTicket {
     display: flex;
