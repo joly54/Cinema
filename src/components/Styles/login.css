@@ -4,7 +4,7 @@
     align-items: center;
     justify-content: center;
     height: 100vh;
-    background-color: #f6f6f6;
+    background-color: #333;
 }
 
 .title {
@@ -17,10 +17,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #fff;
+    background-color: #333;
     padding: 2rem;
     border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 1);
 }
 
 .form-group {
@@ -40,12 +40,12 @@ input {
     padding: 0.5rem;
     border: none;
     border-radius: 0.3rem;
-    background-color: #f6f6f6;
+    background-color: #444;
 }
 
 .btn {
-    background-color: #774699;
-    color: #fff;
+    background-color: #444;
+    color: #999;
     padding: 0.5rem 1rem;
     border: none;
     border-radius: 0.3rem;
