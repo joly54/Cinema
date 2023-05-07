@@ -50,6 +50,7 @@ function Profile() {
 
     return (
         <div className="profile-container">
+            <BackToTopButton/>
             <ToastContainer/>
             <div className="profile-header">
                 <h2>{email}</h2>

@@ -13,9 +13,12 @@ import ForgotPassword from "./components/ForgotPassword";
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import FilmPage from "./components/FilmPage";
 import "../src/components/Styles/App.css";
-
+import Cookies from 'js-cookie';
 
 function App() {
+    useEffect(() => {
+        Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
+    }, []);
     const theme = createMuiTheme({
         palette: {
             primary: {
@@ -23,6 +26,7 @@ function App() {
             },
         },
     });
+    document.cookie = 'cookieName=cookieValue; SameSite=Lax';
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
