@@ -6,7 +6,7 @@
 
 /* Изменение цвета и размера полосы прокрутки */
 ::-webkit-scrollbar-thumb {
-    background-color: orange;
+    background-color: white;
     border-radius: 5px;
 
 }

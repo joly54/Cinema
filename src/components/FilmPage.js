@@ -56,7 +56,14 @@ function FilmPage(ses_id){
             <BackToTopButton />
             {sessionInfo && sessionInfo["trailer"] ? (
                 <Grid>
-                    <Card>
+                    <Card class = "CenterDataFilm">
+                        <h1>{sessionInfo["title"]}</h1>
+                        <h2>{sessionInfo["description"]}</h2>
+                        <h3>{sessionInfo["date"]}</h3>
+                        <h3>{sessionInfo["time"]}</h3>
+                        <h3>Prise: {sessionInfo["price"]} uah</h3>
+                    </Card>
+                    <Card class="CenterIframe">
                         <iframe
                             width="560"
                             height="315"
@@ -66,13 +73,7 @@ function FilmPage(ses_id){
                             allowFullScreen
                         ></iframe>
                     </Card>
-                    <Card>
-                        <h1>{sessionInfo["title"]}</h1>
-                        <h2>{sessionInfo["description"]}</h2>
-                        <h3>{sessionInfo["date"]}</h3>
-                        <h3>{sessionInfo["time"]}</h3>
-                        <h3>{sessionInfo["price"]}</h3>
-                    </Card>
+                    <br/>
                     <div id="selected"></div>
                     <div className="Seats">
                         <Grid container spacing={1}

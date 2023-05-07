@@ -22,7 +22,7 @@ function App() {
     const theme = createMuiTheme({
         palette: {
             primary: {
-                main: '#ff8c00',
+                main: '#56376B',
             },
         },
     });
@@ -183,7 +183,7 @@ function App() {
     }
   return (
       <ThemeProvider theme={theme}>
-      <div>
+      <div className="BackGroundColor">
           <ToastContainer />
           <Navbar loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>

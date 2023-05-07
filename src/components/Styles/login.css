@@ -9,7 +9,7 @@
 
 .title {
     font-size: 2rem;
-    color: #ff8c00;
+    color: #774699;
     margin-bottom: 2rem;
 }
 
@@ -32,7 +32,7 @@
 label {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    color: #ff8c00;
+    color: #774699;
 }
 
 input {
@@ -44,7 +44,7 @@ input {
 }
 
 .btn {
-    background-color: #ff8c00;
+    background-color: #774699;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
@@ -55,7 +55,7 @@ input {
 }
 
 .btn:hover {
-    background-color: #e68100;
+    background-color: #774699;
 }
 .row {
     display: flex;
@@ -70,5 +70,5 @@ input {
     user-select: none;
 }
 .text-btn:hover{
-    color: #ff8c00;
+    color: #774699;
 }

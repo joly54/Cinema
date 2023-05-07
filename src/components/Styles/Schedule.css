@@ -17,7 +17,7 @@ h2 {
     fontSize: 2rem;
     fontWeight: bold;
     margin: 2rem 0;
-    color: #ff8c00
+    color: white;
 }
 
 card-content {
@@ -36,7 +36,7 @@ card-text {
     color: #666;
 }
 .btn {
-    background-color: #ff8c00;
+    background-color: #56376B;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;

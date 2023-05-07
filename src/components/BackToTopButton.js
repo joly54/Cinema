@@ -30,12 +30,12 @@ function BackToTopButton() {
                     right: "20px",
                     width: "40px",
                     height: "40px",
-
                     border: "none",
                     backgroundColor: "#333",
-                    color: "orange",
+                    color: "white",
                     fontSize: "20px",
-                    cursor: "pointer"
+                    cursor: "pointer",
+                    animation: `${backToTopButton ? "fade-in 0.3s" : ""}`
                 })} onClick={scrollUp}
                 >▲</button>)}
         </div>

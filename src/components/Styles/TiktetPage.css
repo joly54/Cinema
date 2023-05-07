@@ -19,3 +19,16 @@
     background-color: #afafaf;
 }
 
+.CenterIframe {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.CenterDataFilm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+

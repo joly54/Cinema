@@ -28,7 +28,7 @@ function CinemaSchedule({
     },[])
     return (
         schedule.map((day) => (
-            <div key={day.date}>
+            <div key={day.date} >
                 <BackToTopButton />
                     <h2
                         style={{
