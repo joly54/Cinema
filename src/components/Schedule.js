@@ -24,9 +24,6 @@ function CinemaSchedule({
                     });
             })
     },[])
-    schedule.map((item) => {
-        console.log(item);
-    })
     return (
         schedule.map((day) => (
             <div key={day.date}>
@@ -72,6 +69,7 @@ function CinemaSchedule({
                                             disableElevation
                                             color="primary"
                                             onClick={() => handleFilm(scheduleItem["session_id"])}
+                                            disabled={scheduleItem["seats"].length === 0}
                                         >
                                             <Typography variant="body2" component="p" className="BuyTicket">
                                                 Buy ticket for {scheduleItem["price"]}UAH

@@ -1,8 +1,8 @@
 import React from "react";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import * as api from "../utils/Api";
-import {Card, Grid, makeStyles, Typography} from "@material-ui/core";
+import {Card, Grid, Typography} from "@material-ui/core";
 import "./Styles/TiktetPage.css";
 
 
@@ -33,8 +33,9 @@ function FilmPage(ses_id){
                 console.error(error);
                 alert("Failed to fetch session info.");
             });
-    }, []);
-    const numbers = Array.from({ length: 49 }, (_, i) => i + 1);
+    }, [aviSeats, navigate, ses_id]);
+    Array.from({ length: 49 }, (_, i) => i + 1);
+
     function setSelect(id){
         if(document.getElementById(id).classList.contains("occupied"))
             return;
@@ -59,7 +60,6 @@ function FilmPage(ses_id){
                             height="315"
                             src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}`}
                             title="YouTube video player"
-                            frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             allowFullScreen
                         ></iframe>
@@ -78,22 +78,22 @@ function FilmPage(ses_id){
                                 <Grid key={row} item xs={12} container justify="center">
                                     {[...Array(7)].map((_, col) => (
                                         <div id={(row * 7) + col + 1} className={
-                                           ( aviSeats.includes((row * 7) + col + 1) ? "aviable" : "occupied") + " square"
+                                            ( aviSeats.includes((row * 7) + col + 1) ? "aviable" : "occupied") + " square"
                                         } onClick={()=>{
                                             setSelect((row * 7) + col + 1);}
                                         }>
-                                        <Typography
-                                            variant="body1"
-                                            style={{
-                                                color: "white",
-                                                textAlign: "center",
-                                                fontWeight: "bold",
-                                                //center vertically
-                                                justifyContent: "center",
-                                            }}
-                                        >
-                                            {(row * 7) + col + 1}
-                                        </Typography>
+                                            <Typography
+                                                variant="body1"
+                                                style={{
+                                                    color: "white",
+                                                    textAlign: "center",
+                                                    fontWeight: "bold",
+                                                    //center vertically
+                                                    justifyContent: "center",
+                                                }}
+                                            >
+                                                {(row * 7) + col + 1}
+                                            </Typography>
                                         </div>
                                     ))}
                                 </Grid>
@@ -109,4 +109,5 @@ function FilmPage(ses_id){
     );
 
 }
+
 export default FilmPage;
