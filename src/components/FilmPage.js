@@ -5,6 +5,7 @@ import * as api from "../utils/Api";
 import {Card, Grid, Typography} from "@material-ui/core";
 import "./Styles/TiktetPage.css";
 import './Styles/scrollBar.css';
+import BackToTopButton from "./BackToTopButton";
 
 function FilmPage(ses_id){
     const navigate = useNavigate();
@@ -52,6 +53,7 @@ function FilmPage(ses_id){
     }
     return (
         <div>
+            <BackToTopButton />
             {sessionInfo && sessionInfo["trailer"] ? (
                 <Grid>
                     <Card>

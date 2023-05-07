@@ -3,6 +3,7 @@ import './Styles/Schedule.css'
 import {Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Button} from '@material-ui/core';
 import * as api from '../utils/Api'
 import './Styles/scrollBar.css';
+import BackToTopButton from "./BackToTopButton";
 
 function CinemaSchedule({
                             handleFilm
@@ -28,6 +29,7 @@ function CinemaSchedule({
     return (
         schedule.map((day) => (
             <div key={day.date}>
+                <BackToTopButton />
                     <h2
                         style={{
                             textAlign: "center",
