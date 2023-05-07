@@ -33,7 +33,7 @@ function FilmPage(ses_id){
                 console.error(error);
                 alert("Failed to fetch session info.");
             });
-    }, [aviSeats, navigate, ses_id]);
+    }, []);
     Array.from({ length: 49 }, (_, i) => i + 1);
 
     function setSelect(id){
@@ -73,7 +73,13 @@ function FilmPage(ses_id){
                     </Card>
                     <div id="selected"></div>
                     <div className="Seats">
-                        <Grid container spacing={1}>
+                        <Grid container spacing={1}
+                        style={
+                            {
+                                maxWidth: "100%",
+                            }
+                        }
+                        >
                             {[...Array(7)].map((_, row) => (
                                 <Grid key={row} item xs={12} container justify="center">
                                     {[...Array(7)].map((_, col) => (

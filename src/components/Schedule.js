@@ -25,9 +25,6 @@ function CinemaSchedule({
                     });
             })
     },[])
-    schedule.map((item) => {
-        console.log(item);
-    })
     return (
         schedule.map((day) => (
             <div key={day.date}>
@@ -41,6 +38,7 @@ function CinemaSchedule({
                           style={{
                               padding: "0 2rem",
                               alignContent: "center",
+                              maxWidth: "100%",
                           }}
                     >
                         {day["sessions"].map((scheduleItem) => (
@@ -74,9 +72,10 @@ function CinemaSchedule({
                                                 disableElevation
                                                 color="primary"
                                                 onClick={() => handleFilm(scheduleItem["session_id"])}
+                                                disabled={scheduleItem["seats"].length === 0}
                                             >
                                                 <Typography variant="body2" component="p" className="BuyTicket">
-                                                    Buy ticket for {scheduleItem["price"]}UAH
+                                                    {scheduleItem["seats"].length === 0 ? "Sold out" : `Buy ticket ${scheduleItem["price"]} UAH`}
                                                 </Typography>
                                             </Button>
 
