@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Profile.css';
+import './Styles/Profile.css';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

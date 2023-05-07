@@ -1,5 +1,5 @@
 import React from 'react';
-import './login.css';
+import './Styles/login.css';
 import {useNavigate} from "react-router-dom";
 
 function Login(

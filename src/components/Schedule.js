@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Schedule.css'
+import './Styles/Schedule.css'
 import {Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Button} from '@material-ui/core';
 import * as api from '../utils/Api'
 
