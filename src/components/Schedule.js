@@ -50,7 +50,7 @@ function CinemaSchedule({
                                     className="card"
                                     style={{
                                         borderRadius: "10px",
-                                        boxShadow: "0 0 10px rgba(0,0,0,0.5)",
+                                        boxShadow: "1px 5px 15px 10px rgba(0,0,0,0.5)",
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "space-between",

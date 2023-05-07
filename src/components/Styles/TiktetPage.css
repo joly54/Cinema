@@ -7,13 +7,13 @@
     margin: 0.1rem;
 }
 .aviable{
-    background-color: #e68100;
+    background-color: #66512C;
 }
 .aviable:hover{
     transform: scale(1.05);
 }
 .selected{
-    background-color: #ffad48;
+    background-color: #423B27;
 }
 .occupied{
     background-color: #afafaf;
