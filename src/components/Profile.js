@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as api from '../utils/Api';
 import './Styles/scrollBar.css';
+import BackToTopButton from "./BackToTopButton";
 export const baseurl = "https://vincinemaApi.pythonanywhere.com";
 
 function Profile() {
