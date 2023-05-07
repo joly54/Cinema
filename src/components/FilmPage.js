@@ -2,18 +2,20 @@ import React from "react";
 import {useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import * as api from "../utils/Api";
-import {Card, Grid, Typography} from "@material-ui/core";
+import {Button, Card, Grid, Typography} from "@material-ui/core";
 import "./Styles/TiktetPage.css";
 import './Styles/scrollBar.css';
 import BackToTopButton from "./BackToTopButton";
+import {toast, ToastContainer} from "react-toastify";
 
 function FilmPage(ses_id){
+    const session = ses_id["ses_id"];
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
     const [selected, setSelected] = useState([]);
     useEffect(() => {
-        api.getSessionInfo(ses_id["ses_id"])
+        api.getSessionInfo(session)
             .then(res => {
                 if (res.ok) {
                     res.json().then(data => {
@@ -25,14 +27,13 @@ function FilmPage(ses_id){
                 } else {
                     res.json().then(data => {
                         console.error(data);
-                        //alert(data.message);
                         navigate("/");
                     });
                 }
             })
             .catch(error => {
                 console.error(error);
-                alert("Failed to fetch session info.");
+                toast.error("Failed to get session info.");
             });
     }, []);
     Array.from({ length: 49 }, (_, i) => i + 1);
@@ -51,8 +52,26 @@ function FilmPage(ses_id){
 
         console.log(selected);
     }
+    function buy(){
+        api.buyTicket(session, localStorage.getItem("username"), localStorage.getItem("token"), selected)
+            .then(res => {
+                if (res.ok) {
+                    res.json().then(data => {
+                        console.log(data);
+                        toast.success("Ticket bought successfully!");
+                        navigate("/");
+                    });
+                } else {
+                    res.json().then(data => {
+                        console.error(data);
+                        toast.error("Failed to buy ticket.");
+                    });
+                }
+            })
+    }
     return (
         <div>
+            <ToastContainer />
             <BackToTopButton />
             {sessionInfo && sessionInfo["trailer"] ? (
                 <Grid>
@@ -109,6 +128,13 @@ function FilmPage(ses_id){
                                     ))}
                                 </Grid>
                             ))}
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                    buy();
+                                }}
+                            >Buy</Button>
                         </Grid>
 
                     </div>

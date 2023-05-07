@@ -10,7 +10,7 @@ import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import FilmPage from "./components/FilmPage";
 import "../src/components/Styles/App.css";
 import Cookies from 'js-cookie';
@@ -19,7 +19,7 @@ function App() {
     useEffect(() => {
         Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
     }, []);
-    const theme = createMuiTheme({
+    const theme = createTheme({
         palette: {
             primary: {
                 main: '#56376B',
@@ -36,8 +36,6 @@ function App() {
     useEffect(() =>{
         if (validDue) {
             let now = new Date()/1000
-            /*alert(now, validDue)
-            alert("now: " + now + " validDue: " + validDue)*/
             if (now > validDue) {
                 localStorage.removeItem('token');
                 localStorage.removeItem('username');
