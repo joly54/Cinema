@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import re
 import smtplib
@@ -19,7 +20,7 @@ app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
 is_local = config.is_local
-if not is_local:
+if is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
     base_url = "http://127.0.0.1:5000"
 else:
@@ -53,20 +54,12 @@ class Sessions(db.Model):
     title = db.Column(db.String(80), unique=False, nullable=False)
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     film = db.relationship('Film', backref='sessions')
-    seats = db.Column(db.String(120), nullable=False)
+    seats = db.Column(db.String, nullable=False)
+    time = db.Column(db.String, nullable=False)
+    date = db.Column(db.String, nullable=False)
 
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
-
-
-class Days(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    t_9 = db.Column(db.Integer, nullable=True)
-    t_12 = db.Column(db.Integer, nullable=True)
-    t_15 = db.Column(db.Integer, nullable=True)
-    t_18 = db.Column(db.Integer, nullable=True)
-    t_21 = db.Column(db.Integer, nullable=True)
 
 
 class User(db.Model):
@@ -331,74 +324,30 @@ class Display(Resource):
         return {'message': 'Data displayed successfully'}, 200
 
 
-class fullSchedule(Resource):
+class Schedule(Resource):
     def get(self):
-        days = Days.query.all()
         sessions = Sessions.query.all()
         answer = []
-        for day in days:
-            answer.append({"date": day.date, "sessions": []})
-            if day.t_9 is not None:
-                film = Film.query.filter_by(id=sessions[day.t_9 - 1].film_id).first()
-                answer[-1]["sessions"].append(
-                    {"time": "09:00",
-                     "title": sessions[day.t_9 - 1].title,
-                     "trailer": film.trailer,
-                     "seats": json.loads(sessions[day.t_9 - 1].seats),
-                     "session_id": sessions[day.t_9 - 1].id,
-                     "price": film.price,
-                     "description": film.description
-                     }
-                )
-            if day.t_12 is not None:
-                film = Film.query.filter_by(id=sessions[day.t_12 - 1].film_id).first()
-                answer[-1]["sessions"].append(
-                    {"time": "12:00",
-                     "title": sessions[day.t_12 - 1].title,
-                     "trailer": film.trailer,
-                     "seats": json.loads(sessions[day.t_12 - 1].seats),
-                     "session_id": sessions[day.t_12 - 1].id,
-                     "price": film.price,
-                     "description": film.description
-                     }
-                )
-            if day.t_15 is not None:
-                film = Film.query.filter_by(id=sessions[day.t_15 - 1].film_id).first()
-                answer[-1]["sessions"].append(
-                    {"time": "15:00",
-                     "title": sessions[day.t_15 - 1].title,
-                     "trailer": film.trailer,
-                     "seats": json.loads(sessions[day.t_15 - 1].seats),
-                     "session_id": sessions[day.t_15 - 1].id,
-                     "price": film.price,
-                     "description": film.description
-                     }
-                )
-            if day.t_18 is not None:
-                film = Film.query.filter_by(id=sessions[day.t_18 - 1].film_id).first()
-                answer[-1]["sessions"].append(
-                    {"time": "18:00",
-                     "title": sessions[day.t_18 - 1].title,
-                     "trailer": film.trailer,
-                     "seats": json.loads(sessions[day.t_18 - 1].seats),
-                     "session_id": sessions[day.t_18 - 1].id,
-                     "price": film.price,
-                     "description": film.description
-                     }
-                )
-            if day.t_21 is not None:
-                film = Film.query.filter_by(id=sessions[day.t_21 - 1].film_id).first()
-                answer[-1]["sessions"].append(
-                    {"time": "21:00",
-                     "title": sessions[day.t_21 - 1].title,
-                     "trailer": film.trailer,
-                     "seats": json.loads(sessions[day.t_21 - 1].seats),
-                     "session_id": sessions[day.t_21 - 1].id,
-                     "price": film.price,
-                     "description": film.description
-                     }
-                )
-
+        #get all aviable dates from sessions
+        dates = {}
+        for session in sessions:
+            if session.date not in dates:
+                dates[session.date] = []
+        for session in sessions:
+            dates[session.date].append(
+                {
+                    "time": session.time,
+                    "title": session.title,
+                    "trailer": session.film.trailer,
+                    "seats": json.loads(session.seats),
+                    "session_id": session.id,
+                    "price": session.film.price,
+                    "description": session.film.description,
+                    "poster": base_url + "/Posters/" + str(session.film_id)
+                }
+            )
+        for date in dates:
+            answer.append({"date": date, "sessions": dates[date]})
         return answer, 200
 
 
@@ -439,6 +388,14 @@ class getTikets(Resource):
 class serve_image(Resource):
     def get(self, id):
         filename = "/home/vincinemaApi/tikets/" + id
+        return send_file(filename, mimetype='image/png')
+
+
+class send_poster(Resource):
+    def get(self, id):
+        filename = "Posters/" + id + ".jpg"
+        if not os.path.isfile(filename):
+            return {'message': 'Poster not found'}, 404
         return send_file(filename, mimetype='image/png')
 
 
@@ -487,7 +444,7 @@ class userConfirmEmail(Resource):
 
 
 class UserInformation(Resource):
-    def get(self):
+    def post(self):
         token = request.args.get('token')
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
@@ -519,42 +476,31 @@ class BuyTikets(Resource):
     def post(self):
         username = request.headers.get('username')
         token = request.headers.get('token')
-        date = request.headers.get('date')
-        title = request.headers.get('title')
-        time = request.headers.get('time')
         seats = request.headers.get('seats')
-        if username is None or token is None or date is None or title is None or time is None or seats is None:
-            return {'message': 'Bad request'}, 400
+        ses_id = request.args.get('sessions_id')
+        if username is None or token is None or seats is None or ses_id is None:
+            return {'message': 'Missing data',
+                    "username": username,
+                    "token": token,
+                    "seats": seats,
+                    "ses_id": ses_id
+                    }, 400
         user = User.query.filter_by(username=username).first()
         if user is None:
             return {'message': 'User not found'}, 404
         if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
             return {'message': 'Wrong token or ses_id expired'}, 400
-        day = Days.query.filter_by(date=date).first()
-        if day is None:
-            return {'message': 'Date not found'}, 404
-        ses_id = None
-        if time == "09:00":
-            ses_id = day.t_9
-        elif time == "12:00":
-            ses_id = day.t_12
-        elif time == "15:00":
-            ses_id = day.t_15
-        elif time == "18:00":
-            ses_id = day.t_18
-        elif time == "21:00":
-            ses_id = day.t_21
-        if ses_id is None:
-            return {'message': 'Time not found'}, 404
         ses = Sessions.query.filter_by(id=ses_id).first()
         if ses is None:
-            return {'message': 'Time not found'}, 404
-        if ses.title != title:
-            return {'message': 'Title not found'}, 404
+            return {'message': 'Session not found'}, 404
+
         seats = json.loads(seats)
         aviable_seats = json.loads(ses.seats)
-        if all(elem in aviable_seats for elem in seats) == False:
-            return {'message': 'Seats not aviable'}, 400
+        if not all(elem in aviable_seats for elem in seats):
+            return {'message': 'Seats not available'}, 400
+        date = ses.date
+        title = ses.title
+        time = ses.time
         tikets = []
         for seat in seats:
             tiket = Tiket(username=username, date=date, title=title, time=time, number=seat,
@@ -594,6 +540,7 @@ class getSessionInfo(Resource):
         ans['seats'] = json.loads(ses.seats)
         ans['description'] = film.description
         ans['price'] = film.price
+        ans['poster'] = base_url + "/Posters/" + str(film.id)
         return ans, 200
 
 
@@ -609,6 +556,11 @@ class dbinfo(Resource):
         return str(table_names), 200
 
 
+# metadata = db.MetaData()
+# metadata.reflect(bind=db.engine)
+# table_names = metadata.tables.keys()
+# print(table_names)
+
 class getFilms(Resource):
     def get(self):
         films = Film.query.all()
@@ -621,6 +573,7 @@ class getFilms(Resource):
                 "description": film.description,
                 "price": film.price,
                 "trailer": film.trailer,
+                "poster": base_url + "/Posters/" + str(film.id)
             })
         return res, 200
 
@@ -632,65 +585,23 @@ class getSessions(Resource):
             id = int(id)
         except:
             return {'message': 'Bad request'}, 400
-        day = Days.query.all()
+        sessions = Sessions.query.filter_by(film_id=id).all()
+        if sessions is None:
+            return {'message': 'Film not found'}, 404
         res = []
-        for d in day:
-            if d.t_9 is not None:
-                ses = Sessions.query.filter_by(id=d.t_9).first()
-                if ses is not None and ses.film_id == id:
-                    res.append({
-                        "title": ses.title,
-                        "ses_id": ses.id,
-                        "date": d.date,
-                        "time": "09:00",
-                        "seats": json.loads(ses.seats),
-                        "price": Film.query.filter_by(id=ses.film_id).first().price
-                    })
-            if d.t_12 is not None:
-                ses = Sessions.query.filter_by(id=d.t_12).first()
-                if ses is not None and ses.film_id == id:
-                    res.append({
-                        "title": ses.title,
-                        "ses_id": ses.id,
-                        "date": d.date,
-                        "time": "12:00",
-                        "seats": json.loads(ses.seats),
-                        "price": Film.query.filter_by(id=ses.film_id).first().price
-                    })
-            if d.t_15 is not None:
-                ses = Sessions.query.filter_by(id=d.t_15).first()
-                if ses is not None and ses.film_id == id:
-                    res.append({
-                        "title": ses.title,
-                        "ses_id": ses.id,
-                        "date": d.date,
-                        "time": "15:00",
-                        "seats": json.loads(ses.seats),
-                        "price": Film.query.filter_by(id=ses.film_id).first().price
-                    })
-            if d.t_18 is not None:
-                ses = Sessions.query.filter_by(id=d.t_18).first()
-                if ses is not None and ses.film_id == id:
-                    res.append({
-                        "title": ses.title,
-                        "ses_id": ses.id,
-                        "date": d.date,
-                        "time": "18:00",
-                        "seats": json.loads(ses.seats),
-                        "price": Film.query.filter_by(id=ses.film_id).first().price
-                    })
-            if d.t_21 is not None:
-                ses = Sessions.query.filter_by(id=d.t_21).first()
-                if ses is not None and ses.film_id == id:
-                    res.append({
-                        "title": ses.title,
-                        "ses_id": ses.id,
-                        "date": d.date,
-                        "time": "21:00",
-                        "seats": json.loads(ses.seats),
-                        "price": Film.query.filter_by(id=ses.film_id).first().price
-                    })
+        for ses in sessions:
+            res.append({
+                "id": ses.id,
+                "date": ses.date,
+                "time": ses.time,
+                "title": ses.title,
+                "seats": json.loads(ses.seats),
+                "film_id": ses.film_id,
+                "poster": base_url + "/Posters/" + str(ses.film_id)
+            })
         return res, 200
+
+
 class GetSession(Resource):
     def get(self):
         ses_id = request.args.get('ses_id')
@@ -700,11 +611,15 @@ class GetSession(Resource):
             return {'message': 'Session not found'}, 404
         ans['message'] = 'Success'
         film = Film.query.filter_by(id=ses.film_id).first()
+        if film is None:
+            return {'message': 'Film not found'}, 404
         ans['title'] = ses.title
         ans['trailer'] = film.trailer
         ans['seats'] = json.loads(ses.seats)
         ans['description'] = film.description
         ans['price'] = film.price
+        ans["duration"] = film.duration
+        ans["poster"] = base_url + "/Posters/" + str(film.id)
         return ans, 200
 
 
@@ -713,7 +628,7 @@ api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
 api.add_resource(Display, '/display')
-api.add_resource(fullSchedule, '/schedule')
+api.add_resource(Schedule, '/schedule')
 api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getTikets, '/getTikets')
 api.add_resource(serve_image, '/tikets/<id>')
@@ -729,6 +644,8 @@ api.add_resource(dbinfo, '/dbinfo')
 api.add_resource(getFilms, '/getFilms')
 api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
+api.add_resource(send_poster, '/Posters/<id>')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
