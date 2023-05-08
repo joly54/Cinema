@@ -1,5 +1,5 @@
 import {Routes, Route, useNavigate} from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Header from './components/Navbar';
 import Profile from './components/Profile';
 import Films from './components/Films';
 import Schedule from './components/Schedule';
@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
 import { createTheme, ThemeProvider } from '@material-ui/core/styles';
-import FilmPage from "./components/FilmPage";
+import SesInfo from "./components/SesInfo";
 import "../src/components/Styles/App.css";
 import Cookies from 'js-cookie';
 
@@ -183,7 +183,7 @@ function App() {
       <ThemeProvider theme={theme}>
       <div className="BackGroundColor">
           <ToastContainer />
-          <Navbar loggedIn={isLogin} handleLogout={handleLogout}/>
+          <Header loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>
             <Route path="/" element={<Schedule handleFilm={handleSession} />} />
             <Route path="/films" element={<Films />} />
@@ -191,7 +191,7 @@ function App() {
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgot-password" element={<ForgotPassword handleChangeUsername={handleChangeUsername} ResetPassword={ResetPassword} />} />
-            <Route path="/sessionInfo" element={<FilmPage ses_id={sessionId} />} />
+            <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
         </Routes>
       </div>
       </ThemeProvider>

@@ -28,14 +28,18 @@ function CinemaSchedule({
     },[])
     return (
         schedule.map((day) => (
-            <div key={day.date}>
+            <div key={day.date}
+                 style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        //padding: "2rem",
+                        maxWidth: "100%",
+                 }}
+            >
                 <BackToTopButton />
                 <h2
-                    style={{
-                        textAlign: "center",
-                        alignContent: "center",
-                        padding: "1rem",
-                    }}
                 >
                     {day.date}
                 </h2>
@@ -44,8 +48,9 @@ function CinemaSchedule({
                     container
                     spacing={4}
                     style={{
-                        padding: "0 2rem",
-                        alignContent: "center",
+                        display: "flex",
+                        justifyContent: "center",
+                        //padding: "0.1rem",
                         maxWidth: "100%",
                     }}
                 >

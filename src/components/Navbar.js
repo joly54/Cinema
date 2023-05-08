@@ -2,44 +2,68 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Styles/Navbar.css';
 import './Styles/scrollBar.css';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import NavDropdown from 'react-bootstrap/NavDropdown';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js.map';
 
-function Navbar({ loggedIn, handleLogout }) {
+
+function Header({ loggedIn, handleLogout }) {
 
     return (
-        <nav>
-            <ul>
-                <li>
-                    <Link to="/films">Films</Link>
-                </li>
-                <li>
-                    <Link to="/">Schedule</Link>
-                </li>
-                <div className="RightMenu">
-                    <li>
-                        {loggedIn ? (
-                            <Link to="/login" onClick={handleLogout}>
-                                Log out
-                            </Link>
-                        ) : (
-                            <Link to="/login">Log in</Link>
-                        )}
-                    </li>
-                    <li>
-                        {!loggedIn ? (
-                            <Link to="/register">Register</Link>
-                        ) : (
-                            <div></div>
-                        )}
-                    </li>
-                    <li>
-                        {loggedIn ? <Link to="/profile">My Profile</Link> : <div></div>}
-                    </li>
-                </div>
-                <li>
-                </li>
-            </ul>
-        </nav>
+        <Navbar variant="dark" bg="dark" expand="lg">
+            <Container fluid>
+                <Navbar.Brand>Cinema</Navbar.Brand>
+                <Navbar.Toggle aria-controls="navbar-dark-example" />
+                <Navbar.Collapse id="navbar-dark-example">
+                    <Nav>
+                        <Nav.Link>
+                            <Link to={"/"} className="nav-link">Schedule</Link>
+                        </Nav.Link>
+                        <Nav.Link>
+                            <Link to={"/films"} className="nav-link">Films</Link>
+                        </Nav.Link>
+                    </Nav>
+                    <Nav>
+                        <NavDropdown
+                            id="nav-dropdown-dark-example"
+                            title="Profile"
+                            menuVariant="dark"
+                        >
+                            {loggedIn?
+                                <>
+                                <div
+                                >
+                                    <NavDropdown.Item>
+                                        <Link to={"/profile"} className="nav-link">Profile</Link>
+                                    </NavDropdown.Item>
+                                    <NavDropdown.Item>
+                                        <Link to={"/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
+                                    </NavDropdown.Item>
+                                </div>
+                                    </>
+                                :
+                                <>
+                                    <div
+                                    >
+                                        <NavDropdown.Item>
+                                            <Link to={"/login"} className="nav-link">Login</Link>
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item>
+                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Register</Link>
+                                        </NavDropdown.Item>
+                                    </div>
+                                </>
+                            }
+                        </NavDropdown>
+                    </Nav>
+                </Navbar.Collapse>
+            </Container>
+        </Navbar>
     );
 }
 
-export default Navbar;
+export default Header;

@@ -3,12 +3,12 @@ import {useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
 import * as api from "../utils/Api";
 import {Button, Card, Grid, Typography} from "@material-ui/core";
-import "./Styles/TiktetPage.css";
+import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
 import BackToTopButton from "./BackToTopButton";
 import {toast, ToastContainer} from "react-toastify";
 
-function FilmPage(ses_id){
+function SesInfo(ses_id){
     const session = ses_id["ses_id"];
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
@@ -147,4 +147,4 @@ function FilmPage(ses_id){
 
 }
 
-export default FilmPage;
+export default SesInfo;
