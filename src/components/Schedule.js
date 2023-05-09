@@ -69,7 +69,10 @@ function CinemaSchedule({
                             >
                                 <CardActionArea
                                     style={{
-                                        //height: "100%",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "space-between",
+                                        height: "100%",
                                     }}
                                 >
                                     <CardMedia
@@ -77,11 +80,9 @@ function CinemaSchedule({
                                         image={scheduleItem.poster}
                                         title="Card image"
                                         style={{
-                                            height: "200px", // or any desired height
-                                            width: "100%",
                                             objectFit: "cover",
-                                            borderRadius: "12px 12px 0 0",
                                             objectPosition: "top",
+                                            borderRadius: "12px 12px 0 0",
                                         }}
                                     />
                                     <CardContent className="card-content">
