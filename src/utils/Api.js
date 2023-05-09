@@ -33,3 +33,7 @@ export const buyTicket = (ses, username, token, seats) => {
         seats: "[" + seats + "]"
         }})
 }
+
+export const getFilms = () => {
+    return fetch(`${baseurl}/getFilms`)
+}
