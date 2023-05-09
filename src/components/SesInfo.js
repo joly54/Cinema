@@ -104,7 +104,6 @@ function SesInfo(ses_id){
                         style={{
                             maxWidth: "99%",
                             //centering
-                            margin: "auto",
                             justifyContent: "center",
                             alignItems: "center",
                         }}>
@@ -129,12 +128,13 @@ function SesInfo(ses_id){
                                             }>
                                                 <Typography
                                                     style={{
-                                                        fontSize: "100%",
-                                                        fontWeight: "bold",
                                                         color: "white",
                                                         textAlign: "center",
-                                                        lineHeight: "100%",
-
+                                                        fontWeight: "bold",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        height: "100%",
+                                                        justifyContent: "center",
                                                     }}
                                                 >
                                                     {(row * 12) + col + 1}
@@ -148,6 +148,9 @@ function SesInfo(ses_id){
                                         variant="contained"
                                         color="primary"
                                         onClick={buy}
+                                        style={{
+                                            display: "flex"
+                                    }}
                                     >
                                         Buy
                                     </Button>
