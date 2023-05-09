@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography } from '@material-ui/core';
 import * as api from '../utils/Api'
-
 import './Styles/Films.css';
 
 function Films() {
@@ -35,7 +34,7 @@ function Films() {
                                     className="movie-poster"
                                 />
                                 <CardContent>
-                                    <Typography gutterBottom variant="h5" component="h2">
+                                    <Typography gutterBottom color="textSecondary" variant="h5" component="h2">
                                         {movie.title}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary" component="p">
