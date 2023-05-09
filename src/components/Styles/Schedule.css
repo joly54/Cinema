@@ -35,19 +35,23 @@ card-text {
     line-height: 1.5;
     color: #666;
 }
-.btn {
-    background-color: #56376B;
-    color: #fff;
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 0.3rem;
-    font-size: 1.2rem;
-    cursor: pointer;
+.btn,
+.soldOut {
+    background-color: #56376B !important;
+    color: #fff !important;
+    padding: 0.5rem 1rem !important;
+    border: none !important;
+    border-radius: 0.3rem !important;
+    font-size: 1.2rem !important;
+    cursor: pointer !important;
+    height: 45px;
 }
-.btn:hover {
-    transition: background-color 0.2s ease-in-out;
 
+.btn:hover,
+.soldOut:hover {
+    transition: background-color 0.2s ease-in-out !important;
 }
+
 .BuyTicket {
     display: flex;
     justify-content: center;
@@ -56,4 +60,12 @@ card-text {
     color: white;
     font-weight: unset;
 }
+
+
+
+
+
+
+
+
 

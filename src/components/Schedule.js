@@ -109,7 +109,7 @@ function CinemaSchedule({
                                     </CardContent>
                                 </CardActionArea>
                                 <Button
-                                    className="btn"
+                                    className={scheduleItem.seats.length === 0 ? "btn soldOut" : "btn"}
                                     variant="contained"
                                     disableElevation
                                     color="primary"
@@ -124,11 +124,9 @@ function CinemaSchedule({
                                     <Typography
                                         variant="body2"
                                         component="p"
-                                        className="BuyTicket"
+                                        className={`BuyTicket ${scheduleItem.seats.length === 0 ? "soldOut" : ""}`}
                                     >
-                                        {scheduleItem.seats.length === 0
-                                            ? "Sold out"
-                                            : `Buy ticket ${scheduleItem.price} UAH`}
+                                        {scheduleItem.seats.length === 0 ? "Sold out" : `Buy ticket ${scheduleItem.price} UAH`}
                                     </Typography>
                                 </Button>
                             </Card>
