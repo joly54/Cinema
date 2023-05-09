@@ -1,20 +1,58 @@
 .square {
-    width: 50px;
-    height: 50px;
-    border-radius: 25%; /* Используйте 50% для создания округлой формы */
-    margin: 3px; /* Увеличьте отступ, чтобы увеличить пространство между элементами */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6); /* Добавьте тень для создания эффекта объемности */
+    width: 3%;
+    height: 0%;
+    border-radius: 25%;
+    padding-bottom: 3%;
+    margin: 3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.screen {
+    display: none;
+    max-width: 45%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    transform: perspective(1000px) rotateX(-50deg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    border-radius: 3%;
+    margin-bottom: 20px;
 }
 
-.aviable{
+
+@media only screen and (max-width: 768px) {
+    .screen{
+        max-width: 80%;
+    }
+    .square {
+        width: 7%;
+        height: 0%;
+        padding-bottom: 7%;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .screen{
+        max-width: 80%;
+    }
+    .square {
+        width: 5%;
+        height: 0%;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+
+.available{
     background-color: #9f6bc5;
     transition: transform 0.3s ease-in-out;
+    cursor: pointer;
 }
-.aviable:hover{
+.available:hover{
     transform: scale(1.05);
 }
 .selected{
-    background-color: #71269b;
+    background-color: orange;
 }
 
 .selected-text {

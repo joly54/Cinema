@@ -100,35 +100,44 @@ function SesInfo(ses_id){
                     <br/>
                     <div className="selected-text" id="selected"></div>
                     <div>
-                        <div className="Seats">
+                        <div className="Seats"
+                        style={{
+                            maxWidth: "99%",
+                            //centering
+                            margin: "auto",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}>
+                            <img
+                            src={sessionInfo["poster"]}
+                            className="screen"
+                            >
+                            </img>
                             <Grid container spacing={1}
                                   style={
                                       {
-                                          maxWidth: "100%",
                                       }
                                   }
                             >
-                                {[...Array(7)].map((_, row) => (
+                                {[...Array(5)].map((_, row) => (
                                     <Grid key={row} item xs={12} container justifyContent="center">
-                                        {[...Array(7)].map((_, col) => (
-                                            <div id={(row * 7) + col + 1} className={
-                                                ( aviSeats.includes((row * 7) + col + 1) ? "aviable" : "occupied") + " square"
+                                        {[...Array(12)].map((_, col) => (
+                                            <div id={(row * 12) + col + 1} className={
+                                                ( aviSeats.includes((row * 12) + col + 1) ? "available" : "occupied") + " square"
                                             } onClick={()=>{
-                                                setSelect((row * 7) + col + 1);}
+                                                setSelect((row * 12) + col + 1);}
                                             }>
                                                 <Typography
-                                                    variant="body1"
                                                     style={{
+                                                        fontSize: "100%",
+                                                        fontWeight: "bold",
                                                         color: "white",
                                                         textAlign: "center",
-                                                        fontWeight: "bold",
-                                                        display: "flex",
-                                                        alignItems: "center", // Центрирование по вертикали
-                                                        height: "100%", // Задайте высоту для Typography
-                                                        justifyContent: "center"
+                                                        lineHeight: "100%",
+
                                                     }}
                                                 >
-                                                    {(row * 7) + col + 1}
+                                                    {(row * 12) + col + 1}
                                                 </Typography>
                                             </div>
                                         ))}
