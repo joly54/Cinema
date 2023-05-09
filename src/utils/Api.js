@@ -26,10 +26,3 @@ export const checktoken = (username, token) => {
 export const getSessionInfo = (ses_id) => {
     return fetch(`${baseurl}/getSession?ses_id=${ses_id}`)
 }
-export const buyTicket = (ses, username, token, seats) => {
-    return fetch(`${baseurl}/buyTikets?sessions_id=${ses}`, {method: 'POST', headers: {
-        username: username,
-        token: token,
-        seats: "[" + seats + "]"
-        }})
-}
