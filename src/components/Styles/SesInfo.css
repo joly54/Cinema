@@ -50,7 +50,7 @@
     transform: scale(1.05);
 }
 .selected{
-    background-color: #af2ef8;
+    background-color: orange;
 }
 
 .selected-text {
