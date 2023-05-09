@@ -6,9 +6,30 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as api from '../utils/Api';
 import './Styles/scrollBar.css';
 import BackToTopButton from "./BackToTopButton";
-export const baseurl = "https://vincinemaApi.pythonanywhere.com";
+import {
+    Button,
+    Card,
+    CardContent, CircularProgress,
+    Dialog, DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Grid, Slide, Typography
+} from "@material-ui/core";
+import {baseurl} from "../utils/Api";
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 function Profile() {
+    const [loading, setLoading] = useState(true);
+    const [open, setOpen] = React.useState(false);
+    const [url, setUrl] = React.useState("");
+
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     const navigate = useNavigate()
     const [email] = useState(localStorage.getItem('username') === null ? "null" : localStorage.getItem('username'));
     const [status, setStatus] = useState("");
@@ -28,13 +49,12 @@ function Profile() {
                             setTickets(data["tikets"]);
                         })
                 } else {
-                   navigate('/login', { replace: true })
-                    //alert("error")
-
+                    navigate('/login', {replace: true})
                 }
             })
 
-    }, [email, navigate, token])
+    }, [])
+
     function confirmEmail() {
         fetch(baseurl + `/resendEmailValidationCode?username=${email}`)
             .then((response) => {
@@ -50,34 +70,118 @@ function Profile() {
     }
 
     return (
-        <div className="profile-container">
-            <BackToTopButton/>
-            <ToastContainer/>
-            <div className="profile-header">
-                <h2>{email}</h2>
-                {status === false ? (
-                    <button className="btn" onClick={confirmEmail}>
-                        Confirm email
-                    </button>
-                ) : null}
-            </div>
-            <div className="profile-content">
-                <h3>My Tickets</h3>
-                {tickets &&
-                    tickets.map((ticket) => (
-                        <div key={ticket.id}>
-                            <p>Title: {ticket["title"]}</p>
-                            <p>Date: {ticket["date"]}</p>
-                            <p>Time: {ticket["time"]}</p>
-                            <p>Number: {ticket["number"]}</p>
-                            <button
-                                className="btn"
-                                onClick={() => window.open(ticket["urltoqr"])}
+        <div>
+            <div className="profile-container">
+                <BackToTopButton/>
+                <ToastContainer/>
+                <div className="profile-header">
+                    <h2>{email}</h2>
+                    {status === false ? (
+                        <button className="btn" onClick={confirmEmail}>
+                            Confirm email
+                        </button>
+                    ) : null}
+                </div>
+                <div className="profile-content">
+                    <h3>My Tickets</h3>
+                    <Grid
+                        container
+                        spacing={1}
+                    >
+                        <Dialog
+                            open={open}
+                            TransitionComponent={Transition}
+                            keepMounted
+                            onClose={handleClose}
+                            aria-describedby="alert-dialog-slide-description"
+                        >
+                            <DialogTitle>{"Your qr code"}</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText id="alert-dialog-slide-description">
+                                    <Typography variant="body1" color="textPrimary">
+                                        Your qr code
+                                    </Typography>
+                                </DialogContentText>
+                                <img
+                                    id = "qr-code"
+                                    src={url}
+                                    onLoad={
+                                    () => {
+                                        setTimeout(() => {
+                                            setLoading(false)
+                                        }, 500)
+                                    }
+
+                                } alt="qr code"
+                                     style={{
+                                         maxWidth: "100%",
+                                         maxHeight: "100%",
+                                         objectFit: "contain",
+                                         margin: "auto",
+                                         display: "block",
+                                         marginTop: "10px",
+                                     }}
+                                />
+                                {/*{loading ? <CircularProgress/> : null}*/} {/*todo need fix*/}
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose}>Okay</Button>
+                            </DialogActions>
+                        </Dialog>
+                        {tickets.map((ticket) => (
+                            <Grid
+                                item
+                                key={ticket.id}
+                                lg={2}
+                                md={6}
+                                xs={8}
+                                style={{
+                                    margin: "auto",
+                                }}
                             >
-                                Get qr code
-                            </button>
-                        </div>
-                    ))}
+                                <Card className="ticket-card"
+                                      style={{
+                                          borderRadius: "12px",
+                                          display: "flex",
+                                          flexDirection: "column",
+                                          justifyContent: "space-between",
+                                      }}
+                                >
+                                    <CardContent
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "space-between",
+                                            //alignItems: "left",
+                                        }}
+                                    >
+                                        <h4>{ticket.title}</h4>
+                                        <p>Time: {ticket.time}</p>
+                                        <p>Date: {ticket.date}</p>
+                                        <p>Seats: {ticket.number}</p>
+
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={
+                                                () => {
+                                                    setOpen(true);
+                                                    setUrl(ticket.urltoqr);
+                                                    setLoading(true)
+                                                }
+                                            }
+                                            style={{
+                                                textDecoration: "none",
+                                                color: "white",
+                                                fontWeight: "semi-bold",
+                                            }}
+                                        >Get qr code</Button>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </div>
             </div>
         </div>
     );

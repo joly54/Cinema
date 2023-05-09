@@ -2,6 +2,7 @@ import React from 'react';
 import './Styles/login.css';
 import {useNavigate} from "react-router-dom";
 import './Styles/scrollBar.css';
+import {Button, Grid, Typography} from "@material-ui/core";
 function Login(
     {
         handleChangeUsername,
@@ -11,37 +12,70 @@ function Login(
 ) {
     const navigate = useNavigate();
     return (
-        <div className="container">
-            <h1 className="title">Login</h1>
-            <div className="form">
-                <div className="form-group">
-                    <label htmlFor="username">Username</label>
+        <div
+        className="container"
+        >
+            <Grid
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+                lg={4}
+                md={5}
+                xs={12}
+            className="form"
+            >
+            <Grid
+                container
+                direction="row"
+                justify="center"
+                alignItems="center"
+                className="loginContainer">
+                <Grid
+                    item
+
+                    className="loginTitle"
+                style={{
+                    fontFamily: "Montserrat",
+                }}
+                >
+                    <h1>LOGIN</h1>
+                </Grid>
+                <Grid item xs={12} className="loginInput">
                     <input
                         type="text"
-                        id="username"
-                        placeholder="Enter username"
+                        placeholder="Username"
                         onChange={(e) => handleChangeUsername(e.target.value)}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="password">Password</label>
+                    ></input>
+                </Grid>
+                <Grid item xs={12} className="loginInput">
                     <input
                         type="password"
-                        id="password"
-                        placeholder="Enter password"
+                        placeholder="Password"
                         onChange={(e) => handleChangePassword(e.target.value)}
-                    />
-                </div>
-                <div className="row">
-                    <button className="btn" onClick={handleLogin}>Log in</button>
-                    <p className="text-btn" onClick={() =>{
-                       navigate('/forgot-password')
-                    }
-                    }>
-                        Forgot password?
-                    </p>
-                </div>
-            </div>
+                    >
+                    </input>
+                </Grid>
+                <Grid item xs={12} className="loginButton">
+                    <Button
+                        className="btn"
+                            onClick={handleLogin}
+                        style={{
+                            fontFamily: "Montserrat",
+                        }}
+                    >Log in</Button>
+                    <Typography
+                        className="text-btn"
+                        onClick={() => navigate("/forgotPassword")}
+                        style={{
+                            fontFamily: "Montserrat",
+                        }}
+                    >Forgot Password?</Typography>
+                </Grid>
+
+            </Grid>
+        </Grid>
         </div>
     );
 }

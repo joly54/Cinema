@@ -73,6 +73,7 @@ function App() {
     }, [navigate, validDue])
     function handleChangeUsername(value){
         setUsername(value);
+        console.log(username);
     }
     function handleChangePassword(value){
         setPassword(value);

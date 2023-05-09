@@ -1,4 +1,4 @@
-import {baseurl} from "../components/Profile";
+export const baseurl = "https://vincinemaApi.pythonanywhere.com";
 
 export const login = (username, password) => {
     return fetch(`${baseurl}/login?username=${username}&password=${password}`, {method: 'POST'})

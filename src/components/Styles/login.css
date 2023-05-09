@@ -18,10 +18,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    max-height: 33%;
     background-color: #333;
     padding: 2rem;
     box-shadow: 5px 5px 10px rgba(250, 250, 250, 0.7);
-    width: 30%;
     border-radius: 20px;
     color: white;
 }
@@ -30,16 +31,22 @@
     display: flex;
     flex-direction: column;
     margin-bottom: 1rem;
-    width: 90%;
 }
 
  label {
     font-size: 1.2rem;
     margin-bottom: 0.5rem;
     color: #8302d9;
+     max-width: 100%;
 }
-
+.loginInput{
+    width: 100%;
+    font-size: 1.2rem;
+    padding: 0.5rem;
+}
 input {
+    font-family: "Montserrat SemiBold";
+    width: 100%;
     font-size: 1.2rem;
     padding: 0.5rem;
     border: none;
@@ -48,35 +55,31 @@ input {
 }
 
 .btn {
-    background-color: #555;
-    color: #999;
+    width: 100%;
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+    border-radius: 12px!important;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: none;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-top: 20px;
+    margin-bottom: 20px;
 
-    border: none;
-    border-radius: 1rem;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
 }
 
 .btn:hover {
-    background-color: #774699;
-}
-.row {
-    width: 90%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+    transform: scale(1.02);
 }
 .text-btn{
-    padding-left: 1rem;
-    padding-top: 10px;
-    transition: color 0.5s;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: gray;
     user-select: none;
-    color: #555;
-    text-align: center;
+    cursor: pointer;
 }
 .text-btn:hover{
-    color: #774699;
+    color: #56376B;
 }
