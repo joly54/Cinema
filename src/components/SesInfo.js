@@ -144,6 +144,20 @@ function SesInfo(ses_id){
                                     </Grid>
                                 ))}
                                 <div className="center-button-container">
+                                    <div className="button">
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={buy}
+                                            style={{
+                                                width: "150px",
+                                                borderRadius: "10px",
+                                                boxShadow: "0 0 10px rgba(0, 0, 0, 0.9)",
+                                            }}
+                                        >
+                                            Buy
+                                        </Button>
+                                    </div>
                                 </div>
                             </Grid>
                         </div>
