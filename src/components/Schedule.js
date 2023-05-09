@@ -122,7 +122,7 @@ function CinemaSchedule({
                                         objectPosition: "bottom",
                                     }}
                                 >
-                                    //fghjhgjf
+
                                     <Typography
                                         variant="body2"
                                         component="p"
