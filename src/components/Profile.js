@@ -45,7 +45,9 @@ function Profile() {
                         .then(data => {
                             console.log(data);
                             setStatus(data["isEmailConfirmed"]);
-                            //alert(data["isEmailConfirmed"]);
+                            data["tikets"].sort((a, b) => {
+                                return new Date(a.date) - new Date(b.date);
+                            });
                             setTickets(data["tikets"]);
                         })
                 } else {
@@ -107,6 +109,7 @@ function Profile() {
                                     src={url}
                                     onLoad={
                                     () => {
+                                        console.log("qr code loaded");
                                         setTimeout(() => {
                                             setLoading(false)
                                         }, 500)
@@ -122,7 +125,24 @@ function Profile() {
                                          marginTop: "10px",
                                      }}
                                 />
-                                {/*{loading ? <CircularProgress/> : null}*/} {/*todo need fix*/}
+                                {loading ?
+                                    <div
+                                    style={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "100%",
+                                        width: "100%",
+                                        position: "absolute",
+                                        top: "0",
+                                        left: "0",
+                                        backgroundColor: "white",
+                                        zIndex: "100",
+                                    }}
+                                    >
+                                        <CircularProgress color="secondary" />
+                                    </div>
+                                    : null} {/*todo need fix*/}
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleClose}>Okay</Button>
@@ -133,8 +153,9 @@ function Profile() {
                                 item
                                 key={ticket.id}
                                 lg={2}
-                                md={6}
-                                xs={8}
+                                md={4}
+                                sm={5}
+                                xs={6}
                                 style={{
                                     margin: "auto",
                                 }}
@@ -165,6 +186,7 @@ function Profile() {
                                             color="primary"
                                             onClick={
                                                 () => {
+                                                    console.log("Loading qr code");
                                                     setOpen(true);
                                                     setUrl(ticket.urltoqr);
                                                     setLoading(true)

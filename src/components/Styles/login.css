@@ -3,23 +3,16 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 94vh;
+    height: 100vh;
     width: 100%;
     background-color: #5C0099;
 }
 
-.title {
-    font-size: 2rem;
-    color: white;
-    margin-bottom: 2rem;
-}
-
 .form {
+    max-height: 40%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    max-height: 33%;
     background-color: #333;
     padding: 2rem;
     box-shadow: 5px 5px 10px rgba(250, 250, 250, 0.7);
@@ -27,25 +20,14 @@
     color: white;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
- label {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: #8302d9;
-     max-width: 100%;
-}
 .loginInput{
     width: 100%;
     font-size: 1.2rem;
     padding: 0.5rem;
 }
+
 input {
-    font-family: "Montserrat SemiBold";
+    color: #FFFFFF;
     width: 100%;
     font-size: 1.2rem;
     padding: 0.5rem;
@@ -65,13 +47,13 @@ input {
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     margin-top: 20px;
     margin-bottom: 20px;
-
 }
 
 .btn:hover {
     transform: scale(1.02);
 }
-.text-btn{
+
+.text-btn {
     padding-top: 1rem;
     display: flex;
     justify-content: center;
@@ -80,6 +62,7 @@ input {
     user-select: none;
     cursor: pointer;
 }
-.text-btn:hover{
+
+.text-btn:hover {
     color: #56376B;
 }
