@@ -73,7 +73,16 @@ function Profile() {
 
     return (
         <div>
-            <div className="profile-container">
+            <div className="profile-container"
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
+                maxWidth: "100%",
+                height: "100%",
+            }}
+            >
                 <BackToTopButton/>
                 <ToastContainer/>
                 <div className="profile-header">
@@ -89,6 +98,10 @@ function Profile() {
                     <Grid
                         container
                         spacing={1}
+                        style={{
+                            maxWidth: "100%",
+                            margin: "auto",
+                        }}
                     >
                         <Dialog
                             open={open}

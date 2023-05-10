@@ -55,7 +55,7 @@ function CinemaSchedule({
                     }}
                 >
                     {day.sessions.map((scheduleItem) => (
-                        <Grid item xs={12} md={6} lg={3} key={scheduleItem.id}>
+                        <Grid item xs={12} sm={6} md={6} lg={3} key={scheduleItem.id}>
                             <Card
                                 className="card"
                                 style={{
