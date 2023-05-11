@@ -14,6 +14,7 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import SesInfo from "./components/SesInfo";
 import "../src/components/Styles/App.css";
 import Cookies from 'js-cookie';
+import Payment from "./components/Payment"
 
 function App() {
     useEffect(() => {
@@ -193,6 +194,7 @@ function App() {
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgot-password" element={<ForgotPassword handleChangeUsername={handleChangeUsername} ResetPassword={ResetPassword} />} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
+            <Route path="/payment" element={<Payment/>} />
         </Routes>
       </div>
       </ThemeProvider>
