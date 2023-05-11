@@ -119,7 +119,7 @@ function SesInfo(ses_id){
                                   }
                             >
                                 {[...Array(5)].map((_, row) => (
-                                    <Grid key={row} item xs={12} container justifyContent="center">
+                                    <Grid key={row} item xs={15} container justifyContent="center">
                                         {[...Array(12)].map((_, col) => (
                                             <div id={(row * 12) + col + 1} className={
                                                 ( aviSeats.includes((row * 12) + col + 1) ? "available" : "occupied") + " square"
@@ -128,6 +128,7 @@ function SesInfo(ses_id){
                                             }>
                                                 <Typography
                                                     style={{
+                                                        fontSize: "0.8rem",
                                                         color: "white",
                                                         textAlign: "center",
                                                         fontWeight: "bold",

@@ -23,7 +23,7 @@ function Register(
                 alignItems="center"
                 className="form">
                 <Grid item className="loginTitle">
-                    <Typography variant="h4" style={{fontFamily: "Montserrat"}}>REGISTER</Typography>
+                    <Typography variant="h4" style={{fontFamily: "Montserrat"}}>SING UP</Typography>
                 </Grid>
                 <Grid item xs={12} className="loginInput">
                     <input
@@ -47,7 +47,7 @@ function Register(
                         style={{fontFamily: "Montserrat"}}
                         className="btn"
                         onClick={handleRegister}
-                    >Register</Button>
+                    >Sing up</Button>
                 </Grid>
             </Grid>
         </div>

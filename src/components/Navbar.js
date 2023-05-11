@@ -50,10 +50,10 @@ function Header({ loggedIn, handleLogout }) {
                                     <div
                                     >
                                         <NavDropdown.Item>
-                                            <Link to={"/login"} className="nav-link">Login</Link>
+                                            <Link to={"/login"} className="nav-link">Log in</Link>
                                         </NavDropdown.Item>
                                         <NavDropdown.Item>
-                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Register</Link>
+                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sing up</Link>
                                         </NavDropdown.Item>
                                     </div>
                                 </>
