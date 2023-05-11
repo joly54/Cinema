@@ -64,3 +64,31 @@ input {
 .text-btn:hover {
     color: #56376B;
 }
+
+@media screen and (max-width: 480px) {
+    /* set number of columns to 1 for extra small screens */
+    .MuiImageList-root {
+        grid-template-columns: repeat(1, 1fr)!important;
+    }
+}
+
+@media screen and (min-width: 481px) and (max-width: 720px) {
+    /* set number of columns to 1 for small screens */
+    .MuiImageList-root {
+        grid-template-columns: repeat(1, 1fr)!important;
+    }
+}
+
+@media screen and (min-width: 721px) and (max-width: 1280px) {
+    /* set number of columns to 2 for medium screens */
+    .MuiImageList-root {
+        grid-template-columns: repeat(2, 1fr)!important;
+    }
+}
+
+@media screen and (min-width: 1281px) {
+    /* set number of columns to 3 for large screens */
+    .MuiImageList-root {
+        grid-template-columns: repeat(3, 1fr)!important;
+    }
+}

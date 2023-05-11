@@ -33,8 +33,8 @@ function CinemaSchedule({
                  style={{
                         display: "flex",
                         flexDirection: "column",
-                        alignItems: "left",
-                        justifyContent: "left",
+                        alignItems: "center",
+                        justifyContent: "center",
                         maxWidth: "100%",
                  }}
             >

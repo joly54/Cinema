@@ -1,8 +1,7 @@
 import {useEffect, useState} from 'react';
-import {Grid, Typography} from '@material-ui/core';
 import * as api from '../utils/Api'
 import './Styles/Films.css';
-import {ImageList, ImageListItem, ImageListItemBar} from "@mui/material";
+import {Button, ImageList, ImageListItem, ImageListItemBar, Grid, Typography} from "@mui/material";
 
 function Films() {
     const [movies, setMovies] = useState([]);
@@ -23,13 +22,12 @@ function Films() {
         <div className="movies-container"
              style={{
                  height: '100%',
-                 width: "100vw",
+                 maxWidth: '100%',
              }}
         >
             <Grid
                 style={{
                     height: '100%',
-                    width: "100vw",
                     display: 'flex',
                     flexDirection: 'column',
                     justifyContent: 'center',
@@ -48,7 +46,7 @@ function Films() {
                     }}>
                     Films
                 </Typography>
-                <ImageList cols={4} rowHeight={500}
+                <ImageList cols={4} rowHeight={500} id = "films"
                 >
                     {movies.map((item) => (
                         <Grid
