@@ -1,13 +1,4 @@
-card {
-    padding: 10rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-}
-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
+
 card img {
     object-fit: cover;
     height: 200px;
@@ -33,7 +24,7 @@ h2 {
 
 .btn:hover,
 .soldOut:hover {
-    transition: background-color 0.2s ease-in-out !important;
+    background-color: #774699 !important;
 }
 
 .BuyTicket {

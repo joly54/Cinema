@@ -119,7 +119,7 @@ function CinemaSchedule({
                                     style={{
                                         width: "100%",
                                         borderRadius: "0 0 12px 12px",
-                                        objectPosition: "bottom",
+                                       // objectPosition: "bottom",
                                     }}
                                 >
                                     <Typography

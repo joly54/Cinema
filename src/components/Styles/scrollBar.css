@@ -1,12 +1,10 @@
-/* Изменение цвета полосы прокрутки */
+
 ::-webkit-scrollbar {
     background-color: #333;
     width: 10px;
 }
-
-/* Изменение цвета и размера полосы прокрутки */
 ::-webkit-scrollbar-thumb {
-    background-color: white;
+    background-color: gray;
     border-radius: 5px;
 
 }
