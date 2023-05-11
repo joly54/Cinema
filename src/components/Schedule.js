@@ -29,12 +29,12 @@ function CinemaSchedule({
     return (
         schedule.map((day) => (
             <div key={day.date}
+                 className={"schedule"}
                  style={{
                         display: "flex",
                         flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        //padding: "2rem",
+                        alignItems: "left",
+                        justifyContent: "left",
                         maxWidth: "100%",
                  }}
             >
@@ -49,7 +49,7 @@ function CinemaSchedule({
                     spacing={4}
                     style={{
                         display: "flex",
-                        justifyContent: "center",
+                        justifyContent: "left",
                         //padding: "0.1rem",
                         maxWidth: "100%",
                     }}
@@ -80,6 +80,7 @@ function CinemaSchedule({
                                         image={scheduleItem.poster}
                                         title="Card image"
                                         style={{
+                                            height: "200px",
                                             objectFit: "cover",
                                             objectPosition: "top",
                                             borderRadius: "12px 12px 0 0",

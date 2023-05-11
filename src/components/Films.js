@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Grid, Card, CardActionArea, CardMedia, CardContent, Typography } from '@material-ui/core';
+import {useEffect, useState} from 'react';
+import {Grid, Typography} from '@material-ui/core';
 import * as api from '../utils/Api'
 import './Styles/Films.css';
+import {ImageList, ImageListItem, ImageListItemBar} from "@mui/material";
 
 function Films() {
     const [movies, setMovies] = useState([]);
@@ -17,34 +18,66 @@ function Films() {
                 console.error(error);
             });
     }, []);
-
+    const [loaded, setLoading] = useState(false);
     return (
-        <div className="movies-container">
-            <h1 className="movies-title">Movies</h1>
-
-            <Grid container spacing={4}>
-                {movies.map((movie) => (
-                    <Grid item xs={12} md={6} lg={4} key={movie.id}>
-                        <Card className="movie-card">
-                            <CardActionArea>
-                                <CardMedia
-                                    component="img"
-                                    image={movie.poster}
-                                    title={movie.title}
-                                    className="movie-poster"
+        <div className="movies-container"
+             style={{
+                 height: '100%',
+                 width: "100vw",
+             }}
+        >
+            <Grid
+                style={{
+                    height: '100%',
+                    width: "100vw",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography
+                    variant="h2"
+                    style={{
+                        color: 'white',
+                        textAlign: 'center',
+                        fontFamily: 'Montserrat',
+                        fontSize: '50px',
+                        paddingTop: '50px',
+                        paddingBottom: '50px',
+                    }}>
+                    Films
+                </Typography>
+                <ImageList cols={4} rowHeight={500}
+                >
+                    {movies.map((item) => (
+                        <Grid
+                            lg={12}
+                        >
+                            <ImageListItem key={item.poster}
+                                           style={{
+                                               height: '100%',
+                                               width: "100%",
+                                               display: 'flex',
+                                               flexDirection: 'column',
+                                               justifyContent: 'center',
+                                               alignItems: 'center',
+                                           }}
+                            >
+                                <img src={item.poster} alt={item.title}
+                                     style={{
+                                         objectFit: 'cover',
+                                         borderRadius: '10px',
+                                     }}/>
+                                <ImageListItemBar
+                                    title={item.title}
+                                    subtitle={<span>Price: {item.price}UAH</span>}
                                 />
-                                <CardContent>
-                                    <Typography gutterBottom color="textSecondary" variant="h5" component="h2">
-                                        {movie.title}
-                                    </Typography>
-                                    <Typography variant="body2" color="textSecondary" component="p">
-                                        {movie.description}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                    </Grid>
-                ))}
+                            </ImageListItem>
+
+                        </Grid>
+                    ))}
+                </ImageList>
             </Grid>
         </div>
     );

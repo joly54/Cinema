@@ -11,45 +11,58 @@ function Register(
     }
 ) {
     return (
-        <div className="container">
-            <Grid
-                lg={4}
-                md={8}
-                sm={10}
-                xs={12}
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                className="form">
-                <Grid item className="loginTitle">
-                    <Typography variant="h4" style={{fontFamily: "Montserrat"}}>SING UP</Typography>
+        <div className="container"
+             style={{
+                 height: "100vh",
+             }}
+        >
+            <div
+                style={{
+                    width: "100%",
+                }}
+            >
+                <Grid
+                    xl={4}
+                    lg={5}
+                    md={5}
+                    sm={9}
+                    xs={12}
+
+                    container
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    className="form"
+                >
+                    <Grid item className="loginTitle">
+                        <Typography variant="h4" style={{fontFamily: "Montserrat"}}>SING UP</Typography>
+                    </Grid>
+                    <Grid item xs={12} className="loginInput">
+                        <input
+                            style={{fontFamily: "Montserrat"}}
+                            type="text"
+                            placeholder="Username"
+                            onChange={(e) => handleChangeUsername(e.target.value)}
+                        ></input>
+                    </Grid>
+                    <Grid item xs={12} className="loginInput">
+                        <input
+                            style={{fontFamily: "Montserrat"}}
+                            type="password"
+                            placeholder="Password"
+                            onChange={(e) => handleChangePassword(e.target.value)}
+                        >
+                        </input>
+                    </Grid>
+                    <Grid item xs={12} className="loginButton">
+                        <Button
+                            style={{fontFamily: "Montserrat"}}
+                            className="btn"
+                            onClick={handleRegister}
+                        >SING UP</Button>
+                    </Grid>
                 </Grid>
-                <Grid item xs={12} className="loginInput">
-                    <input
-                        style={{fontFamily: "Montserrat"}}
-                        type="text"
-                        placeholder="Username"
-                        onChange={(e) => handleChangeUsername(e.target.value)}
-                    ></input>
-                </Grid>
-                <Grid item xs={12} className="loginInput">
-                    <input
-                        style={{fontFamily: "Montserrat"}}
-                        type="password"
-                        placeholder="Password"
-                        onChange={(e) => handleChangePassword(e.target.value)}
-                    >
-                    </input>
-                </Grid>
-                <Grid item xs={12} className="loginButton">
-                    <Button
-                        style={{fontFamily: "Montserrat"}}
-                        className="btn"
-                        onClick={handleRegister}
-                    >Sing up</Button>
-                </Grid>
-            </Grid>
+            </div>
         </div>
     );
 }

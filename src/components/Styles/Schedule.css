@@ -25,6 +25,7 @@ h2 {
 .btn:hover,
 .soldOut:hover {
     background-color: #774699 !important;
+    transform: scale(1.0) !important;
 }
 
 .BuyTicket {
