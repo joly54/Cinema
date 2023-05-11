@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './Styles/Payment.css'
-import {Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Button} from '@material-ui/core';
-import * as api from '../utils/Api'
+import {Button, Grid, Typography} from '@material-ui/core';
+
 import './Styles/scrollBar.css';
-import BackToTopButton from "./BackToTopButton";
 
 function Payment (){
     return (
@@ -39,11 +38,23 @@ function Payment (){
                             style={{fontFamily: "Montserrat"}}
                             type="text"
                             placeholder="XXXX-XXXX-XXXX-XXXX"
+                            maxLength="19"
+                            onKeyUp={(event) => {
+                                const input = event.target;
+                                const inputValue = input.value.replace(/\D/g, '');
+                                let maskedValue = '';
+                                for (let i = 0; i < inputValue.length && i < 16; i++) {
+                                    if (i % 4 === 0 && i > 0) {
+                                        maskedValue += ' ';
+                                    }
+                                    maskedValue += inputValue.charAt(i);
+                                }
+                                input.value = maskedValue;
+                            }}
                         ></input>
-
                     </Grid>
 
-                    <Grid container  className="gridContainer" >
+                    <Grid container className="gridContainer">
 
                         <Grid item xs={3} className="privateInput">
                             <Typography className="" variant="h6" style={{fontFamily: "Montserrat"}}>Date:</Typography>
@@ -51,15 +62,36 @@ function Payment (){
                                 style={{fontFamily: "Montserrat"}}
                                 type="text"
                                 placeholder="XX/XX"
+                                maxLength="5"
+                                onKeyUp={(event) => {
+                                    const input = event.target;
+                                    const inputValue = input.value.replace(/\D/g, '');
+                                    let maskedValue = '';
+                                    for (let i = 0; i < inputValue.length && i < 4; i++) {
+                                        if (i === 2) {
+                                            maskedValue += '/';
+                                        }
+                                        maskedValue += inputValue.charAt(i);
+                                    }
+                                    input.value = maskedValue;
+                                }}
                             ></input>
+
                         </Grid>
                         <Grid item xs={2} className="privateInput">
                             <Typography className="" variant="h6" style={{fontFamily: "Montserrat"}}>CVV:</Typography>
                             <input
+                                maxLength={3}
                                 style={{fontFamily: "Montserrat"}}
-                                type="password"
+                                type="text"
                                 placeholder="XXX"
+                                onKeyUp={(event) => {
+                                    const input = event.target;
+                                    const inputValue = input.value.replace(/\D/g, '');
+                                    input.value = inputValue;
+                                }}
                             ></input>
+
                         </Grid>
                     </Grid>
 
