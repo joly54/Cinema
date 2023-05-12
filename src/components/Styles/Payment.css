@@ -47,8 +47,9 @@
     margin-right: 10% !important;
 }
 .payInfo{
-    margin-left: 5px;
-    font-family: "Montserrat SemiBold";
+    margin-left: 5px!important;
+    font-weight: bold!important;
+    font-family: "Montserrat SemiBold"!important;
 }
 
 

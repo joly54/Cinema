@@ -1,10 +1,12 @@
 import {useEffect, useState} from 'react';
 import * as api from '../utils/Api'
 import './Styles/Films.css';
-import {Button, ImageList, ImageListItem, ImageListItemBar, Grid, Typography} from "@mui/material";
+import {Grid, ImageList, ImageListItem, ImageListItemBar, Typography} from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 function Films() {
     const [movies, setMovies] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         api.getFilms()
@@ -50,6 +52,16 @@ function Films() {
                 >
                     {movies.map((item) => (
                         <Grid
+                            item
+                            onClick={
+                                () =>{
+                                    navigate(`/films/${item.id}`)
+                                }
+                            }
+                            style={{
+                        cursor: 'pointer',
+                        }
+                            }
                             lg={12}
                         >
                             <ImageListItem key={item.poster}

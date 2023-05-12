@@ -14,6 +14,7 @@ import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import SesInfo from "./components/SesInfo";
 import "../src/components/Styles/App.css";
 import Cookies from 'js-cookie';
+import FilmsInfo from "./components/filmsInfo";
 import Payment from "./components/Payment"
 
 function App() {
@@ -177,13 +178,14 @@ function App() {
           <Header loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>
             <Route path="/" element={<Schedule handleFilm={handleSession} />} />
+            <Route path="/films/:id" element={<FilmsInfo />} />
             <Route path="/films" element={<Films />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} />} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
-            <Route path="/payment" element={<Payment/>} />
+            <Route path="/films" element={<Payment/>} />
         </Routes>
       </div>
       </ThemeProvider>

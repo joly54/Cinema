@@ -41,3 +41,6 @@ export const forgotPasswordConfirm = (username) => {
 export const ResetPassword = (username, password, token) => {
     return fetch(`${baseurl}/reset-password?username=${username}&password=${password}&token=${token}`, {method: 'POST'})
 }
+export const getSessions = (film_id) => {
+    return fetch(`${baseurl}/getSessions?film_id=${film_id}`)
+}

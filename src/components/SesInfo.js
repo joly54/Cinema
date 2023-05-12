@@ -7,6 +7,7 @@ import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
 import BackToTopButton from "./BackToTopButton";
 import {toast, ToastContainer} from "react-toastify";
+import {Skeleton} from "@mui/material";
 
 
 function SesInfo(ses_id){
@@ -17,6 +18,7 @@ function SesInfo(ses_id){
     const [selected, setSelected] = useState([]);
     const username = localStorage.getItem("username");
     const token = localStorage.getItem("token");
+    const [isloading, setIsLoading] = useState(true);
     useEffect(() => {
         if(!username || !token){
             toast.error("You are not logged in.",
@@ -116,8 +118,7 @@ function SesInfo(ses_id){
         >
             <ToastContainer />
             <BackToTopButton />
-            {sessionInfo && sessionInfo["trailer"] ? (
-                <div>
+            {sessionInfo && sessionInfo["trailer"] ? <div>
                     <Grid container spacing={2}
                           style={{
                               maxWidth: "100%",
@@ -158,11 +159,29 @@ function SesInfo(ses_id){
                                 title="Movie trailer"
                                 width="100%"
                                 height="315"
-                                src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}`}
+                                onLoad={() => {
+                                    setIsLoading(false)
+
+                                }
+                                }
+                                src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
                                 title="YouTube video player"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                 allowFullScreen
                             />
+                            {isloading ? (
+                                <Skeleton
+                                    variant="rectangular"
+                                    width="100%"
+                                    height="100%"
+                                    style={{
+                                        position: "absolute",
+                                        top: 0,
+                                        left: 0,
+                                    }}></Skeleton>
+                            ): null}
+
+
                         </Grid>
                     </Grid>
                 <Grid>
@@ -264,10 +283,7 @@ function SesInfo(ses_id){
                         </div>
                     </div>
                 </Grid>
-                </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+                </div> : <p>Loading...</p>}
         </div>
     );
 
