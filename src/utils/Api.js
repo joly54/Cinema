@@ -37,3 +37,7 @@ export const getFilms = () => {
 export const forgotPasswordConfirm = (username) => {
     return fetch(`${baseurl}/forgot-password?username=${username}`, {method: 'POST'})
 }
+
+export const ResetPassword = (username, password, token) => {
+    return fetch(`${baseurl}/reset-password?username=${username}&password=${password}&token=${token}`, {method: 'POST'})
+}

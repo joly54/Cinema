@@ -29,13 +29,16 @@ function ForgotPassword({}) {
                         setIsUsernameDisabled(true);
                         setIsButtonClicked(true);
                     } else {
-                        toast.error("Invalid email address", {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: true
+                        response.json().then(data => {
+                            const errorMessage = data.message || "An error occurred";
+                            toast.error(errorMessage, {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true
+                            });
                         });
                     }
                 })
