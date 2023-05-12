@@ -159,7 +159,6 @@ function App() {
 
     }
     function ResetPassword(){
-        document.getElementById("code").removeAttribute("disabled");
         toast.success("Please check your email for the code", {
             position: "top-center",
             autoClose: 5000,
@@ -192,7 +191,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
-            <Route path="/forgot-password" element={<ForgotPassword handleChangeUsername={handleChangeUsername} ResetPassword={ResetPassword} />} />
+            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} ResetPassword={ResetPassword} />} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
             <Route path="/payment" element={<Payment/>} />
         </Routes>
