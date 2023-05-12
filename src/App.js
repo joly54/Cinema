@@ -207,7 +207,7 @@ function App() {
           <Header loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>
             <Route path="/" element={<Schedule handleFilm={handleSession} />} />
-            <Route path="/films/:id" element={<FilmsInfo />} />
+            <Route path="/films/:id" element={<FilmsInfo  handleSession={handleSession}/>} />
             <Route path="/films" element={<Films />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
