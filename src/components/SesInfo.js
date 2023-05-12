@@ -15,7 +15,41 @@ function SesInfo(ses_id){
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
     const [selected, setSelected] = useState([]);
+    const username = localStorage.getItem("username");
+    const token = localStorage.getItem("token");
     useEffect(() => {
+        if(!username || !token){
+            toast.error("You are not logged in.",
+                {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: true}
+            );
+            navigate("/login");
+            return;
+        } else{
+            api.checktoken(username, token)
+                .then(res => {
+                    if (res.ok) {
+                        res.json().then(data => {
+                            console.log(data);
+                        });
+                    } else {
+                        res.json().then(data => {
+                            console.error(data);
+                            navigate("/login");
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    toast.error("Oops! Something went wrong.");
+                    navigate("/")
+                });
+                }
         api.getSessionInfo(session)
             .then(res => {
                 if (res.ok) {
@@ -193,8 +227,9 @@ function SesInfo(ses_id){
                                             }>
                                                 <Typography
                                                     style={{
-                                                        fontSize: "0.8rem",
+                                                        fontSize: "1rem",
                                                         color: "white",
+                                                        fontFamily: "Montserrat",
                                                         textAlign: "center",
                                                         fontWeight: "bold",
                                                         display: "flex",
@@ -221,7 +256,7 @@ function SesInfo(ses_id){
                                                 boxShadow: "0 0 10px rgba(0, 0, 0, 0.9)",
                                             }}
                                         >
-                                            Buy
+                                            Pay
                                         </Button>
                                     </div>
                                 </div>

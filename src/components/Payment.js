@@ -5,6 +5,13 @@ import {Button, Grid, Typography} from '@material-ui/core';
 import './Styles/scrollBar.css';
 
 function Payment (){
+    const data = {
+        "title" : "Martian",
+        "date" : "2020-10-10",
+        "time" : "10:00",
+        "Seats" : "1,2,3,4,5,6,7,8,9,10,11,12",
+        "price" : "999",
+    }
     return (
         <div className="container"
              style={{
@@ -33,6 +40,23 @@ function Payment (){
                         <Typography variant="h4" style={{fontFamily: "Montserrat"}}>PAYMENT</Typography>
                     </Grid>
                     <Grid item xs={12} className="numberInput">
+                        <Grid
+                            spacing={12}
+
+                        className="paymentInfo"
+                        style={{
+                            marginBottom: "20px",
+                            width: "100%",
+                        }}
+                        container
+                        >
+                            <Typography className="payInfo" variant="h6">Film tittle: {data["title"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Date: {data["date"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Time: {data["time"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Seats: [{data["Seats"]}];</Typography>
+                            <Typography className="payInfo" variant="h6">Price: {data["price"]}UAH</Typography>
+                        </Grid>
+
                         <Typography variant="h6" style={{fontFamily: "Montserrat"}}>Card number:</Typography>
                         <input
                             style={{fontFamily: "Montserrat"}}
