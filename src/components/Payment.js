@@ -45,8 +45,10 @@ function Payment (){
 
                         className="paymentInfo"
                         style={{
+                            fontFamily: "Montserrat",
                             marginBottom: "20px",
                             width: "100%",
+                            fontWeight: "bold",
                         }}
                         container
                         >

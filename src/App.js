@@ -209,7 +209,8 @@ function App() {
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
-            <Route path="/films" element={<Payment/>} />
+            <Route path="/Payment" element={<Payment/>} />
+
         </Routes>
       </div>
       </ThemeProvider>
