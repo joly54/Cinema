@@ -8,6 +8,7 @@ import './Styles/scrollBar.css';
 import BackToTopButton from "./BackToTopButton";
 import {toast, ToastContainer} from "react-toastify";
 
+
 function SesInfo(ses_id){
     const session = ses_id["ses_id"];
     const navigate = useNavigate();
@@ -48,7 +49,7 @@ function SesInfo(ses_id){
         else
             items.splice(items.indexOf(id), 1);
         setSelected(items)
-        document.getElementById("selected").innerHTML = "Selected: " + selected;
+        document.getElementById("selected").innerHTML = selected;
 
         console.log(selected);
     }
@@ -58,7 +59,7 @@ function SesInfo(ses_id){
                 if (res.ok) {
                     res.json().then(data => {
                         console.log(data);
-                        toast.success("Ticket bought successfully!");
+                        toast.success("Payment created successfully!");
                         navigate("/");
                     });
                 } else {
@@ -70,35 +71,67 @@ function SesInfo(ses_id){
             })
     }
     return (
-        <div>
+        <div
+        style={{
+            height: "100%",
+            width: "100%",
+            //centering
+            justifyContent: "center",
+            alignItems: "center",
+        }}
+        >
             <ToastContainer />
             <BackToTopButton />
             {sessionInfo && sessionInfo["trailer"] ? (
-                <Grid>
-                    <div className="FilmContainer">
-                        <Card class="CenterDataFilm">
-                            <h1>{sessionInfo["title"]}</h1>
-                            <h2>{sessionInfo["description"]}</h2>
-                            <h3>{sessionInfo["date"]}</h3>
-                            <h3>{sessionInfo["time"]}</h3>
-                            <h3>Prise: {sessionInfo["price"]} uah</h3>
-                        </Card>
-                        <Card class="CenterIframe">
-                            <div className="VideoContainer">
-                                <iframe
-                                    width="560"
-                                    height="315"
-                                    src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}`}
-                                    title="YouTube video player"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    allowFullScreen
-                                ></iframe>
-                            </div>
-                        </Card>
-                    </div>
+                <div>
+                    <Grid container spacing={2}
+                          style={{
+                              maxWidth: "100%",
+                              justifyContent: "center",
+                              alignItems: "center",
 
-                    <br/>
-                    <div className="selected-text" id="selected"></div>
+
+                          }}
+                    >
+                        <Grid item xs={12} md={6}
+                              style={{
+                              }}
+                        >
+                            <Typography
+                                className="FilmInfo"
+                                style={{fontFamily: "Montserrat"}}
+                                variant="h4"
+                            >
+                                {sessionInfo["title"]}
+                            </Typography>
+                            <Typography
+                                style={{fontFamily: "Montserrat"}}
+                                variant="h6"
+                                className="FilmInfo">
+                                {sessionInfo["date"] + " " + sessionInfo["time"] + " " + sessionInfo["seats"].length + " seats left"}
+                            </Typography>
+                            <br></br>
+                            <Typography
+                                mt={2}
+                                className="FilmInfo"
+                                variant="h6"
+                            >
+                                {sessionInfo["description"]}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <iframe
+                                title="Movie trailer"
+                                width="100%"
+                                height="315"
+                                src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}`}
+                                title="YouTube video player"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowFullScreen
+                            />
+                        </Grid>
+                    </Grid>
+                <Grid>
                     <div>
                         <div className="Seats"
                         style={{
@@ -112,12 +145,44 @@ function SesInfo(ses_id){
                             className="screen"
                             >
                             </img>
-                            <Grid container spacing={1}
-                                  style={
-                                      {
-                                      }
-                                  }
-                            >
+                            <div style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexDirection: "row",
+                            }}>
+                                <Typography
+                                    component="h1"
+                                    variant="h5"
+                                    style={{
+                                        fontFamily: "Montserrat",
+                                        fontSize: "1.5rem",
+                                        fontWeight: "bold",
+                                        textAlign: "center",
+                                        margin: "1rem",
+                                        color: "white",
+                                        marginRight: "0.5rem"
+                                    }}
+                                >
+                                    Selected seats:
+                                </Typography>
+                                <Typography
+                                    component="h1"
+                                    variant="h5"
+                                    id="selected"
+                                    style={{
+                                        fontFamily: "Montserrat",
+                                        fontSize: "1.5rem",
+                                        fontWeight: "bold",
+                                        textAlign: "center",
+                                        margin: "1rem",
+                                        color: "orange",
+                                    }}
+                                >
+                                    {null}
+                                </Typography>
+                            </div>
+                            <Grid container spacing={1}>
                                 {[...Array(5)].map((_, row) => (
                                     <Grid key={row} item xs={15} container justifyContent="center">
                                         {[...Array(12)].map((_, col) => (
@@ -164,6 +229,7 @@ function SesInfo(ses_id){
                         </div>
                     </div>
                 </Grid>
+                </div>
             ) : (
                 <p>Loading...</p>
             )}
