@@ -171,6 +171,30 @@ function App() {
         setsession(ses_id);
         navigate('/sessionInfo');
     }
+
+    function handleToastErr(text){
+        toast.error(text, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true
+        });
+    }
+
+    function handleToastSuc(text){
+        toast.success(text, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true
+        });
+    }
+
+
   return (
       <ThemeProvider theme={theme}>
       <div className="BackGroundColor">
@@ -183,7 +207,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
-            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} />} />
+            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
             <Route path="/films" element={<Payment/>} />
         </Routes>

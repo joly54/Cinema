@@ -2,71 +2,40 @@ import React, { useState } from 'react';
 import './Styles/scrollBar.css';
 import './Styles/ForgotPassword.css';
 import { Button, Grid, Typography } from "@material-ui/core";
-import { toast } from "react-toastify";
 import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
 import {useNavigate} from "react-router-dom";
 
-function ForgotPassword() {
+function ForgotPassword({handleToastErr, handleToastSuc}) {
     const [showConfirmationCode, setShowConfirmationCode] = useState(false);
     const [isUsernameDisabled, setIsUsernameDisabled] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [username, setUsername] = useState('');
-    //New Changes don't touch
     const [code, setCode]=useState('')
     const [password, setPassword]=useState('')
     const navigate = useNavigate();
-    //
 
     const handleSendCode = () => {
         if (username !== '') {
             forgotPasswordConfirm(username)
                 .then(response => {
                     if (response.ok) {
-                        toast.success("Please check your email for the code", {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: true
-                        });
+                        handleToastSuc("Please check your email for the code");
                         setShowConfirmationCode(true);
                         setIsUsernameDisabled(true);
                         setIsButtonClicked(true); // Обновлено
                     } else {
                         response.json().then(data => {
                             const errorMessage = data.message || "An error occurred";
-                            toast.error(errorMessage, {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true
-                            });
+                            handleToastErr(errorMessage);
                         });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    toast.error("An error occurred", {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: true
-                    });
+                    handleToastErr("An error occurred");
                 });
         } else {
-            toast.error("Please enter a username", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true
-            });
+            handleToastErr("Please enter a username");
         }
     };
 
@@ -96,69 +65,30 @@ function ForgotPassword() {
 
     const handleResetPassword = () => {
         if (password === '') {
-            toast.error("Please enter a password", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true
-            });
+            handleToastErr("Please enter a password");
         }
 
         if (password !== confirmPassword) {
-            toast.error("Check that the password is entered correctly", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                draggable: true
-            });
+            handleToastErr("Check that the password is entered correctly")
         }else {
             ResetPassword(username, code, password)
                 .then(response=>{
                     if(response.ok){
-                        toast.success("Password reset ", {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: true
-                        })
+                        handleToastSuc("Password reset");
                         navigate('/login');
                     }else {
                         response.json().then(data => {
                             const errorMessage = data.message || "An error occurred";
-                            toast.error(errorMessage, {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true
-                            });
+                            handleToastErr(errorMessage);
                         });
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    toast.error("An error occurred", {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        draggable: true
-                    });
+                    handleToastErr(error);
                 });
         }
     };
-
-
-
-
     return (
         <div className="container">
             <Grid
