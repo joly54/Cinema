@@ -10,13 +10,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js.map';
 
-
+function navigator() {
+    window.location.href = "/";
+}
 function Header({ loggedIn, handleLogout }) {
 
     return (
         <Navbar variant="dark" bg="dark" expand="lg">
             <Container fluid>
-                <Navbar.Brand>Cinema</Navbar.Brand>
+                <Navbar.Brand onClick={navigator}>Cinema</Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbar-dark-example" />
                 <Navbar.Collapse id="navbar-dark-example">
                     <Nav>

@@ -89,7 +89,6 @@ function Profile() {
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                alignItems: "center",
                 maxWidth: "100%",
                 height: "100%",
             }}
