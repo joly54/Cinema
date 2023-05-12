@@ -72,7 +72,18 @@ function Profile() {
     }
 
     return (
-        <div>
+        <div style={{
+            height : "100vh",
+        }}>
+            <div className="profile-header">
+                <h2>{email}</h2>
+                <h3>My Tickets</h3>
+                {status === false ? (
+                    <button className="btn" onClick={confirmEmail}>
+                        Confirm email
+                    </button>
+                ) : null}
+            </div>
             <div className="profile-container"
             style={{
                 display: "flex",
@@ -85,16 +96,8 @@ function Profile() {
             >
                 <BackToTopButton/>
                 <ToastContainer/>
-                <div className="profile-header">
-                    <h2>{email}</h2>
-                    {status === false ? (
-                        <button className="btn" onClick={confirmEmail}>
-                            Confirm email
-                        </button>
-                    ) : null}
-                </div>
                 <div className="profile-content">
-                    <h3>My Tickets</h3>
+
                     <Grid
                         container
                         spacing={1}
