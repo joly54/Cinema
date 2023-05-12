@@ -34,6 +34,7 @@ function App() {
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(false);
     const [sessionId, setsession] = useState(null);
+    const [PayData, setPayData] = useState({});
     let validDue = localStorage.getItem('validDue');
     useEffect(() =>{
         if (validDue) {
@@ -194,6 +195,10 @@ function App() {
         });
     }
 
+    function handleChangePayData(value){
+        setPayData(value)
+        navigate("/Payment")
+    }
 
   return (
       <ThemeProvider theme={theme}>
@@ -208,8 +213,8 @@ function App() {
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
-            <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
-            <Route path="/Payment" element={<Payment/>} />
+            <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
+            <Route path="/Payment" element={<Payment data={PayData}/>} />
 
         </Routes>
       </div>

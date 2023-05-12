@@ -1,16 +1,31 @@
 import React from 'react';
 import './Styles/Payment.css'
 import {Button, Grid, Typography} from '@material-ui/core';
-
+import * as api from "../utils/Api"
 import './Styles/scrollBar.css';
+import {toast} from "react-toastify";
 
-function Payment (){
-    const data = {
-        "title" : "Martian",
-        "date" : "2020-10-10",
-        "time" : "10:00",
-        "Seats" : "1,2,3,4,5,6,7,8,9,10,11,12",
-        "price" : "999",
+function Payment ({data}){
+    function confirmPayment() {
+        api.confirmPayment(data["pay_id"])
+            .then(res => {
+                if (res.ok) {
+                    res.json().then(data => {
+                        console.log(data);
+                        toast.success("You successfully bought tickets!");
+                    });
+                }
+                else {
+                    res.json().then(data => {
+                        console.log(data);
+                        toast.success(data["message"]);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                toast.error("Failed to confirm payment");
+            });
     }
     return (
         <div className="container"
@@ -52,11 +67,11 @@ function Payment (){
                         }}
                         container
                         >
-                            <Typography className="payInfo" variant="h6">Film tittle: {data["title"]};</Typography>
-                            <Typography className="payInfo" variant="h6">Date: {data["date"]};</Typography>
-                            <Typography className="payInfo" variant="h6">Time: {data["time"]};</Typography>
-                            <Typography className="payInfo" variant="h6">Seats: [{data["Seats"]}];</Typography>
-                            <Typography className="payInfo" variant="h6">Price: {data["price"]}UAH</Typography>
+                            <Typography className="payInfo" variant="h6">Film tittle: {data["pay_title"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Date: {data["pay_date"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Time: {data["pay_time"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Seats: {data["pay_seats"]};</Typography>
+                            <Typography className="payInfo" variant="h6">Price: {data["pay_amount"]}UAH</Typography>
                         </Grid>
 
                         <Typography variant="h6" style={{fontFamily: "Montserrat"}}>Card number:</Typography>
@@ -122,7 +137,7 @@ function Payment (){
                     </Grid>
 
                     <Grid item xs={12} className="payButton">
-                        <Button
+                        <Button onClick = {confirmPayment}
                             style={{fontFamily: "Montserrat"}}
                             className="btn"
                         >PAY</Button>
