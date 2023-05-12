@@ -11,7 +11,7 @@ consindex = -1
 consoles = []
 
 
-def GetConsoles():
+def GetConsoles(param=1):
     global consindex, consoles
     response = requests.get(api_base_url + "/consoles/", headers={"Authorization": "Token " + api_token})
     if response.status_code == 200:
@@ -19,16 +19,17 @@ def GetConsoles():
         print("Select console:")
         for i in range(len(consoles)):
             print(f"{i + 1}. {consoles[i]['name']}")
-        while True:
-            try:
-                consindex = int(input("Enter console index: "))
-                if consindex > len(consoles) or consindex < 1:
+        if param == 1:
+            while True:
+                try:
+                    consindex = int(input("Enter console index: "))
+                    if consindex > len(consoles) or consindex < 1:
+                        print("Error: Invalid console index.")
+                    else:
+                        consindex -= 1
+                        break
+                except ValueError:
                     print("Error: Invalid console index.")
-                else:
-                    consindex -= 1
-                    break
-            except ValueError:
-                print("Error: Invalid console index.")
     else:
         print("Error: Could not retrieve console data.")
         exit()
@@ -44,7 +45,7 @@ def GetOutput():
         os.system("cls")
         print(f"{response.json()['output']}", end="")
     else:
-        print("Error: Could not retrieve console output.")
+        print("Error: Could not retrieve console output.\n" + str(response.json()))
 
 
 def SendInput(text):
@@ -113,6 +114,30 @@ def uploadfile(file="D:\\VNTU\\1 course\\2 semestr\\web\\testflaks\\app.py"):
         exit()
 
 
+def refilldb():
+    global consindex
+    GetConsoles(param=0)
+    for console in consoles:
+        if console["executable"] == "mysql":
+            consindex = consoles.index(console)
+            SendInput("drop table if exists sessions;\ndrop table if exists film;")
+            print("SQL>>> drop table if exists sessions;")
+            print("SQL>>> drop table if exists film;")
+            break
+    for console in consoles:
+        if console["executable"] == "bash":
+            consindex = consoles.index(console)
+            SendInput("cd /home/vincinemaApi/Cinema\npython\nfrom app import db\ndb.create_all()\nexit()\npython newFilingFilms.py fill\necho 'Base refilled'")
+            print("bash>>> cd /home/vincinemaApi/Cinema")
+            print("bash>>> python")
+            print("python>>> from app import db")
+            print("python>>> db.create_all()")
+            print("python>>> exit()")
+            print("bash>>> python newFilingFilms.py")
+
+            break
+
+
 while True:
     GetOutput()
     command = input()
@@ -135,6 +160,8 @@ while True:
         os.system("start https://vincinemaapi.pythonanywhere.com/")
     elif command == "chconsole":
         GetConsoles()
+    elif command == "refilldb":
+        refilldb()
     elif command == "help":
         print('''
         reload - reloads webapp

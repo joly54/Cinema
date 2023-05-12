@@ -5,8 +5,10 @@ import re
 import smtplib
 import ssl
 import string
+import threading
 import time as systime
 from email.message import EmailMessage
+from datetime import datetime
 
 import qrcode
 from flask import Flask, jsonify, make_response, request, send_file, render_template, Response
@@ -37,6 +39,21 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
+class Payment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    ses_id = db.Column(db.Integer, nullable=False)
+    seats = db.Column(db.String(500), nullable=False)
+    time = db.Column(db.Integer, nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    expired = db.Column(db.Integer, nullable=False)
+    confirmed = db.Column(db.Boolean, nullable=False)
+
+    def __repr__(self):
+        return "Payment: " + str(self.user_id) + " " + str(self.ses_id) + " " + self.seats + " " + str(
+            self.time) + " " + str(self.amount) + " " + str(self.expired) + " " + str(self.confirmed)
+
+
 class Film(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80), unique=False, nullable=False)
@@ -54,9 +71,9 @@ class Sessions(db.Model):
     title = db.Column(db.String(80), unique=False, nullable=False)
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     film = db.relationship('Film', backref='sessions')
-    seats = db.Column(db.String, nullable=False)
-    time = db.Column(db.String, nullable=False)
-    date = db.Column(db.String, nullable=False)
+    seats = db.Column(db.String(500), nullable=False)
+    time = db.Column(db.String(10), nullable=False)
+    date = db.Column(db.String(10), nullable=False)
 
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
@@ -193,6 +210,9 @@ def after_request(response):
 
 class Login(Resource):
     def post(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         password = request.args.get('password')
         user = User.query.filter_by(username=username).first()
@@ -210,6 +230,9 @@ class Login(Resource):
 
 class Register(Resource):
     def post(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         password = request.args.get('password')
         print(password)
@@ -238,6 +261,9 @@ class Register(Resource):
 
 class isEmailConfirmed(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
         if user is None:
@@ -266,6 +292,9 @@ def sendValidationCode(username, code):
 
 class ConfirmEmail(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         code = request.args.get('code')
         user = User.query.filter_by(username=username).first()
@@ -292,26 +321,37 @@ class ConfirmEmail(Resource):
 
 class FogotPassword(Resource):
     def post(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
         if user is None:
             return {'message': 'User not found'}, 404
+        user.secret_code = get_random_string(8)
+        User.query.filter_by(username=username).update(dict(secret_code=user.secret_code))
+        db.session.commit()
         send_email(username, user.secret_code)
         return {'message': 'Email sent successfully'}, 200
 
 
 class ResetPassword(Resource):
     def post(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         password = request.args.get('password')
         secret_code = request.args.get('secret_code')
+        #return {"Secret code": secret_code, "Password": password, "Username": username, "Message": "OK"},200
         user = User.query.filter_by(username=username).first()
         if user is None:
             return {'message': 'User not found'}, 404
         if user.secret_code != secret_code:
             return {'message': 'Wrong secret code'}, 400
         user.password = password
-        db.session.commit()
+        user.secret_code = get_random_string(8)
+        User.query.filter_by(username=username).update(dict(password=password, secret_code=user.secret_code))
         return {'message': 'Password reset successfully'}, 200
 
 
@@ -328,7 +368,7 @@ class Schedule(Resource):
     def get(self):
         sessions = Sessions.query.all()
         answer = []
-        #get all aviable dates from sessions
+        # get all aviable dates from sessions
         dates = {}
         for session in sessions:
             if session.date not in dates:
@@ -362,6 +402,9 @@ class DisplayTikets(Resource):
 
 class getTikets(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         token = request.args.get('token')
 
@@ -393,7 +436,13 @@ class serve_image(Resource):
 
 class send_poster(Resource):
     def get(self, id):
-        filename = "Posters/" + id + ".jpg"
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
+        filename = "/home/vincinemaApi/Cinema/Posters/" + id + ".jpg"
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+             filename = "/home/vincinemaApi/Cinema/Posters/" + "Untitled.jpg"
         if not os.path.isfile(filename):
             return {'message': 'Poster not found'}, 404
         return send_file(filename, mimetype='image/png')
@@ -401,6 +450,9 @@ class send_poster(Resource):
 
 class checkToken(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         token = request.args.get('token')
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
@@ -413,6 +465,9 @@ class checkToken(Resource):
 
 class ResendEmailValidationCode(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
         if user is None:
@@ -427,6 +482,9 @@ class ResendEmailValidationCode(Resource):
 
 class userConfirmEmail(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.args.get('username')
         code = request.args.get('code')
         user = User.query.filter_by(username=username).first()
@@ -444,7 +502,10 @@ class userConfirmEmail(Resource):
 
 
 class UserInformation(Resource):
-    def post(self):
+    def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         token = request.args.get('token')
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
@@ -455,8 +516,15 @@ class UserInformation(Resource):
         res = {}
         res['username'] = user.username
         res['isEmailConfirmed'] = user.isEmailConfirmed
-        # get tikets
         tikets = Tiket.query.filter_by(username=username).all()
+        currentDate = datetime.strptime(systime.strftime("%Y.%m.%d"), "%Y.%m.%d")
+        for tiket in tikets:
+            if datetime.strptime(tiket.date, "%Y.%m.%d") < currentDate:
+                tikets.remove(tiket)
+                #delete from db
+                Tiket.query.filter_by(id=tiket.id).delete()
+                os.remove("tikets/" + tiket.id + ".png")
+        db.session.commit()
         res['tikets'] = []
         for tiket in tikets:
             data = {
@@ -472,8 +540,40 @@ class UserInformation(Resource):
         return res, 200
 
 
+
+def checkPayment(id, expired):
+    print("running checkPayment")
+    time = systime.time()
+    systime.sleep(expired-time)
+    with app.app_context():
+        payment = Payment.query.filter_by(id=id).first()
+        if payment is None:
+            return
+        if payment.confirmed:
+            return
+        else:
+            print("Payment not confirmed, id: " + str(id))
+            f = open("log.txt", "a")
+            f.write("Payment not confirmed, id: " + str(id) + "\n")
+            f.close()
+            session = Sessions.query.filter_by(id=payment.ses_id).first()
+            seats = eval(session.seats)
+            mised_seats = eval(payment.seats)
+            for seat in mised_seats:
+                seats.append(seat)
+            seats.sort()
+            session.seats = str(seats)
+            db.session.commit()
+            db.session.delete(payment)
+            db.session.commit()
+            return
+
+
 class BuyTikets(Resource):
     def post(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         username = request.headers.get('username')
         token = request.headers.get('token')
         seats = request.headers.get('seats')
@@ -498,9 +598,51 @@ class BuyTikets(Resource):
         aviable_seats = json.loads(ses.seats)
         if not all(elem in aviable_seats for elem in seats):
             return {'message': 'Seats not available'}, 400
+        pay = Payment(
+            user_id=user.id,
+            ses_id=ses.id,
+            seats=str(seats),
+            amount=ses.film.price * len(seats),
+            time=int(systime.time()),
+            expired=int(systime.time()) + 60 * 5,
+            confirmed=False
+        )
+        for seat in seats:
+            aviable_seats.remove(seat)
+        ses.seats = str(aviable_seats)
+        db.session.add(pay)
+        db.session.commit()
+        threading.Thread(target=checkPayment, args=(pay.id, pay.expired)).start()
+        return {
+            'message': 'Payment created',
+            'id': pay.id,
+            "amount": pay.amount,
+            "Pay_created": pay.time,
+            "expired": pay.expired,
+            "title": ses.title,
+            "date": ses.date,
+            "time": ses.time,
+            "seats": pay.seats
+        }, 200
+class confirm_Payment(Resource):
+    def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
+        id = request.args.get('payment_id')
+        payment = Payment.query.filter_by(id=id).first()
+        if payment is None:
+            return {'message': 'Payment not found'}, 404
+        if payment.confirmed:
+            return {'message': 'Payment already confirmed'}, 400
+        payment.confirmed = True
+        db.session.commit()
+        ses = Sessions.query.filter_by(id=payment.ses_id).first()
+        seats = eval(payment.seats)
         date = ses.date
         title = ses.title
         time = ses.time
+        username = User.query.filter_by(id=payment.user_id).first().username
         tikets = []
         for seat in seats:
             tiket = Tiket(username=username, date=date, title=title, time=time, number=seat,
@@ -518,15 +660,17 @@ class BuyTikets(Resource):
             img.save("tikets/" + tiket.id + '.png')
             tikets.append(data)
             db.session.add(tiket)
-            aviable_seats.remove(seat)
-        ses.seats = json.dumps(aviable_seats)
         db.session.commit()
         sendManyTikets(username, tikets)
         return {"message": "Tikets bought successfully", "tikets": tikets}, 200
 
 
+
 class getSessionInfo(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         ses_id = request.args.get('ses_id')
         ses = Sessions.query.filter_by(id=ses_id).first()
         if ses is None:
@@ -556,13 +700,11 @@ class dbinfo(Resource):
         return str(table_names), 200
 
 
-# metadata = db.MetaData()
-# metadata.reflect(bind=db.engine)
-# table_names = metadata.tables.keys()
-# print(table_names)
-
 class getFilms(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         films = Film.query.all()
         res = []
         for film in films:
@@ -580,6 +722,9 @@ class getFilms(Resource):
 
 class getSessions(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         id = request.args.get('film_id')
         try:
             id = int(id)
@@ -588,22 +733,30 @@ class getSessions(Resource):
         sessions = Sessions.query.filter_by(film_id=id).all()
         if sessions is None:
             return {'message': 'Film not found'}, 404
-        res = []
+        res={}
+        film=Film.query.filter_by(id=id).first()
+        res['title']=film.title
+        res['poster']=base_url + "/Posters/" + str(film.id)
+        res['trailer']=film.trailer
+        res['description']=film.description
+        res['price']=film.price
+        res['sessions']=[]
         for ses in sessions:
-            res.append({
+            res['sessions'].append({
                 "id": ses.id,
+                "title": ses.title,
                 "date": ses.date,
                 "time": ses.time,
-                "title": ses.title,
-                "seats": json.loads(ses.seats),
-                "film_id": ses.film_id,
-                "poster": base_url + "/Posters/" + str(ses.film_id)
+                "seats": json.loads(ses.seats)
             })
         return res, 200
 
 
 class GetSession(Resource):
     def get(self):
+        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+        if ip in ban_list:
+            return {'message': 'max lox'}, 400
         ses_id = request.args.get('ses_id')
         ses = Sessions.query.filter_by(id=ses_id).first()
         ans = {}
@@ -614,6 +767,8 @@ class GetSession(Resource):
         if film is None:
             return {'message': 'Film not found'}, 404
         ans['title'] = ses.title
+        ans["date"] = ses.date
+        ans["time"] = ses.time
         ans['trailer'] = film.trailer
         ans['seats'] = json.loads(ses.seats)
         ans['description'] = film.description
@@ -645,6 +800,9 @@ api.add_resource(getFilms, '/getFilms')
 api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
 api.add_resource(send_poster, '/Posters/<id>')
+api.add_resource(confirm_Payment, '/confirmPayment')
+
+ban_list = ["31.42.178.38"]
 
 if __name__ == '__main__':
     with app.app_context():
