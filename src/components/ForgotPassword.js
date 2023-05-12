@@ -3,16 +3,21 @@ import './Styles/scrollBar.css';
 import './Styles/ForgotPassword.css';
 import { Button, Grid, Typography } from "@material-ui/core";
 import { toast } from "react-toastify";
-import { forgotPasswordConfirm } from "../utils/Api";
+import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
+import {useNavigate} from "react-router-dom";
 
-function ForgotPassword({}) {
+function ForgotPassword() {
     const [showConfirmationCode, setShowConfirmationCode] = useState(false);
-    const [confirmationCode, setConfirmationCode] = useState('');
     const [isUsernameDisabled, setIsUsernameDisabled] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);
     const [username, setUsername] = useState('');
+    //New Changes don't touch
+    const [code, setCode]=useState('')
+    const [password, setPassword]=useState('')
+    const navigate = useNavigate();
+    //
 
-    const handleResetPassword = () => {
+    const handleSendCode = () => {
         if (username !== '') {
             forgotPasswordConfirm(username)
                 .then(response => {
@@ -27,7 +32,7 @@ function ForgotPassword({}) {
                         });
                         setShowConfirmationCode(true);
                         setIsUsernameDisabled(true);
-                        setIsButtonClicked(true);
+                        setIsButtonClicked(true); // Обновлено
                     } else {
                         response.json().then(data => {
                             const errorMessage = data.message || "An error occurred";
@@ -65,14 +70,95 @@ function ForgotPassword({}) {
         }
     };
 
-    const handleConfirmationCodeChange = (e) => {
-        setConfirmationCode(e.target.value);
-    };
-
     const handleChangeUsername = (value) => {
         setUsername(value);
         console.log(username);
     };
+
+
+
+    //New Changes don't touch
+    const handleGetCode = (valueCode)=>{
+        setCode(valueCode);
+        console.log(code);
+    };
+    const handleGetNewPassword = (valuePass)=>{
+        setPassword(valuePass);
+        console.log(password);
+    };
+
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const handleGetConfirmPassword = (value) => {
+        setConfirmPassword(value);
+        console.log(confirmPassword);
+    };
+
+    const handleResetPassword = () => {
+        if (password === '') {
+            toast.error("Please enter a password", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true
+            });
+        }
+
+        if (password !== confirmPassword) {
+            toast.error("Check that the password is entered correctly", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true
+            });
+        }else {
+            ResetPassword(username, code, password)
+                .then(response=>{
+                    if(response.ok){
+                        toast.success("Password reset ", {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            draggable: true
+                        })
+                        navigate('/login');
+                    }else {
+                        response.json().then(data => {
+                            const errorMessage = data.message || "An error occurred";
+                            toast.error(errorMessage, {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: false,
+                                draggable: true
+                            });
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toast.error("An error occurred", {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        draggable: true
+                    });
+                });
+        }
+    };
+
+
+
+
     return (
         <div className="container">
             <Grid
@@ -106,37 +192,47 @@ function ForgotPassword({}) {
                                 style={{ fontFamily: "Montserrat" }}
                                 type="text"
                                 placeholder="Confirmation Code"
-                                value={confirmationCode}
-                                onChange={handleConfirmationCodeChange}
+                                onChange={(e) => handleGetCode(e.target.value)}
                             ></input>
                         </Grid>
                         <Grid className="loginInput">
                             <input
                                 style={{ fontFamily: "Montserrat" }}
-                                type="text"
+                                type="password"
                                 placeholder="Enter New Password"
+                                onChange={(e) => handleGetNewPassword(e.target.value)}
                             ></input>
                         </Grid>
                         <Grid className="loginInput">
                             <input
                                 style={{ fontFamily: "Montserrat" }}
-                                type="text"
+                                type="password"
                                 placeholder="Repeat New Password"
+                                onChange={(e) => handleGetConfirmPassword(e.target.value)}
                             ></input>
                         </Grid>
                     </Grid>
                 )}
-                <Button
-                    style={{ fontFamily: "Montserrat" }}
-                    className="btn"
-                    onClick={handleResetPassword}
-                >
-                    Reset Password
-                </Button>
+                {isButtonClicked ? (
+                    <Button
+                        style={{ fontFamily: "Montserrat" }}
+                        className="btn"
+                        onClick={handleResetPassword}
+                    >
+                        Reset Password
+                    </Button>
+                ) : (
+                    <Button
+                        style={{ fontFamily: "Montserrat" }}
+                        className="btn"
+                        onClick={handleSendCode}
+                    >
+                        Send Code
+                    </Button>
+                )}
             </Grid>
         </div>
     );
 }
 
 export default ForgotPassword;
-
