@@ -158,16 +158,6 @@ function App() {
         )
 
     }
-    function ResetPassword(){
-        toast.success("Please check your email for the code", {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true
-        })
-    }
 
     function handleLogout(){
         localStorage.removeItem('token');
@@ -191,7 +181,7 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
-            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} ResetPassword={ResetPassword} />} />
+            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} />} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} />} />
             <Route path="/payment" element={<Payment/>} />
         </Routes>

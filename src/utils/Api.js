@@ -13,10 +13,6 @@ export const userInfo = (username, token) => {
 export const register = (username, password) => {
     return fetch(`${baseurl}/register?username=${username}&password=${password}`, {method: 'POST'})
 }
-
-export const forgotPassword = (username) => {
-    return fetch(`${baseurl}/forgot-password?username=${username}`, {method: 'POST'})
-}
 export const schedule = () => {
     return fetch(`${baseurl}/schedule`)
 }
@@ -36,4 +32,8 @@ export const buyTicket = (ses, username, token, seats) => {
 
 export const getFilms = () => {
     return fetch(`${baseurl}/getFilms`)
+}
+
+export const forgotPasswordConfirm = (username) => {
+    return fetch(`${baseurl}/forgot-password?username=${username}`, {method: 'POST'})
 }
