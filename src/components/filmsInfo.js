@@ -51,7 +51,6 @@ function FilmsInfo(){
                         //make it in top
                         alignItems: "flex-start",
                         flexDirection: "row",
-
                     }}
                 >
                     <img
