@@ -191,7 +191,6 @@ function SesInfo({ses_id, handlePayData}){
                         <div className="Seats"
                         style={{
                             maxWidth: "99%",
-                            //centering
                             justifyContent: "center",
                             alignItems: "center",
                         }}>

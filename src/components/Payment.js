@@ -4,7 +4,10 @@ import {Button, Grid, Typography} from '@material-ui/core';
 import * as api from "../utils/Api"
 import './Styles/Payment.css'
 import './Styles/scrollBar.css';
+import {useNavigate} from "react-router-dom";
+
 function Payment ({data}){
+    const navigate = useNavigate();
     function confirmPayment() {
         api.confirmPayment(data["pay_id"])
             .then(res => {
@@ -12,6 +15,7 @@ function Payment ({data}){
                     res.json().then(data => {
                         console.log(data);
                         toast.success("You successfully bought tickets!");
+                        navigate("/profile");
                     });
                 }
                 else {
