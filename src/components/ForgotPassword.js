@@ -5,6 +5,7 @@ import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
 import './Styles/scrollBar.css';
 import './Styles/ForgotPassword.css';
 function ForgotPassword({handleToastErr, handleToastSuc}) {
+    document.title = "Forgot Password";
     const [showConfirmationCode, setShowConfirmationCode] = useState(false);
     const [isUsernameDisabled, setIsUsernameDisabled] = useState(false);
     const [isButtonClicked, setIsButtonClicked] = useState(false);

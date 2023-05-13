@@ -4,6 +4,7 @@ import {Grid, ImageList, ImageListItem, ImageListItemBar, Typography} from "@mui
 import * as api from '../utils/Api'
 import './Styles/Films.css';
 function Films() {
+    document.title = "Films";
     const [movies, setMovies] = useState([]);
     const navigate = useNavigate();
     useEffect(() => {

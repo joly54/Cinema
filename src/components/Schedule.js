@@ -8,7 +8,8 @@ import {useNavigate} from "react-router-dom";
 function CinemaSchedule() {
     const [schedule, setSchedule] = useState([])
     const navigate = useNavigate()
-    useEffect(() => {
+    document.title = "Schedule"
+        useEffect(() => {
         api.schedule()
             .then((res) => {
                 res.json().then(data => {

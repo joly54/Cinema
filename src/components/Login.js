@@ -7,6 +7,7 @@ function Login({
                    handleChangePassword,
                    handleLogin,
                }) {
+    document.title = "Login";
     const navigate = useNavigate();
     return (
         <div className="container"

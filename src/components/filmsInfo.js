@@ -18,6 +18,7 @@ function FilmsInfo(){
                         console.log(data);
                         setData(data);
                         setSessions(data["sessions"]);
+                        document.title = data["title"];
                     });
                 } else {
                     res.json().then(data => {

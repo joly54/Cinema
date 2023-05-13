@@ -10,6 +10,7 @@ function Register(
         handleRegister
     }
 ) {
+    document.title = "Register";
     return (
         <div className="container"
              style={{

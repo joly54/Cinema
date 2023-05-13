@@ -7,6 +7,7 @@ import './Styles/scrollBar.css';
 import {useNavigate} from "react-router-dom";
 
 function Payment ({data}){
+    document.title = "Payment";
     const navigate = useNavigate();
     function confirmPayment() {
         api.confirmPayment(data["pay_id"])

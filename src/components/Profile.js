@@ -15,6 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 function Profile() {
+    document.title = "Profile";
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = React.useState(false);
     const [url, setUrl] = React.useState("");

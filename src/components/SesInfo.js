@@ -59,7 +59,7 @@ function SesInfo({handlePayData}){
                         console.log(data);
                         setSessionInfo(data);
                         setAviSeats(data["seats"])
-                        console.log(aviSeats[0])
+                        document.title = data["title"] + " - " + data["date"] + " " + data["time"]+ data["price"] + "UAH";
                     });
                 } else {
                     res.json().then(data => {
