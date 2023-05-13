@@ -5,13 +5,15 @@ import { Button, Card, CardContent, CircularProgress, Dialog, DialogActions,
     DialogContent, DialogContentText, DialogTitle, Grid, Slide, Typography} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
 import * as api from '../utils/Api';
-import {baseurl} from "../utils/Api";
+import { baseurl } from "../utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import './Styles/Profile.css';
 import './Styles/scrollBar.css';
+
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
+
 function Profile() {
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = React.useState(false);
@@ -19,11 +21,12 @@ function Profile() {
     const handleClose = () => {
         setOpen(false);
     };
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const [email] = useState(localStorage.getItem('username') === null ? "null" : localStorage.getItem('username'));
     const [status, setStatus] = useState("");
     const [tickets, setTickets] = useState([]);
     const token = localStorage.getItem('token');
+
     useEffect(() => {
         api.userInfo(email, token)
             .then((response) => {
@@ -37,12 +40,13 @@ function Profile() {
                                 return new Date(a.date) - new Date(b.date);
                             });
                             setTickets(data["tikets"]);
-                        })
+                        });
                 } else {
-                    navigate('/login', {replace: true})
+                    navigate('/login', { replace: true });
                 }
-            })
-    }, [])
+            });
+    }, []);
+
     function confirmEmail() {
         fetch(baseurl + `/resendEmailValidationCode?username=${email}`)
             .then((response) => {
@@ -56,9 +60,10 @@ function Profile() {
                 toast.error("Error sending email." + error);
             });
     }
+
     return (
         <div style={{
-            height : "100vh",
+            height: "100vh",
         }}>
             <div className="profile-header">
                 <h2>{email}</h2>
@@ -70,23 +75,23 @@ function Profile() {
                 ) : null}
             </div>
             <div className="profile-container"
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                maxWidth: "100%",
-                height: "100%",
-            }}
+                 style={{
+                     display: "flex",
+                     flexDirection: "column",
+                     justifyContent: "space-between",
+                 }}
             >
-                <BackToTopButton/>
-                <ToastContainer/>
+                <BackToTopButton />
+                <ToastContainer />
                 <div className="profile-content">
                     <Grid
                         container
                         spacing={1}
                         style={{
                             maxWidth: "100%",
+                            maxHeight: "100%",
                             margin: "auto",
+                            flexWrap: "wrap",
                         }}
                     >
                         <Dialog
@@ -104,43 +109,42 @@ function Profile() {
                                     </Typography>
                                 </DialogContentText>
                                 <img
-                                    id = "qr-code"
+                                    id="qr-code"
                                     src={url}
-                                    onLoad={
-                                    () => {
+                                    onLoad={() => {
                                         console.log("qr code loaded");
                                         setTimeout(() => {
-                                            setLoading(false)
-                                        }, 500)
-                                    }
-                                } alt="qr code"
-                                     style={{
-                                         maxWidth: "100%",
-                                         maxHeight: "100%",
-                                         objectFit: "contain",
-                                         margin: "auto",
-                                         display: "block",
-                                         marginTop: "10px",
-                                     }}
-                                />
-                                {loading ?
-                                    <div
-                                    style={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        height: "100%",
-                                        width: "100%",
-                                        position: "absolute",
-                                        top: "0",
-                                        left: "0",
-                                        backgroundColor: "white",
-                                        zIndex: "100",
+                                            setLoading(false);
+                                        }, 500);
                                     }}
+                                    alt="qr code"
+                                    style={{
+                                        maxWidth: "100%",
+                                        maxHeight: "100%",
+                                        objectFit: "contain",
+                                        margin: "auto",
+                                        display: "block",
+                                        marginTop: "10px",
+                                    }}
+                                />
+                                {loading ? (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            height: "100%",
+                                            width: "100%",
+                                            position: "absolute",
+                                            top: "0",
+                                            left: "0",
+                                            backgroundColor: "white",
+                                            zIndex: "100",
+                                        }}
                                     >
                                         <CircularProgress color="secondary" />
                                     </div>
-                                    : null} {/*todo need fix*/}
+                                ) : null}
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleClose}>Okay</Button>
@@ -150,28 +154,31 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={2}
-                                md={4}
-                                sm={5}
-                                xs={6}
+                                lg={4}
+                                md={6}
+                                sm={8}
+                                xs={10}
+                                container
+                                justify="center"
                                 style={{
                                     margin: "auto",
+                                    justifyContent: "center",
                                 }}
                             >
-                                <Card className="ticket-card"
-                                      style={{
-                                          borderRadius: "12px",
-                                          display: "flex",
-                                          flexDirection: "column",
-                                          justifyContent: "space-between",
-                                      }}
+                                <Card
+                                    className="ticket-card"
+                                    style={{
+                                        borderRadius: "1.5rem",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "space-between",
+                                    }}
                                 >
                                     <CardContent
                                         style={{
                                             display: "flex",
                                             flexDirection: "column",
-                                            justifyContent: "space-between",
-                                            //alignItems: "left",
+                                            height: "100%",
                                         }}
                                     >
                                         <h4>{ticket.title}</h4>
@@ -181,20 +188,22 @@ function Profile() {
                                         <Button
                                             variant="contained"
                                             color="primary"
-                                            onClick={
-                                                () => {
-                                                    console.log("Loading qr code");
-                                                    setOpen(true);
-                                                    setUrl(ticket.urltoqr);
-                                                    setLoading(true)
-                                                }
-                                            }
+                                            onClick={() => {
+                                                console.log("Loading qr code");
+                                                setOpen(true);
+                                                setUrl(ticket.urltoqr);
+                                                setLoading(true);
+                                            }}
                                             style={{
+                                                borderRadius: "0.5rem",
                                                 textDecoration: "none",
                                                 color: "white",
                                                 fontWeight: "semi-bold",
+
                                             }}
-                                        >Get qr code</Button>
+                                        >
+                                            Get qr code
+                                        </Button>
                                     </CardContent>
                                 </Card>
                             </Grid>

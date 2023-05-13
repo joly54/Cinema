@@ -12,7 +12,6 @@ function Payment ({data}){
                     res.json().then(data => {
                         console.log(data);
                         toast.success("You successfully bought tickets!");
-                        navigator.push("/");
                     });
                 }
                 else {
