@@ -1,0 +1,24 @@
+nav {
+    background-color: #333;
+    box-shadow: 0 0 25px 5px rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    height: 100%;
+    width: 100%;
+}
+
+li a:hover {
+    background-color: #774699;
+}
+
+.RightMenu {
+    float: right;
+}
+

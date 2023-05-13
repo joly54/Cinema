@@ -1,0 +1,43 @@
+
+card img {
+    object-fit: cover;
+    height: 200px;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+h2 {
+    textAlign: center;
+    fontSize: 2rem;
+    fontWeight: bold;
+    margin: 2rem 0;
+    color: white;
+}
+.btn,
+.soldOut {
+    background-color: #56376B !important;
+    color: #fff !important;
+    padding: 0.5rem 1rem !important;
+    border: none !important;
+    border-radius: 0.3rem !important;
+    font-size: 1.2rem !important;
+    cursor: pointer !important;
+    height: 45px;
+}
+
+.btn:hover,
+.soldOut:hover {
+    background-color: #774699 !important;
+    transform: scale(1.0) !important;
+}
+
+.BuyTicket {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2rem;
+    color: white;
+    font-weight: unset;
+}

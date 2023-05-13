@@ -1,0 +1,63 @@
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #5C0099;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.profile-header h2 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.profile-header p {
+    font-size: 18px;
+}
+
+.profile-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-content h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.ticket-card {
+    border: 2px solid #ccc;
+    border-radius: 2rem;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out!important;
+}
+.ticket-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+}
+
+.ticket-card h4 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.ticket-card p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.none {
+    visibility: hidden;
+}
