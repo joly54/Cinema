@@ -10,8 +10,8 @@ import {toast, ToastContainer} from "react-toastify";
 import {Skeleton} from "@mui/material";
 
 
-function SesInfo(ses_id){
-    const session = ses_id["ses_id"];
+function SesInfo({ses_id, handlePayData}){
+    const session = ses_id;
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
@@ -96,7 +96,18 @@ function SesInfo(ses_id){
                     res.json().then(data => {
                         console.log(data);
                         toast.success("Payment created successfully!");
-                        navigate("/");
+                        handlePayData(
+                            {
+                                pay_id: data["id"],
+                                pay_amount: data["amount"],
+                                pay_title: data["title"],
+                                pay_date: data["date"],
+                                pay_time: data["time"],
+                                pay_seats: data["seats"],
+
+                            }
+                        )
+                        navigate("/payment");
                     });
                 } else {
                     res.json().then(data => {
@@ -106,6 +117,8 @@ function SesInfo(ses_id){
                 }
             })
     }
+
+
     return (
         <div
         style={{

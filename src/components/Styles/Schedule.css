@@ -3,6 +3,12 @@ card img {
     object-fit: cover;
     height: 200px;
 }
+
+.card:hover {
+    /*box-shadow: 0 0 20px white!important;*/
+    transform: scale(1.05);
+}
+
 h2 {
     textAlign: center;
     fontSize: 2rem;

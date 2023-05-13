@@ -59,6 +59,7 @@ function CinemaSchedule({
                             <Card
                                 className="card"
                                 style={{
+                                    transition: "all 0.3s ease-in-out",
                                     borderRadius: "12px",
                                     boxShadow: "1px 5px 15px 10px rgba(0,0,0,0.5)",
                                     display: "flex",

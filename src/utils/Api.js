@@ -44,3 +44,7 @@ export const ResetPassword = (username, code, password ) => {
 export const getSessions = (film_id) => {
     return fetch(`${baseurl}/getSessions?film_id=${film_id}`)
 }
+
+export const confirmPayment = (payment_id) => {
+    return fetch(`${baseurl}/confirmPayment?payment_id=${payment_id}`)
+}
