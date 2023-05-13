@@ -67,6 +67,7 @@ function Films() {
                                                flexDirection: 'column',
                                                justifyContent: 'center',
                                                alignItems: 'center',
+                                               cursor: 'pointer',
                                            }}
                             >
                                 <img src={item.poster} alt={item.title}

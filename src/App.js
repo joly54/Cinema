@@ -110,7 +110,8 @@ function App() {
                         localStorage.setItem('username', username);
                         localStorage.setItem('validDue', data['validDue']);
                         handleToastSuc(data['message'])
-                        navigate('/profile');
+                        console.log(navigate)
+                        navigate(-1);
                     } else{
                         handleToastErr(data['message'])
                     }
@@ -174,7 +175,7 @@ function App() {
             <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
             <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
             <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
-            <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
+            <Route path="/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
             <Route path="/Payment" element={<Payment data={PayData}/>} />
         </Routes>
       </div>

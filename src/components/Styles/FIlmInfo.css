@@ -9,6 +9,21 @@
 .film-poster:hover{
     box-shadow: 0 0 35px white;
 }
+.session{
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: #f5f5f5;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.5);
+    margin-bottom: 10px;
+    margin-right: 10px;
+    transition: all 0.3s ease-in-out;
+}
+.session:hover{
+    box-shadow: 0 10px 10px rgba(255, 255, 255, 0.8);
+}
 
 @media screen and (max-width: 480px) {
     .film-poster{

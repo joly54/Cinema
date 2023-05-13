@@ -4,8 +4,10 @@ import BackToTopButton from "./BackToTopButton";
 import * as api from '../utils/Api'
 import './Styles/Schedule.css'
 import './Styles/scrollBar.css';
-function CinemaSchedule({handleFilm}) {
+import {useNavigate} from "react-router-dom";
+function CinemaSchedule() {
     const [schedule, setSchedule] = useState([])
+    const navigate = useNavigate()
     useEffect(() => {
         api.schedule()
             .then((res) => {
@@ -110,7 +112,9 @@ function CinemaSchedule({handleFilm}) {
                                     variant="contained"
                                     disableElevation
                                     color="primary"
-                                    onClick={() => handleFilm(scheduleItem.session_id)}
+                                    onClick={() =>
+                                        navigate(`/sessionInfo/${scheduleItem.session_id}`)
+                                        }
                                     disabled={scheduleItem.seats.length === 0}
                                     style={{
                                         width: "100%",

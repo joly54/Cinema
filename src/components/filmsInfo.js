@@ -4,10 +4,12 @@ import {Grid, Typography} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/FIlmInfo.css"
-function FilmsInfo({handleSession}){
+import {useNavigate} from "react-router-dom";
+function FilmsInfo(){
     const film_id = window.location.pathname.split("/")[2];
     const [data, setData] = React.useState(null);
     const [sessions, setSessions] = React.useState(null);
+    const navigate = useNavigate();
     useEffect(() => {
         api.getSessions(film_id)
             .then(res => {
@@ -115,18 +117,14 @@ function FilmsInfo({handleSession}){
                     >
                         {sessions.map((session, index) => (
                             <Grid
-                                onClick={() => handleSession(session["id"])}
+                                onClick={() =>
+                            navigate(`/sessionInfo/${session["id"]}`)
+                            }
                                 key={index}
                                 item
                                 spacing={2}
+                                className={"session"}
                                 style={{
-                                    cursor: "pointer",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    padding: "10px",
-                                    borderRadius: "10px",
-                                    backgroundColor: "#f5f5f5",
-                                    boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.1)",
                                     marginBottom: "10px",
                                     marginRight: "10px",
                                 }}

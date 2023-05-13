@@ -8,8 +8,10 @@ import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
-function SesInfo({ses_id, handlePayData}){
-    const session = ses_id;
+function SesInfo({handlePayData}){
+    //get current url
+    const url = window.location.href;
+    const session = url.split("/")[4];
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
