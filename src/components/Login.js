@@ -2,14 +2,12 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button, Grid, Typography } from "@material-ui/core";
 import './Styles/login.css';
-
 function Login({
                    handleChangeUsername,
                    handleChangePassword,
                    handleLogin,
                }) {
     const navigate = useNavigate();
-
     return (
         <div className="container"
              style={{
@@ -27,7 +25,6 @@ function Login({
                     md={5}
                     sm={9}
                     xs={12}
-
                     container
                     direction="row"
                     justify="center"
@@ -71,5 +68,4 @@ function Login({
         </div>
     );
 }
-
 export default Login;

@@ -1,15 +1,13 @@
 import React from "react";
-import {useNavigate} from "react-router-dom";
 import { useState, useEffect } from "react";
+import {useNavigate} from "react-router-dom";
+import {toast, ToastContainer} from "react-toastify";
+import {Button, Grid, Typography} from "@material-ui/core";
+import {Skeleton} from "@mui/material";
+import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
-import {Button, Card, Grid, Typography} from "@material-ui/core";
 import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
-import BackToTopButton from "./BackToTopButton";
-import {toast, ToastContainer} from "react-toastify";
-import {Skeleton} from "@mui/material";
-
-
 function SesInfo({ses_id, handlePayData}){
     const session = ses_id;
     const navigate = useNavigate();
@@ -74,7 +72,6 @@ function SesInfo({ses_id, handlePayData}){
             });
     }, []);
     Array.from({ length: 49 }, (_, i) => i + 1);
-
     function setSelect(id){
         if(document.getElementById(id).classList.contains("occupied"))
             return;
@@ -104,7 +101,6 @@ function SesInfo({ses_id, handlePayData}){
                                 pay_date: data["date"],
                                 pay_time: data["time"],
                                 pay_seats: data["seats"],
-
                             }
                         )
                         navigate("/payment");
@@ -117,8 +113,6 @@ function SesInfo({ses_id, handlePayData}){
                 }
             })
     }
-
-
     return (
         <div
         style={{
@@ -137,8 +131,6 @@ function SesInfo({ses_id, handlePayData}){
                               maxWidth: "100%",
                               justifyContent: "center",
                               alignItems: "center",
-
-
                           }}
                     >
                         <Grid item xs={12} md={6}
@@ -174,7 +166,6 @@ function SesInfo({ses_id, handlePayData}){
                                 height="315"
                                 onLoad={() => {
                                     setIsLoading(false)
-
                                 }
                                 }
                                 src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
@@ -193,8 +184,6 @@ function SesInfo({ses_id, handlePayData}){
                                         left: 0,
                                     }}></Skeleton>
                             ): null}
-
-
                         </Grid>
                     </Grid>
                 <Grid>
@@ -301,5 +290,4 @@ function SesInfo({ses_id, handlePayData}){
     );
 
 }
-
 export default SesInfo;

@@ -9,12 +9,10 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js.map';
-
 function navigator() {
     window.location.href = "/";
 }
 function Header({ loggedIn, handleLogout }) {
-
     return (
         <Navbar variant="dark" bg="dark" expand="lg">
             <Container fluid>
@@ -67,5 +65,4 @@ function Header({ loggedIn, handleLogout }) {
         </Navbar>
     );
 }
-
 export default Header;

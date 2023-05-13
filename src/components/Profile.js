@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import './Styles/Profile.css';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import * as api from '../utils/Api';
-import './Styles/scrollBar.css';
+import { Button, Card, CardContent, CircularProgress, Dialog, DialogActions,
+    DialogContent, DialogContentText, DialogTitle, Grid, Slide, Typography} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
-import {
-    Button,
-    Card,
-    CardContent, CircularProgress,
-    Dialog, DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Grid, Slide, Typography
-} from "@material-ui/core";
+import * as api from '../utils/Api';
 import {baseurl} from "../utils/Api";
-
+import 'react-toastify/dist/ReactToastify.css';
+import './Styles/Profile.css';
+import './Styles/scrollBar.css';
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -25,8 +16,6 @@ function Profile() {
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = React.useState(false);
     const [url, setUrl] = React.useState("");
-
-
     const handleClose = () => {
         setOpen(false);
     };
@@ -35,7 +24,6 @@ function Profile() {
     const [status, setStatus] = useState("");
     const [tickets, setTickets] = useState([]);
     const token = localStorage.getItem('token');
-
     useEffect(() => {
         api.userInfo(email, token)
             .then((response) => {
@@ -54,9 +42,7 @@ function Profile() {
                     navigate('/login', {replace: true})
                 }
             })
-
     }, [])
-
     function confirmEmail() {
         fetch(baseurl + `/resendEmailValidationCode?username=${email}`)
             .then((response) => {
@@ -70,7 +56,6 @@ function Profile() {
                 toast.error("Error sending email." + error);
             });
     }
-
     return (
         <div style={{
             height : "100vh",
@@ -96,7 +81,6 @@ function Profile() {
                 <BackToTopButton/>
                 <ToastContainer/>
                 <div className="profile-content">
-
                     <Grid
                         container
                         spacing={1}
@@ -129,7 +113,6 @@ function Profile() {
                                             setLoading(false)
                                         }, 500)
                                     }
-
                                 } alt="qr code"
                                      style={{
                                          maxWidth: "100%",
@@ -195,7 +178,6 @@ function Profile() {
                                         <p>Time: {ticket.time}</p>
                                         <p>Date: {ticket.date}</p>
                                         <p>Seats: {ticket.number}</p>
-
                                         <Button
                                             variant="contained"
                                             color="primary"
@@ -223,5 +205,4 @@ function Profile() {
         </div>
     );
 }
-
 export default Profile;

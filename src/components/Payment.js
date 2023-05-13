@@ -1,10 +1,9 @@
 import React from 'react';
-import './Styles/Payment.css'
+import {toast} from "react-toastify";
 import {Button, Grid, Typography} from '@material-ui/core';
 import * as api from "../utils/Api"
+import './Styles/Payment.css'
 import './Styles/scrollBar.css';
-import {toast} from "react-toastify";
-
 function Payment ({data}){
     function confirmPayment() {
         api.confirmPayment(data["pay_id"])
@@ -13,6 +12,7 @@ function Payment ({data}){
                     res.json().then(data => {
                         console.log(data);
                         toast.success("You successfully bought tickets!");
+                        navigator.push("/");
                     });
                 }
                 else {
@@ -44,7 +44,6 @@ function Payment ({data}){
                     md={5}
                     sm={9}
                     xs={12}
-
                     container
                     direction="row"
                     justify="center"
@@ -57,7 +56,6 @@ function Payment ({data}){
                     <Grid item xs={12} className="numberInput">
                         <Grid
                             spacing={12}
-
                         className="paymentInfo"
                         style={{
                             fontFamily: "Montserrat",
@@ -73,7 +71,6 @@ function Payment ({data}){
                             <Typography className="payInfo" variant="h6">Seats: {data["pay_seats"]};</Typography>
                             <Typography className="payInfo" variant="h6">Price: {data["pay_amount"]}UAH</Typography>
                         </Grid>
-
                         <Typography variant="h6" style={{fontFamily: "Montserrat"}}>Card number:</Typography>
                         <input
                             style={{fontFamily: "Montserrat"}}
@@ -94,9 +91,7 @@ function Payment ({data}){
                             }}
                         ></input>
                     </Grid>
-
                     <Grid container className="gridContainer">
-
                         <Grid item xs={3} className="privateInput">
                             <Typography className="" variant="h6" style={{fontFamily: "Montserrat"}}>Date:</Typography>
                             <input
@@ -117,7 +112,6 @@ function Payment ({data}){
                                     input.value = maskedValue;
                                 }}
                             ></input>
-
                         </Grid>
                         <Grid item xs={2} className="privateInput">
                             <Typography className="" variant="h6" style={{fontFamily: "Montserrat"}}>CVV:</Typography>
@@ -132,10 +126,8 @@ function Payment ({data}){
                                     input.value = inputValue;
                                 }}
                             ></input>
-
                         </Grid>
                     </Grid>
-
                     <Grid item xs={12} className="payButton">
                         <Button onClick = {confirmPayment}
                             style={{fontFamily: "Montserrat"}}
@@ -147,5 +139,4 @@ function Payment ({data}){
         </div>
     );
 }
-
 export default Payment

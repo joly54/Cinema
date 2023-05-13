@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import './Styles/scrollBar.css';
-import './Styles/ForgotPassword.css';
+import {useNavigate} from "react-router-dom";
 import { Button, Grid, Typography } from "@material-ui/core";
 import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
-import {useNavigate} from "react-router-dom";
-
+import './Styles/scrollBar.css';
+import './Styles/ForgotPassword.css';
 function ForgotPassword({handleToastErr, handleToastSuc}) {
     const [showConfirmationCode, setShowConfirmationCode] = useState(false);
     const [isUsernameDisabled, setIsUsernameDisabled] = useState(false);
@@ -13,7 +12,6 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
     const [code, setCode]=useState('')
     const [password, setPassword]=useState('')
     const navigate = useNavigate();
-
     const handleSendCode = () => {
         if (username !== '') {
             forgotPasswordConfirm(username)
@@ -22,7 +20,7 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
                         handleToastSuc("Please check your email for the code");
                         setShowConfirmationCode(true);
                         setIsUsernameDisabled(true);
-                        setIsButtonClicked(true); // Обновлено
+                        setIsButtonClicked(true);
                     } else {
                         response.json().then(data => {
                             const errorMessage = data.message || "An error occurred";
@@ -38,15 +36,10 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
             handleToastErr("Please enter a username");
         }
     };
-
     const handleChangeUsername = (value) => {
         setUsername(value);
         console.log(username);
     };
-
-
-
-    //New Changes don't touch
     const handleGetCode = (valueCode)=>{
         setCode(valueCode);
         console.log(code);
@@ -55,20 +48,15 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
         setPassword(valuePass);
         console.log(password);
     };
-
     const [confirmPassword, setConfirmPassword] = useState('');
-
     const handleGetConfirmPassword = (value) => {
         setConfirmPassword(value);
         console.log(confirmPassword);
     };
-
     const handleResetPassword = () => {
         if (password === '') {
             handleToastErr("Please enter a password");
-        }
-
-        if (password !== confirmPassword) {
+        }if (password !== confirmPassword) {
             handleToastErr("Check that the password is entered correctly")
         }else {
             ResetPassword(username, code, password)
@@ -164,5 +152,4 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
         </div>
     );
 }
-
 export default ForgotPassword;

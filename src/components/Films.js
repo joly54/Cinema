@@ -1,13 +1,11 @@
 import {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
+import {Grid, ImageList, ImageListItem, ImageListItemBar, Typography} from "@mui/material";
 import * as api from '../utils/Api'
 import './Styles/Films.css';
-import {Grid, ImageList, ImageListItem, ImageListItemBar, Typography} from "@mui/material";
-import {useNavigate} from "react-router-dom";
-
 function Films() {
     const [movies, setMovies] = useState([]);
     const navigate = useNavigate();
-
     useEffect(() => {
         api.getFilms()
             .then((response) => response.json())
@@ -89,5 +87,4 @@ function Films() {
         </div>
     );
 }
-
 export default Films;

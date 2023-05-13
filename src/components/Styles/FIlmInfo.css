@@ -10,7 +10,6 @@
     box-shadow: 0 0 35px white;
 }
 
-
 @media screen and (max-width: 480px) {
     .film-poster{
         width: 100%;

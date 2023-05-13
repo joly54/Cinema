@@ -1,18 +1,13 @@
 import React, {useEffect} from "react";
-import {Grid, Typography} from "@material-ui/core";
-import * as api from "../utils/Api";
 import {toast, ToastContainer} from "react-toastify";
+import {Grid, Typography} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
+import * as api from "../utils/Api";
 import "./Styles/FIlmInfo.css"
-
-function FilmsInfo({
-                       handleSession
-                   }){
-    //get current url
+function FilmsInfo({handleSession}){
     const film_id = window.location.pathname.split("/")[2];
     const [data, setData] = React.useState(null);
     const [sessions, setSessions] = React.useState(null);
-    //const navigate = useNavigate();
     useEffect(() => {
         api.getSessions(film_id)
             .then(res => {
@@ -26,7 +21,6 @@ function FilmsInfo({
                     res.json().then(data => {
                         console.error(data);
                         toast.error(data["message"]);
-                        //navigate("/")
                     });
                 }
             });
@@ -36,7 +30,6 @@ function FilmsInfo({
             style={{
                 height: "100%",
                 width: "100%",
-                //centering
                 justifyContent: "center",
                 alignItems: "center",
             }}
@@ -49,8 +42,6 @@ function FilmsInfo({
                           maxWidth: "100%",
                           justifyContent: "center",
                           alignItems: "center",
-
-
                       }}
                 >
                     <Grid item xs={12} md={6}
@@ -84,14 +75,10 @@ function FilmsInfo({
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
-
                           }}
                     >
                         <iframe
-                            style={{
-                                borderRadius: "10px",
-                            }
-                            }
+                            style={{borderRadius: "10px"}}
                             title="Movie trailer"
                             width="500"
                             height="315"
@@ -160,7 +147,6 @@ function FilmsInfo({
                                 >
                                     {session["time"]}
                                 </Typography>
-
                                 <Typography
                                     style={{ fontFamily: "Montserrat" }}
                                     variant="h6"

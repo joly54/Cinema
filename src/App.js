@@ -1,22 +1,21 @@
+import React, {useEffect, useState} from "react";
 import {Routes, Route, useNavigate} from 'react-router-dom';
+import {toast, ToastContainer} from "react-toastify";
+import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import Header from './components/Navbar';
 import Profile from './components/Profile';
 import Films from './components/Films';
 import Schedule from './components/Schedule';
 import Login from "./components/Login";
-import {toast, ToastContainer} from "react-toastify";
-import React, {useEffect, useState} from "react";
-import * as api from "./utils/Api";
-import 'react-toastify/dist/ReactToastify.css';
 import Register from "./components/Register";
 import ForgotPassword from "./components/ForgotPassword";
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
 import SesInfo from "./components/SesInfo";
-import "../src/components/Styles/App.css";
-import Cookies from 'js-cookie';
 import FilmsInfo from "./components/filmsInfo";
 import Payment from "./components/Payment"
-
+import Cookies from 'js-cookie';
+import * as api from "./utils/Api";
+import 'react-toastify/dist/ReactToastify.css';
+import "../src/components/Styles/App.css";
 function App() {
     useEffect(() => {
         Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
@@ -36,6 +35,29 @@ function App() {
     const [sessionId, setsession] = useState(null);
     const [PayData, setPayData] = useState({});
     let validDue = localStorage.getItem('validDue');
+
+    function handleToastErr(text){
+        toast.error(text, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true
+        });
+    }
+
+    function handleToastSuc(text){
+        toast.success(text, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true
+        });
+    }
+
     useEffect(() =>{
         if (validDue) {
             let now = new Date()/1000
@@ -57,14 +79,7 @@ function App() {
                                 localStorage.removeItem('username');
                                 localStorage.removeItem('validDue');
                                 setIsLogin(false);
-                                toast("Your session expired, please login again", {
-                                    position: "top-center",
-                                    autoClose: 5000,
-                                    hideProgressBar: false,
-                                    closeOnClick: true,
-                                    pauseOnHover: false,
-                                    draggable: true
-                                })
+                                handleToastErr("Your session expired, please login again");
                                 navigate('/login');
                             }
                         }
@@ -94,24 +109,10 @@ function App() {
                         localStorage.setItem('token', data['token']);
                         localStorage.setItem('username', username);
                         localStorage.setItem('validDue', data['validDue']);
-                        toast.success(data['message'], {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: true
-                        })
+                        handleToastSuc(data['message'])
                         navigate('/profile');
                     } else{
-                        toast.error(data['message'], {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: false,
-                            draggable: true
-                        })
+                        handleToastErr(data['message'])
                     }
             }
                 )}
@@ -121,7 +122,6 @@ function App() {
             }
         )
     }
-
     function handleRegister(){
         api.register(
             username,
@@ -135,24 +135,10 @@ function App() {
                             localStorage.setItem('token', data['token']);
                             localStorage.setItem('username', username);
                             localStorage.setItem('validDue', data['validDue']);
-                            toast.success(data['message'], {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true
-                            })
+                            handleToastSuc(data['message'])
                             navigate('/profile');
                         }else {
-                            toast.error(data['message'], {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: false,
-                                draggable: true
-                            })
+                            handleToastErr(data['message'])
                         }
                     }
                 )
@@ -160,7 +146,6 @@ function App() {
         )
 
     }
-
     function handleLogout(){
         localStorage.removeItem('token');
         localStorage.removeItem('username');
@@ -172,34 +157,10 @@ function App() {
         setsession(ses_id);
         navigate('/sessionInfo');
     }
-
-    function handleToastErr(text){
-        toast.error(text, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true
-        });
-    }
-
-    function handleToastSuc(text){
-        toast.success(text, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true
-        });
-    }
-
     function handleChangePayData(value){
         setPayData(value)
         navigate("/Payment")
     }
-
   return (
       <ThemeProvider theme={theme}>
       <div className="BackGroundColor">
@@ -215,11 +176,9 @@ function App() {
             <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
             <Route path="/sessionInfo" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
             <Route path="/Payment" element={<Payment data={PayData}/>} />
-
         </Routes>
       </div>
       </ThemeProvider>
   );
 }
-
 export default App;

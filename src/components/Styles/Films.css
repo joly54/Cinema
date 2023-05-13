@@ -5,13 +5,16 @@
     justify-content: center;
     background-color: #5C0099;
 }
+
 .movie{
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease-in-out;
 }
+
 .movie:hover{
     transform: scale(1.01);
 }
+
 @media screen and (max-width: 480px) {
     /* set number of columns to 1 for extra small screens */
     .MuiImageList-root {

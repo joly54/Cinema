@@ -1,8 +1,8 @@
 import React from 'react';
+import {Button, Grid, Typography} from "@material-ui/core";
 import 'react-toastify/dist/ReactToastify.css';
 import './Styles/login.css'
 import './Styles/scrollBar.css';
-import {Button, Grid, Typography} from "@material-ui/core";
 function Register(
     {
         handleChangeUsername,
@@ -27,7 +27,6 @@ function Register(
                     md={5}
                     sm={9}
                     xs={12}
-
                     container
                     direction="row"
                     justify="center"
@@ -66,5 +65,4 @@ function Register(
         </div>
     );
 }
-
 export default Register;

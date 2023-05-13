@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import './Styles/Schedule.css'
 import {Grid, Card, CardActionArea, CardMedia, CardContent, Typography, Button} from '@material-ui/core';
-import * as api from '../utils/Api'
-import './Styles/scrollBar.css';
 import BackToTopButton from "./BackToTopButton";
-
-function CinemaSchedule({
-                            handleFilm
-                        }) {
+import * as api from '../utils/Api'
+import './Styles/Schedule.css'
+import './Styles/scrollBar.css';
+function CinemaSchedule({handleFilm}) {
     const [schedule, setSchedule] = useState([])
     useEffect(() => {
         api.schedule()
@@ -39,18 +36,15 @@ function CinemaSchedule({
                  }}
             >
                 <BackToTopButton />
-                <h2
-                >
+                <h2>
                     {day.date}
                 </h2>
-
                 <Grid
                     container
                     spacing={4}
                     style={{
                         display: "flex",
                         justifyContent: "left",
-                        //padding: "0.1rem",
                         maxWidth: "100%",
                     }}
                 >
@@ -121,7 +115,6 @@ function CinemaSchedule({
                                     style={{
                                         width: "100%",
                                         borderRadius: "0 0 12px 12px",
-                                       // objectPosition: "bottom",
                                     }}
                                 >
                                     <Typography
@@ -139,8 +132,5 @@ function CinemaSchedule({
             </div>
         ))
     );
-
-
 }
-
 export default CinemaSchedule;

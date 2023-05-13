@@ -13,8 +13,6 @@
     align-items: flex-start;
 }
 
-
-
 .card-form {
     height: 100%;
     width: 100%;
@@ -38,22 +36,15 @@
     border-radius: 10px;
 }
 
-
-
 .privateInput {
     font-size: 1.2rem;
     width: 8rem;
     margin-bottom: 1rem !important;
     margin-right: 10% !important;
 }
+
 .payInfo{
     margin-left: 5px!important;
     font-weight: bold!important;
     font-family: "Montserrat"!important;
 }
-
-
-
-
-
-
