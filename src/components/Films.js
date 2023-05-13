@@ -58,10 +58,7 @@ function Films() {
                                     navigate(`/films/${item.id}`)
                                 }
                             }
-                            style={{
-                        cursor: 'pointer',
-                        }
-                            }
+                            className={"movie"}
                             lg={12}
                         >
                             <ImageListItem key={item.poster}

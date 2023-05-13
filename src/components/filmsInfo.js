@@ -80,17 +80,17 @@ function FilmsInfo({
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                          style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
 
-                    }}
+                          }}
                     >
                         <iframe
                             style={{
-                        borderRadius: "10px",
-                        }
+                                borderRadius: "10px",
+                            }
                             }
                             title="Movie trailer"
                             width="500"
@@ -101,68 +101,71 @@ function FilmsInfo({
                             allowFullScreen/>
                     </Grid>
                     <Grid
-                    style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
 
-                    }}
+                        }}
                     >
                         <img
-                            style={{
-                                width: "50%",
-                                height: "auto",
-                                padding: "10px",
-                                objectFit: "cover",
-                                borderRadius: "10px",
-                            }}
+                            className={"film-poster"}
                             src={data["poster"]}
                             alt="poster"></img>
                     </Grid>
-                    <Grid
-                        xs={12}
-                        container
+                    <Grid container
+                          style={
+                              {
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  padding: "10px",
+                                  borderRadius: "10px",
+                                  boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.1)",
+                                  marginBottom: "10px",
+                              }
+                          }
                     >
                         {sessions.map((session, index) => (
                             <Grid
                                 onClick={() => handleSession(session["id"])}
                                 key={index}
                                 item
-                                xs={12}
-                                md={6}
-                                lg={4}
                                 spacing={2}
                                 style={{
                                     cursor: "pointer",
-                                    maxWidth: "100%",
                                     justifyContent: "center",
                                     alignItems: "center",
                                     padding: "10px",
                                     borderRadius: "10px",
                                     backgroundColor: "#f5f5f5",
-                                    marginTop: "10px",
+                                    boxShadow: "0px 3px 10px rgba(0, 0, 0, 0.1)",
                                     marginBottom: "10px",
-                                    paddingLeft: "10px",
+                                    marginRight: "10px",
                                 }}
                             >
                                 <Typography
-                                    style={{ fontFamily: "Montserrat" }}
+                                    style={{
+                                        fontFamily: "Montserrat",
+                                        fontWeight: "bold",
+                                        marginBottom: "5px",
+                                    }}
                                     variant="h6"
                                 >
                                     {session["date"]}
+                                </Typography>
+                                <Typography
+                                    style={{ fontFamily: "Montserrat", marginBottom: "5px" }}
+                                    variant="h6"
+                                >
+                                    {session["time"]}
                                 </Typography>
 
                                 <Typography
                                     style={{ fontFamily: "Montserrat" }}
                                     variant="h6"
                                 >
-                                    {session["time"]}
-                                </Typography>
-                                <Typography
-                                    style={{ fontFamily: "Montserrat" }}
-                                    variant="h6"
-                                >
-                                    {session["seats"].length} seats left
+                                    {session["seats"].length} seats available
                                 </Typography>
                             </Grid>
                         ))}
