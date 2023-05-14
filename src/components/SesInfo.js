@@ -90,7 +90,6 @@ function SesInfo({handlePayData}){
         setSelected(items)
         document.getElementById("selected").innerHTML = selected;
 
-        console.log(selected);
     }
     function buy(){
         api.buyTicket(session, localStorage.getItem("username"), localStorage.getItem("token"), selected)

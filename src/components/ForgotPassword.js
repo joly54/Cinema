@@ -39,20 +39,16 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
     };
     const handleChangeUsername = (value) => {
         setUsername(value);
-        console.log(username);
     };
     const handleGetCode = (valueCode)=>{
         setCode(valueCode);
-        console.log(code);
     };
     const handleGetNewPassword = (valuePass)=>{
         setPassword(valuePass);
-        console.log(password);
     };
     const [confirmPassword, setConfirmPassword] = useState('');
     const handleGetConfirmPassword = (value) => {
         setConfirmPassword(value);
-        console.log(confirmPassword);
     };
     const handleResetPassword = () => {
         if (password === '') {
