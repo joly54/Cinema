@@ -9,7 +9,7 @@ function Footer() {
     return (
         <div className="footer">
             <Grid container spacing={0}>
-                <Grid item xs={12} sm={4} className="column">
+                <Grid item xs={12} sm={12} md={12} lg={4} className="column">
                     <div className="author"
                     style={{
                        //make it row
@@ -26,6 +26,9 @@ function Footer() {
                             className="authorImage"
                         />
                         <Grid
+                        xs={12}
+                        lg={12}
+
                             style={{
                                 display: "flex",
                                 flexDirection: "column",
