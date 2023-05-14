@@ -29,7 +29,10 @@ function SesInfo({handlePayData}){
                     pauseOnHover: false,
                     draggable: true}
             );
+            //remove from history
+            window.history.replaceState(null, null, "/");
             navigate("/login");
+            return;
             return;
         } else{
             api.checktoken(username, token)
@@ -41,7 +44,9 @@ function SesInfo({handlePayData}){
                     } else {
                         res.json().then(data => {
                             console.error(data);
+                            window.history.replaceState(null, null, "/");
                             navigate("/login");
+                            return;
                         });
                     }
                 })
@@ -160,31 +165,22 @@ function SesInfo({handlePayData}){
                                 {sessionInfo["description"]}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={6}>
+                        <Grid item xs={12} md={6}
+                              style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                              }}
+                        >
                             <iframe
+                                style={{borderRadius: "10px"}}
                                 title="Movie trailer"
-                                width="100%"
+                                width="500"
                                 height="315"
-                                onLoad={() => {
-                                    setIsLoading(false)
-                                }
-                                }
                                 src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
                                 title="YouTube video player"
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen
-                            />
-                            {isloading ? (
-                                <Skeleton
-                                    variant="rectangular"
-                                    width="100%"
-                                    height="100%"
-                                    style={{
-                                        position: "absolute",
-                                        top: 0,
-                                        left: 0,
-                                    }}></Skeleton>
-                            ): null}
+                                allowFullScreen/>
                         </Grid>
                     </Grid>
                 <Grid>

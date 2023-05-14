@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import './Styles/Navbar.css';
 import './Styles/scrollBar.css';
 import Container from 'react-bootstrap/Container';
@@ -9,14 +9,17 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js.map';
-function navigator() {
-    window.location.href = "/";
-}
 function Header({ loggedIn, handleLogout }) {
+    const navigate = useNavigate();
     return (
         <Navbar variant="dark" bg="dark" expand="lg">
             <Container fluid>
-                <Navbar.Brand onClick={navigator}>Cinema</Navbar.Brand>
+                <Navbar.Brand
+                    style={{
+                cursor: "pointer",
+                }
+                    }
+                    onClick={()=> navigate("/")}>Cinema</Navbar.Brand>
                 <Navbar.Toggle aria-controls="navbar-dark-example" />
                 <Navbar.Collapse id="navbar-dark-example">
                     <Nav>
