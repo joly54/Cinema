@@ -21,7 +21,6 @@ function Footer() {
                 >
                     <div className="author"
                     style={{
-                       //make it row
                         display: "flex",
                         flexDirection: "row",
                         alignItems: "center",
@@ -58,7 +57,7 @@ function Footer() {
                                     fontFamily: "Montserrat",
                                     fontWeight: "bold",
                                 }}
-                                variant="body2">Full stack developer</Typography>
+                                variant="body2">Backend & Frontend developer</Typography>
                             <Typography
                                 style={{
                                     fontFamily: "Montserrat",
