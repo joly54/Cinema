@@ -111,7 +111,7 @@ function App() {
                         localStorage.setItem('validDue', data['validDue']);
                         handleToastSuc(data['message'])
                         console.log(navigate)
-                        navigate(-1);
+                        navigate("/profile");
                     } else{
                         handleToastErr(data['message'])
                     }
