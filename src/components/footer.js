@@ -1,0 +1,142 @@
+import { Avatar, Grid, Typography } from "@material-ui/core";
+import React from "react";
+import "./Styles/footer.css"
+import GitHubIcon from '@mui/icons-material/GitHub';
+import TelegramIcon from '@mui/icons-material/Telegram';
+import EmailIcon from '@mui/icons-material/Email';
+import {Link} from "react-router-dom";
+function Footer() {
+    return (
+        <div className="footer">
+            <Grid container spacing={0}>
+                <Grid item xs={12} sm={4} className="column">
+                    <div className="author"
+                    style={{
+                       //make it row
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "1rem",
+                    }}
+                    >
+                        <Avatar
+                            src="https://avatars.githubusercontent.com/u/37771218?s=400&u=f0b7ff749b366656907f79568918d19d231da896&v=4"
+                            alt="Logo"
+                            className="authorImage"
+                        />
+                        <Grid
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-start",
+                                justifyContent: "center",
+                                paddingLeft: "1rem",
+                            }}
+                        >
+                            <Typography
+                                style={{
+                                    fontSize: "1.5rem",
+                                    fontFamily: "Montserrat",
+                                    fontWeight: "bold",
+                                }}
+                                variant="subtitle1">Perepeluk Danilo</Typography>
+                            <Typography
+                                style={{
+                                    fontFamily: "Montserrat",
+                                    fontWeight: "bold",
+                                }}
+                                variant="body2">Full stack developer</Typography>
+                            <Typography
+                                style={{
+                                    fontFamily: "Montserrat",
+                                    fontWeight: "bold",
+                                }}
+                                variant="body2">Backend - python & flask</Typography>
+                            <Typography
+                                style={{
+                                    fontFamily: "Montserrat",
+                                    fontWeight: "bold",
+                                }}
+                                variant="body2">Frontend - react & material-ui</Typography>
+                            <Grid
+                            xs={6}
+                            lg={6}
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "1rem",
+                                paddingTop: "1rem",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                alignItems: "center",
+
+                            }}
+                            >
+                               <Link
+                                   className={"link"}
+                                   to={"https://github.com/joly54"}
+                                   //open in new tab
+                                      target={"_blank"}
+                               style={{
+                                      color: "white",
+                                      textDecoration: "none",
+                               }}
+                               >
+                                      <GitHubIcon/>
+                               </Link>
+                                <Link
+                                    className={"link"}
+                                    to={"https://t.me/joly541"}
+                                    target={"_blank"}
+                                    style={{
+                                        color: "white",
+                                        textDecoration: "none",
+                                    }}>
+                                    <TelegramIcon/>
+                                </Link>
+                                <Link
+                                    className={"link"}
+                                    to={"mailto:perepelukdanilo@gmail.com"}
+                                    target={"_blank"}
+                                    style={{
+                                        color: "white",
+                                        textDecoration: "none",
+                                    }}>
+                                    <EmailIcon/>
+                                </Link>
+                            </Grid>
+                        </Grid>
+
+                    </div>
+                </Grid>
+
+                {/*---------------------Space for faggots-------------------*/}
+                <Grid item xs={12} sm={4} className="column">
+                    <div className="author">
+                        <img
+                            src="/author2.jpg"
+                            alt="Author 2"
+                            className="authorImage circular"
+                        />
+                        <Typography variant="subtitle1">Author 2</Typography>
+                        <Typography variant="body2">Author 2 bio goes here</Typography>
+                    </div>
+                </Grid>
+                <Grid item xs={12} sm={4} className="column">
+                    <div className="author">
+                        <img
+                            src="/author3.jpg"
+                            alt="Author 3"
+                            className="authorImage circular"
+                        />
+                        <Typography variant="subtitle1">Author 3</Typography>
+                        <Typography variant="body2">Author 3 bio goes here</Typography>
+                    </div>
+                </Grid>
+            </Grid>
+        </div>
+    );
+}
+
+export default Footer;

@@ -116,7 +116,12 @@ function FilmsInfo(){
                           }
                     >
                         {sessions.map((session, index) => (
-                            <Link to={`/sessionInfo/${session["id"]}`}>
+                            <Link to={`/sessionInfo/${session["id"]}`}
+                            style={{
+                                textDecoration: "none",
+                                color: "black",
+                            }}
+                            >
                             <Grid
                                 key={index}
                                 item
