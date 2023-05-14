@@ -4,7 +4,7 @@ import BackToTopButton from "./BackToTopButton";
 import * as api from '../utils/Api'
 import './Styles/Schedule.css'
 import './Styles/scrollBar.css';
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 function CinemaSchedule() {
     const [schedule, setSchedule] = useState([])
     const navigate = useNavigate()
@@ -66,6 +66,10 @@ function CinemaSchedule() {
                                 }}
                             >
                                 <CardActionArea
+                                    onClick={() =>{
+                                navigate(`/films/${scheduleItem["film_id"]}`)
+                                }
+                                    }
                                     style={{
                                         display: "flex",
                                         flexDirection: "column",
@@ -108,14 +112,12 @@ function CinemaSchedule() {
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
+                                <Link to={`/sessionInfo/${scheduleItem.session_id}`}>
                                 <Button
                                     className={scheduleItem.seats.length === 0 ? "btn soldOut" : "btn"}
                                     variant="contained"
                                     disableElevation
                                     color="primary"
-                                    onClick={() =>
-                                        navigate(`/sessionInfo/${scheduleItem.session_id}`)
-                                        }
                                     disabled={scheduleItem.seats.length === 0}
                                     style={{
                                         width: "100%",
@@ -130,6 +132,7 @@ function CinemaSchedule() {
                                         {scheduleItem.seats.length === 0 ? "Sold out" : `Buy ticket ${scheduleItem.price} UAH`}
                                     </Typography>
                                 </Button>
+                                </Link>
                             </Card>
                         </Grid>
                     ))}

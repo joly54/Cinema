@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Grid, ImageList, ImageListItem, ImageListItemBar, Typography} from "@mui/material";
 import * as api from '../utils/Api'
 import './Styles/Films.css';
@@ -50,13 +50,14 @@ function Films() {
                 <ImageList cols={4} rowHeight={500} id = "films"
                 >
                     {movies.map((item) => (
+                        <Link to={`/films/${item.id}`}
+                        style={{
+                            textDecoration: 'none',
+                            //color: 'white',
+                        }}
+                        >
                         <Grid
                             item
-                            onClick={
-                                () =>{
-                                    navigate(`/films/${item.id}`)
-                                }
-                            }
                             className={"movie"}
                             lg={12}
                         >
@@ -72,7 +73,9 @@ function Films() {
                                            }}
                             >
                                 <img src={item.poster} alt={item.title}
+                                     className={"movie-image"}
                                      style={{
+                                         height: "300px",
                                          objectFit: 'cover',
                                          borderRadius: '10px',
                                      }}/>
@@ -83,6 +86,7 @@ function Films() {
                             </ImageListItem>
 
                         </Grid>
+                        </Link>
                     ))}
                 </ImageList>
             </Grid>

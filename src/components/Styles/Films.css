@@ -8,11 +8,15 @@
 
 .movie{
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-    transition: transform 0.3s ease-in-out;
 }
 
-.movie:hover{
-    transform: scale(1.01);
+.movie-image{
+    transition: filter 0.1s ease-in-out;
+}
+
+.movie-image:hover{
+    /*make image darker*/
+    filter: brightness(80%);
 }
 
 @media screen and (max-width: 480px) {

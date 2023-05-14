@@ -4,7 +4,7 @@ import {Grid, Typography} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/FIlmInfo.css"
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 function FilmsInfo(){
     const film_id = window.location.pathname.split("/")[2];
     const [data, setData] = React.useState(null);
@@ -117,10 +117,8 @@ function FilmsInfo(){
                           }
                     >
                         {sessions.map((session, index) => (
+                            <Link to={`/sessionInfo/${session["id"]}`}>
                             <Grid
-                                onClick={() =>
-                            navigate(`/sessionInfo/${session["id"]}`)
-                            }
                                 key={index}
                                 item
                                 spacing={2}
@@ -128,6 +126,8 @@ function FilmsInfo(){
                                 style={{
                                     marginBottom: "10px",
                                     marginRight: "10px",
+                                    textDecoration: "none",
+
                                 }}
                             >
                                 <Typography
@@ -153,6 +153,7 @@ function FilmsInfo(){
                                     {session["seats"].length} seats available
                                 </Typography>
                             </Grid>
+                            </Link>
                         ))}
                     </Grid>
                 </Grid>
