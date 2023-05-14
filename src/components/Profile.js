@@ -1,13 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
+import {toast, ToastContainer} from 'react-toastify';
 import {
-    Button, Card, CardContent, CircularProgress, Dialog, DialogActions,
-    DialogContent, DialogContentText, DialogTitle, Grid, Icon, Slide, Typography
+    Button,
+    Card,
+    CardContent,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Grid,
+    Slide,
+    Typography
 } from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
 import * as api from '../utils/Api';
-import { baseurl } from "../utils/Api";
+import {baseurl} from '../utils/Api';
 import 'react-toastify/dist/ReactToastify.css';
 import './Styles/Profile.css';
 import './Styles/scrollBar.css';
