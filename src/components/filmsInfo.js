@@ -43,7 +43,7 @@ function FilmsInfo(){
                       style={{
                           maxWidth: "100%",
                           justifyContent: "center",
-                          alignItems: "center",
+                          alignItems: "center"
                       }}
                 >
                     <Grid item xs={12} md={6}
@@ -52,13 +52,13 @@ function FilmsInfo(){
                     >
                         <Typography
                             className="FilmInfo"
-                            style={{fontFamily: "Montserrat"}}
+                            style={{fontFamily: "Montserrat", textDecoration: 'none'}}
                             variant="h4"
                         >
                             {data["title"]}
                         </Typography>
                         <Typography
-                            style={{fontFamily: "Montserrat"}}
+                            style={{fontFamily: "Montserrat", textDecoration: 'none'}}
                             variant="h6"
                             className="FilmInfo">
                             {data["sessions"].length + " available sessions"}
@@ -68,6 +68,7 @@ function FilmsInfo(){
                             mt={2}
                             className="FilmInfo"
                             variant="h6"
+                            style={{textDecoration: 'none'}}
                         >
                             {data["description"]}
                         </Typography>
@@ -94,7 +95,6 @@ function FilmsInfo(){
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
-
                         }}
                     >
                         <img

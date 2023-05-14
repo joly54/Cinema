@@ -6,6 +6,10 @@
     cursor: pointer;
 }
 
+.FilmInfo {
+    text-decoration: none !important;
+}
+
 .film-poster:hover{
     box-shadow: 0 0 35px white;
 }
