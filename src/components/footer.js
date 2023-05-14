@@ -9,7 +9,16 @@ function Footer() {
     return (
         <div className="footer">
             <Grid container spacing={0}>
-                <Grid item xs={12} sm={12} md={12} lg={4} className="column">
+                <Grid item xs={12} sm={6} md={6} lg={4} className="column"
+                style={{
+                    //center
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+
+                }}
+                >
                     <div className="author"
                     style={{
                        //make it row
