@@ -67,7 +67,7 @@ function CinemaSchedule() {
                             >
                                 <CardActionArea
                                     onClick={() =>{
-                                navigate(`/Cinema/films/${scheduleItem["film_id"]}`)
+                                navigate(`/films/${scheduleItem["film_id"]}`)
                                 }
                                     }
                                     style={{
@@ -112,7 +112,7 @@ function CinemaSchedule() {
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
-                                <Link to={`/Cinema/sessionInfo/${scheduleItem.session_id}`}>
+                                <Link to={`/sessionInfo/${scheduleItem.session_id}`}>
                                 <Button
                                     className={scheduleItem.seats.length === 0 ? "btn soldOut" : "btn"}
                                     variant="contained"

@@ -6,7 +6,6 @@ import './Styles/Films.css';
 function Films() {
     document.title = "Films";
     const [movies, setMovies] = useState([]);
-    const navigate = useNavigate();
     useEffect(() => {
         api.getFilms()
             .then((response) => response.json())
@@ -18,7 +17,6 @@ function Films() {
                 console.error(error);
             });
     }, []);
-    const [loaded, setLoading] = useState(false);
     return (
         <div className="movies-container"
              style={{
@@ -50,7 +48,7 @@ function Films() {
                 <ImageList cols={4} rowHeight={500} id = "films"
                 >
                     {movies.map((item) => (
-                        <Link to={`/Cinema/films/${item.id}`}
+                        <Link to={`/films/${item.id}`}
                         style={{
                             textDecoration: 'none',
                             //color: 'white',

@@ -10,7 +10,7 @@ import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
 function SesInfo({handlePayData}){
     //get current url
-    const session =  window.location.pathname.split("/")[3];
+    const session =  window.location.href.split("/")[window.location.href.split("/").length-1];
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
@@ -29,7 +29,7 @@ function SesInfo({handlePayData}){
                     pauseOnHover: false,
                     draggable: true}
             );
-            navigate("Cinema/login");
+            navigate("/login");
             return;
         } else{
             api.checktoken(username, token)
@@ -41,14 +41,14 @@ function SesInfo({handlePayData}){
                     } else {
                         res.json().then(data => {
                             console.error(data);
-                            navigate("Cinema/login");
+                            navigate("/login");
                         });
                     }
                 })
                 .catch(error => {
                     console.error(error);
                     toast.error("Oops! Something went wrong.");
-                    navigate("/Cinema/")
+                    navigate("/")
                 });
                 }
         api.getSessionInfo(session)
@@ -63,7 +63,7 @@ function SesInfo({handlePayData}){
                 } else {
                     res.json().then(data => {
                         console.error(data);
-                        navigate("/Cinema/");
+                        navigate("/");
                     });
                 }
             })
@@ -104,7 +104,7 @@ function SesInfo({handlePayData}){
                                 pay_seats: data["seats"],
                             }
                         )
-                        navigate("/Cinema/payment");
+                        navigate("/payment");
                     });
                 } else {
                     res.json().then(data => {

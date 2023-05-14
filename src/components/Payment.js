@@ -16,7 +16,7 @@ function Payment ({data}){
                     res.json().then(data => {
                         console.log(data);
                         toast.success("You successfully bought tickets!");
-                        navigate("/Cinema/profile");
+                        navigate("/profile");
                     });
                 }
                 else {

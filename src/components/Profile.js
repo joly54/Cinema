@@ -55,7 +55,7 @@ function Profile() {
                             setTickets(data["tikets"]);
                         });
                 } else {
-                    navigate('/Cinema/login', { replace: true });
+                    navigate('/login', { replace: true });
                 }
             });
     }, []);

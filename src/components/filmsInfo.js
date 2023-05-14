@@ -6,10 +6,9 @@ import * as api from "../utils/Api";
 import "./Styles/FIlmInfo.css"
 import {Link, useNavigate} from "react-router-dom";
 function FilmsInfo(){
-    const film_id = window.location.pathname.split("/")[3];
+    const film_id = window.location.href.split("/")[window.location.href.split("/").length-1];
     const [data, setData] = React.useState(null);
     const [sessions, setSessions] = React.useState(null);
-    const navigate = useNavigate();
     useEffect(() => {
         api.getSessions(film_id)
             .then(res => {
@@ -117,7 +116,7 @@ function FilmsInfo(){
                           }
                     >
                         {sessions.map((session, index) => (
-                            <Link to={`Cinema/sessionInfo/${session["id"]}`}>
+                            <Link to={`/sessionInfo/${session["id"]}`}>
                             <Grid
                                 key={index}
                                 item
