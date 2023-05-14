@@ -113,7 +113,7 @@ function Profile() {
                                     id="qr-code"
                                     src={url}
                                     onLoad={() => {
-                                        console.log("qr code loaded");
+                                        //alert("qr code loaded");
                                         setTimeout(() => {
                                             setLoading(false);
                                         }, 500);
@@ -190,10 +190,19 @@ function Profile() {
                                             variant="contained"
                                             color="primary"
                                             onClick={() => {
-                                                console.log("Loading qr code");
-                                                setOpen(true);
+                                                //get src
+                                                const prevsrc= document.getElementById("qr-code").src;
+                                                if(prevsrc !== ticket.urltoqr){
+                                                    document.getElementById("qr-code").src = "fdsfadf";
+                                                    document.getElementById("qr-code").src = ticket.urltoqr;
+                                                    setLoading(true);
+                                                } else {
+                                                    setLoading(false);
+                                                }
                                                 setUrl(ticket.urltoqr);
-                                                setLoading(true);
+                                                setOpen(true);
+
+
                                             }}
                                             style={{
                                                 borderRadius: "0.5rem",
