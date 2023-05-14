@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/Cinema/static/css/main.05799fb7.css",
-    "main.js": "/Cinema/static/js/main.ba7419a5.js",
-    "static/js/787.77c8afa4.chunk.js": "/Cinema/static/js/787.77c8afa4.chunk.js",
-    "static/media/bootstrap.bundle.min.js.map": "/Cinema/static/media/bootstrap.bundle.min.js.6cf42f5405e43f88e807.map",
-    "index.html": "/Cinema/index.html",
-    "main.05799fb7.css.map": "/Cinema/static/css/main.05799fb7.css.map",
-    "main.ba7419a5.js.map": "/Cinema/static/js/main.ba7419a5.js.map",
-    "787.77c8afa4.chunk.js.map": "/Cinema/static/js/787.77c8afa4.chunk.js.map"
+    "main.css": "/static/css/main.05799fb7.css",
+    "main.js": "/static/js/main.397e61a0.js",
+    "static/js/787.77c8afa4.chunk.js": "/static/js/787.77c8afa4.chunk.js",
+    "static/media/bootstrap.bundle.min.js.map": "/static/media/bootstrap.bundle.min.js.6cf42f5405e43f88e807.map",
+    "index.html": "/index.html",
+    "main.05799fb7.css.map": "/static/css/main.05799fb7.css.map",
+    "main.397e61a0.js.map": "/static/js/main.397e61a0.js.map",
+    "787.77c8afa4.chunk.js.map": "/static/js/787.77c8afa4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.05799fb7.css",
-    "static/js/main.ba7419a5.js"
+    "static/js/main.397e61a0.js"
   ]
 }
