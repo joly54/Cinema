@@ -175,6 +175,8 @@ function Profile() {
                                     document.body.innerHTML = printContainer.innerHTML;
                                     window.print();
                                     document.body.innerHTML = originalContents;
+                                    //reload page
+                                    window.location.reload();
                                 }}>
                                     Print
                                 </Button>
@@ -204,8 +206,22 @@ function Profile() {
                                         display: "flex",
                                         flexDirection: "column",
                                         justifyContent: "space-between",
+                                        cursor: "pointer",
                                     }}
-                                >
+                                    onClick={() => {
+                                        //get src
+                                        const prevsrc= document.getElementById("qr-code").src;
+                                        if(prevsrc !== ticket.urltoqr){
+                                            document.getElementById("qr-code").src = "fdsfadf";
+                                            document.getElementById("qr-code").src = ticket.urltoqr;
+                                            setLoading(true);
+                                        } else {
+                                            setLoading(false);
+                                        }
+                                        setticket(ticket);
+                                        setOpen(true);
+                                    }}
+                                    >
                                     <CardContent
                                         style={{
                                             display: "flex",
