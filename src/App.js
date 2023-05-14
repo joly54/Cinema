@@ -66,7 +66,7 @@ function App() {
                 localStorage.removeItem('username');
                 localStorage.removeItem('validDue');
                 setIsLogin(false);
-                navigate('/login');
+                navigate('/Cinema/login');
             }
             api.checktoken(localStorage.getItem("username"), localStorage.getItem("token"))
                 .then((res) => {
@@ -80,7 +80,7 @@ function App() {
                                 localStorage.removeItem('validDue');
                                 setIsLogin(false);
                                 handleToastErr("Your session expired, please login again");
-                                navigate('/login');
+                                navigate('/Cinema/login');
                             }
                         }
 
@@ -137,7 +137,7 @@ function App() {
                             localStorage.setItem('username', username);
                             localStorage.setItem('validDue', data['validDue']);
                             handleToastSuc(data['message'])
-                            navigate('/profile');
+                            navigate('/Cinema/profile');
                         }else {
                             handleToastErr(data['message'])
                         }
@@ -152,15 +152,11 @@ function App() {
         localStorage.removeItem('username');
         localStorage.removeItem('validDue');
         setIsLogin(false);
-        navigate('/login');
-    }
-    function handleSession(ses_id){
-        setsession(ses_id);
-        navigate('/sessionInfo');
+        navigate('/Cinema/login');
     }
     function handleChangePayData(value){
         setPayData(value)
-        navigate("/Payment")
+        navigate("/Cinema/Payment")
     }
   return (
       <ThemeProvider theme={theme}>
@@ -168,15 +164,15 @@ function App() {
           <ToastContainer />
           <Header loggedIn={isLogin} handleLogout={handleLogout}/>
         <Routes>
-            <Route path="/" element={<Schedule handleFilm={handleSession} />} />
-            <Route path="/films/:id" element={<FilmsInfo  handleSession={handleSession}/>} />
-            <Route path="/films" element={<Films />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
-            <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
-            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
-            <Route path="/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
-            <Route path="/Payment" element={<Payment data={PayData}/>} />
+            <Route path="/Cinema/" element={<Schedule />} />
+            <Route path="/Cinema/films/:id" element={<FilmsInfo />} />
+            <Route path="/Cinema/films" element={<Films />} />
+            <Route path="/Cinema/profile" element={<Profile />} />
+            <Route path="/Cinema/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
+            <Route path="/Cinema/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
+            <Route path="/Cinema/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
+            <Route path="/Cinema/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
+            <Route path="/Cinema/Payment" element={<Payment data={PayData}/>} />
         </Routes>
       </div>
       </ThemeProvider>

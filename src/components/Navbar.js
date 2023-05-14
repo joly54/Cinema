@@ -21,10 +21,10 @@ function Header({ loggedIn, handleLogout }) {
                 <Navbar.Collapse id="navbar-dark-example">
                     <Nav>
                         <Nav.Link>
-                            <Link to={"/"} className="nav-link">Schedule</Link>
+                            <Link to={"/Cinema/"} className="nav-link">Schedule</Link>
                         </Nav.Link>
                         <Nav.Link>
-                            <Link to={"/films"} className="nav-link">Films</Link>
+                            <Link to={"/Cinema/films"} className="nav-link">Films</Link>
                         </Nav.Link>
                     </Nav>
                     <Nav>
@@ -38,10 +38,10 @@ function Header({ loggedIn, handleLogout }) {
                                 <div
                                 >
                                     <NavDropdown.Item>
-                                        <Link to={"/profile"} className="nav-link">Profile</Link>
+                                        <Link to={"/Cinema/profile"} className="nav-link">Profile</Link>
                                     </NavDropdown.Item>
                                     <NavDropdown.Item>
-                                        <Link to={"/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
+                                        <Link to={"/Cinema/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
                                     </NavDropdown.Item>
                                 </div>
                                     </>
@@ -50,10 +50,10 @@ function Header({ loggedIn, handleLogout }) {
                                     <div
                                     >
                                         <NavDropdown.Item>
-                                            <Link to={"/login"} className="nav-link">Log in</Link>
+                                            <Link to={"/Cinema/login"} className="nav-link">Log in</Link>
                                         </NavDropdown.Item>
                                         <NavDropdown.Item>
-                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sing up</Link>
+                                            <Link to={"/Cinema/register"} className="nav-link" onClick={handleLogout}>Sing up</Link>
                                         </NavDropdown.Item>
                                     </div>
                                 </>

@@ -50,7 +50,7 @@ function Films() {
                 <ImageList cols={4} rowHeight={500} id = "films"
                 >
                     {movies.map((item) => (
-                        <Link to={`/films/${item.id}`}
+                        <Link to={`/Cinema/films/${item.id}`}
                         style={{
                             textDecoration: 'none',
                             //color: 'white',

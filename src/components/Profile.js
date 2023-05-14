@@ -55,7 +55,7 @@ function Profile() {
                             setTickets(data["tikets"]);
                         });
                 } else {
-                    navigate('/login', { replace: true });
+                    navigate('/Cinema/login', { replace: true });
                 }
             });
     }, []);
@@ -175,7 +175,6 @@ function Profile() {
                                     document.body.innerHTML = printContainer.innerHTML;
                                     window.print();
                                     document.body.innerHTML = originalContents;
-                                    window.location.reload();
                                 }}>
                                     Print
                                 </Button>
