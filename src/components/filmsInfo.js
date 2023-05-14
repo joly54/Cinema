@@ -5,8 +5,8 @@ import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/FIlmInfo.css"
 import {Link, useNavigate} from "react-router-dom";
-function FilmsInfo(){
-    const film_id = window.location.href.split("/")[window.location.href.split("/").length-1];
+function FilmsInfo() {
+    const film_id = window.location.href.split("/")[window.location.href.split("/").length - 1];
     const [data, setData] = React.useState(null);
     const [sessions, setSessions] = React.useState(null);
     useEffect(() => {
@@ -36,8 +36,8 @@ function FilmsInfo(){
                 alignItems: "center",
             }}
         >
-            <ToastContainer />
-            <BackToTopButton />
+            <ToastContainer/>
+            <BackToTopButton/>
             {data && data["trailer"] ? <div>
                 <Grid container spacing={2}
                       style={{
@@ -47,8 +47,7 @@ function FilmsInfo(){
                       }}
                 >
                     <Grid item xs={12} md={6}
-                          style={{
-                          }}
+                          style={{}}
                     >
                         <Typography
                             className="FilmInfo"
@@ -116,49 +115,50 @@ function FilmsInfo(){
                           }
                     >
                         {sessions.map((session, index) => (
-                            <Link to={`/sessionInfo/${session["id"]}`}
-                            style={{
-                                textDecoration: "none",
-                                color: "black",
-                            }}
-                            >
-                            <Grid
-                                key={index}
-                                item
-                                spacing={2}
-                                className={"session"}
-                                style={{
-                                    marginBottom: "10px",
-                                    marginRight: "10px",
-                                    textDecoration: "none",
-
-                                }}
-                            >
-                                <Typography
-                                    style={{
-                                        fontFamily: "Montserrat",
-                                        fontWeight: "bold",
-                                        marginBottom: "5px",
-                                    }}
-                                    variant="h6"
+                            session["seats"].length > 0 ?
+                                <Link to={`/sessionInfo/${session["id"]}`}
+                                      style={{
+                                          textDecoration: "none",
+                                          color: "black",
+                                      }}
                                 >
-                                    {session["date"]}
-                                </Typography>
-                                <Typography
-                                    style={{ fontFamily: "Montserrat", marginBottom: "5px" }}
-                                    variant="h6"
-                                >
-                                    {session["time"]}
-                                </Typography>
-                                <Typography
-                                    style={{ fontFamily: "Montserrat" }}
-                                    variant="h6"
-                                >
-                                    {session["seats"].length} seats available
-                                </Typography>
-                            </Grid>
-                            </Link>
+                                    <Grid
+                                        key={index}
+                                        item
+                                        spacing={2}
+                                        className={"session"}
+                                        style={{
+                                            marginBottom: "10px",
+                                            marginRight: "10px",
+                                            textDecoration: "none",
+                                        }}
+                                    >
+                                        <Typography
+                                            style={{
+                                                fontFamily: "Montserrat",
+                                                fontWeight: "bold",
+                                                marginBottom: "5px",
+                                            }}
+                                            variant="h6"
+                                        >
+                                            {session["date"]}
+                                        </Typography>
+                                        <Typography
+                                            style={{fontFamily: "Montserrat", marginBottom: "5px"}}
+                                            variant="h6"
+                                        >
+                                            {session["time"]}
+                                        </Typography>
+                                        <Typography
+                                            style={{fontFamily: "Montserrat"}}
+                                            variant="h6"
+                                        >
+                                            {session["seats"].length} seats available
+                                        </Typography>
+                                    </Grid>
+                                </Link> : null
                         ))}
+
                     </Grid>
                 </Grid>
             </div> : <p>Loading...</p>}
