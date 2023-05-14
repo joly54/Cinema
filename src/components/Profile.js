@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
-import { Button, Card, CardContent, CircularProgress, Dialog, DialogActions,
-    DialogContent, DialogContentText, DialogTitle, Grid, Slide, Typography} from "@material-ui/core";
+import {
+    Button, Card, CardContent, CircularProgress, Dialog, DialogActions,
+    DialogContent, DialogContentText, DialogTitle, Grid, Icon, Slide, Typography
+} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
 import * as api from '../utils/Api';
 import { baseurl } from "../utils/Api";
@@ -18,7 +20,7 @@ function Profile() {
     document.title = "Profile";
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = React.useState(false);
-    const [url, setUrl] = React.useState("");
+    const [ticket, setticket] = React.useState({});
     const handleClose = () => {
         setOpen(false);
     };
@@ -111,9 +113,8 @@ function Profile() {
                                 </DialogContentText>
                                 <img
                                     id="qr-code"
-                                    src={url}
+                                    src={ticket.urltoqr}
                                     onLoad={() => {
-                                        //alert("qr code loaded");
                                         setTimeout(() => {
                                             setLoading(false);
                                         }, 500);
@@ -148,7 +149,28 @@ function Profile() {
                                 ) : null}
                             </DialogContent>
                             <DialogActions>
+                                <Button onClick={() => {
+                                    const printContents = document.getElementById("qr-code");
+                                    const originalContents = document.body.innerHTML;
+                                    const title = `
+                                    <ul>
+                                        <li>Movie: ${ticket.title}</li>
+                                        <li>Time: ${ticket.time}</li>
+                                        <li>Date: ${ticket.date}</li>
+                                        <li>Seat: ${ticket.number}</li>
+                                        </ul>
+                                    `;
+                                    const printContainer = document.createElement("div");
+                                    printContainer.innerHTML = title + printContents.outerHTML;
+                                    document.body.innerHTML = printContainer.innerHTML;
+                                    window.print();
+                                    document.body.innerHTML = originalContents;
+                                    window.location.reload();
+                                }}>
+                                    Print
+                                </Button>
                                 <Button onClick={handleClose}>Okay</Button>
+
                             </DialogActions>
                         </Dialog>
                         {tickets.map((ticket) => (
@@ -199,7 +221,7 @@ function Profile() {
                                                 } else {
                                                     setLoading(false);
                                                 }
-                                                setUrl(ticket.urltoqr);
+                                                setticket(ticket);
                                                 setOpen(true);
 
 
