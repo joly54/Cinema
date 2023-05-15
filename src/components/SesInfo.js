@@ -1,13 +1,12 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
 import {Button, Grid, Typography} from "@material-ui/core";
-import {Skeleton} from "@mui/material";
 import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
+
 function SesInfo({handlePayData}){
     //get current url
     const session =  window.location.href.split("/")[window.location.href.split("/").length-1];
@@ -17,7 +16,6 @@ function SesInfo({handlePayData}){
     const [selected, setSelected] = useState([]);
     const username = localStorage.getItem("username");
     const token = localStorage.getItem("token");
-    const [isloading, setIsLoading] = useState(true);
     useEffect(() => {
         if(!username || !token){
             toast.error("You are not logged in.",
@@ -32,7 +30,6 @@ function SesInfo({handlePayData}){
             //remove from history
             window.history.replaceState(null, null, "/");
             navigate("/login");
-            return;
             return;
         } else{
             api.checktoken(username, token)
@@ -52,7 +49,8 @@ function SesInfo({handlePayData}){
                 })
                 .catch(error => {
                     console.error(error);
-                    toast.error("Oops! Something went wrong.");
+                    //toast message from server
+
                     navigate("/")
                 });
                 }
@@ -113,7 +111,7 @@ function SesInfo({handlePayData}){
                 } else {
                     res.json().then(data => {
                         console.error(data);
-                        toast.error("Failed to buy ticket.");
+                        toast.error(data["message"]);
                     });
                 }
             })
