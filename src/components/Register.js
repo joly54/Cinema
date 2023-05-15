@@ -3,6 +3,7 @@ import {Button, Grid, Typography} from "@material-ui/core";
 import 'react-toastify/dist/ReactToastify.css';
 import './Styles/login.css'
 import './Styles/scrollBar.css';
+import {Link} from "react-router-dom";
 function Register(
     {
         handleChangeUsername,
@@ -61,6 +62,13 @@ function Register(
                             onClick={handleRegister}
                         >SING UP</Button>
                     </Grid>
+                    <Link to={"/login"} style={{textDecoration: "none",
+                        paddingLeft: "10px"
+                    }}>
+                        <Typography
+                            className={"text-btn"}
+                            style={{fontFamily: "Montserrat"}}
+                        >Already have account?</Typography></Link>
                 </Grid>
             </div>
         </div>

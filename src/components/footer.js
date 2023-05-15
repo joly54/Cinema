@@ -178,7 +178,7 @@ function Footer() {
                                     fontFamily: "Montserrat",
                                     fontWeight: "bold",
                                 }}
-                                variant="body2">Frontend - react & material-ui</Typography>
+                                variant="body2">Frontend - HTML/CSS & JS</Typography>
                             <Typography
                                 style={{
                                     fontFamily: "Montserrat",

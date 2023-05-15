@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import { Button, Grid, Typography } from "@material-ui/core";
 import './Styles/login.css';
 function Login({
@@ -58,11 +58,26 @@ function Login({
                             className="btn"
                             onClick={handleLogin}
                         >Log in</Button>
-                        <Typography
-                            className="text-btn"
-                            onClick={() => navigate("/forgotPassword")}
-                            style={{fontFamily: "Montserrat"}}
-                        >Forgot Password?</Typography>
+                        <Grid
+                            spacing={2}
+                            container
+                            direction="row"
+                            justify="center"
+                            alignItems="center"
+                        >
+                            <Link to={"/forgotPassword"} style={{textDecoration: "none"}}>
+                                <Typography
+                                    className={"text-btn"}
+                                    style={{fontFamily: "Montserrat"}}
+                                >Forgot Password?</Typography></Link>
+                            <Link to={"/register"} style={{textDecoration: "none",
+                            paddingLeft: "10px"
+                            }}>
+                                <Typography
+                                    className={"text-btn"}
+                                    style={{fontFamily: "Montserrat"}}
+                                >Register</Typography></Link>
+                        </Grid>
                     </Grid>
                 </Grid>
             </div>
