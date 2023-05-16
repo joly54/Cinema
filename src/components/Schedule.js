@@ -23,7 +23,6 @@ function CinemaSchedule() {
                         schedule.map((day) =>(
                             mustLoad += day.sessions.length
                         ))
-                       //testfasfsdfs
                     } else {
                         console.log(data);
                     }
