@@ -60,3 +60,14 @@
 .none {
     visibility: hidden;
 }
+
+ul{
+    text-align: center;
+}
+
+p {
+    margin-top: 15px;
+    font-size: 22px;
+    margin-left: 5px;
+    font-weight: bold;
+}
