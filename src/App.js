@@ -17,6 +17,7 @@ import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
 import Footer from "./components/footer";
+import NotFound from "./components/404";
 function App() {
     useEffect(() => {
         Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
@@ -174,6 +175,7 @@ function App() {
             <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
             <Route path="/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
             <Route path="/Payment" element={<Payment data={PayData}/>} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
           <Footer />
       </div>
