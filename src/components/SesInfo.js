@@ -28,7 +28,7 @@ function SesInfo({handlePayData}){
                     draggable: true}
             );
             //remove from history
-            window.history.replaceState(null, null, "/");
+            window.history.replaceState(null, null, "/Cinema");
             navigate("/login");
             return;
         } else{
@@ -41,7 +41,16 @@ function SesInfo({handlePayData}){
                     } else {
                         res.json().then(data => {
                             console.error(data);
-                            window.history.replaceState(null, null, "/");
+                            toast.error("Your session has expired. Please log in again.",
+                                {
+                                    position: "top-center",
+                                    autoClose: 5000,
+                                    hideProgressBar: false,
+                                    closeOnClick: true,
+                                    pauseOnHover: false,
+                                    draggable: true}
+                            );
+                            window.history.replaceState(null, null, "/Cinema");
                             navigate("/login");
                             return;
                         });
