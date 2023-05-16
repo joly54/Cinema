@@ -41,3 +41,12 @@ h2 {
     color: white;
     font-weight: unset;
 }
+
+.preload{
+    /*add translititon for all*/
+    transition: all 3s ease-in-out;
+}
+
+.none{
+    display: none;
+}
