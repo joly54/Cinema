@@ -73,7 +73,7 @@ function App() {
             api.checktoken(localStorage.getItem("username"), localStorage.getItem("token"))
                 .then((res) => {
                     res.json().then(data => {
-                            console.log(data);
+
                             if (res.ok) {
                                 setIsLogin(true);
                             } else{
@@ -93,7 +93,6 @@ function App() {
     }, [navigate, validDue])
     function handleChangeUsername(value){
         setUsername(value);
-        console.log(username);
     }
     function handleChangePassword(value){
         setPassword(value);
@@ -105,14 +104,12 @@ function App() {
         ).then(
             (res) => {
                 res.json().then(data => {
-                    console.log(data);
                     if (res.ok) {
                         setIsLogin(true);
                         localStorage.setItem('token', data['token']);
                         localStorage.setItem('username', username);
                         localStorage.setItem('validDue', data['validDue']);
                         handleToastSuc(data['message'])
-                        console.log(navigate)
                         navigate("/profile");
                     } else{
                         handleToastErr(data['message'])
@@ -121,7 +118,6 @@ function App() {
                 )}
         ).catch(
             (err) => {
-                console.log(err)
             }
         )
     }
@@ -132,7 +128,7 @@ function App() {
         ).then(
             (res) => {
                 res.json().then(data =>{
-                        console.log(data);
+
                         if(res.ok){
                             setIsLogin(true);
                             localStorage.setItem('token', data['token']);

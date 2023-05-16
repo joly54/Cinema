@@ -4,11 +4,13 @@ import BackToTopButton from "./BackToTopButton";
 import * as api from '../utils/Api'
 import './Styles/Schedule.css'
 import './Styles/scrollBar.css';
+import './Styles/preloader.css';
 import {Link, useNavigate} from "react-router-dom";
 import Preloader from "./preloader";
+import NotFoundImage from "./img/404.png";
+let loaded = 0
+let mustLoad = 0
 function CinemaSchedule() {
-    let loaded = 0
-    let mustLoad = 0
     const [schedule, setSchedule] = useState([])
     const navigate = useNavigate()
     document.title = "Schedule"
@@ -18,10 +20,13 @@ function CinemaSchedule() {
                 res.json().then(data => {
                     console.log(data);
                     if (res.ok) {
+                        loaded = 0
+                        mustLoad = 0
                         console.log(data);
                         setSchedule(data)
-                        schedule.map((day) =>(
-                            mustLoad += day.sessions.length
+                        data.map((day) =>(
+                            mustLoad += day.sessions.length,
+                                console.log(mustLoad)
                         ))
                     } else {
                         console.log(data);
@@ -34,9 +39,9 @@ function CinemaSchedule() {
     },[])
     return (
         <>
-            <div className={"preload"}
-                id={"preloader"}
-            ><Preloader/></div>
+            <div className={"preload"} id={"preloader"}>
+                <Preloader/>
+            </div>
             {schedule.map((day) => (
                 <div key={day.date}
                      className={"schedule"}
@@ -91,10 +96,16 @@ function CinemaSchedule() {
                                             component="img"
                                             image={scheduleItem.poster}
                                             title="Card image"
+                                            onError={(e) => {
+                                                loaded++;
+                                                e.target.onerror = null;
+                                                e.target.src = NotFoundImage;
+                                            }}
                                             onLoad={() => {
                                                 loaded++
+                                                console.log(`Loaded ${loaded} of ${mustLoad}`)
                                                 if (loaded >= mustLoad) {
-                                                    document.getElementById("preloader").classList.add("none")
+                                                    document.getElementById("preloader").style.display = "none"
                                                 }
                                             }
                                             }

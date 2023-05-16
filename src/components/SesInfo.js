@@ -6,8 +6,10 @@ import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
-
+import './Styles/preloader.css';
+import Preloader from "./preloader";
 function SesInfo({handlePayData}){
+
     //get current url
     const session =  window.location.href.split("/")[window.location.href.split("/").length-1];
     const navigate = useNavigate();
