@@ -100,6 +100,8 @@ function Profile() {
                     <Grid
                         container
                         spacing={1}
+                        xs={12} sm={10} md={8} lg={8}
+
                         style={{
                             maxWidth: "100%",
                             maxHeight: "100%",
@@ -164,11 +166,12 @@ function Profile() {
                                     const originalContents = document.body.innerHTML;
                                     const title = `
                                     <ul>
-                                        <li>Movie: ${ticket.title}</li>
-                                        <li>Time: ${ticket.time}</li>
-                                        <li>Date: ${ticket.date}</li>
-                                        <li>Seat: ${ticket.number}</li>
+                                        <p>Movie: ${ticket.title}</p>
+                                        <p>Time: ${ticket.time}</p>
+                                        <p>Date: ${ticket.date}</p>
+                                        <p>Seat: ${ticket.number}</p>
                                         </ul>
+                                        
                                     `;
                                     const printContainer = document.createElement("div");
                                     printContainer.innerHTML = title + printContents.outerHTML;
@@ -188,10 +191,8 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={4}
-                                md={6}
-                                sm={8}
-                                xs={10}
+                                xs={12} sm={10
+                            } md={8} lg={6}
                                 container
                                 justify="center"
                                 style={{

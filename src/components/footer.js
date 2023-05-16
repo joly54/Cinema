@@ -124,6 +124,18 @@ function Footer() {
 
                 {/*---------------------Space for faggots-------------------*/}
 
+                <Grid item xs={12} sm={4} className="column">
+                    <div className="author">
+                        <img
+                            src="/author3.jpg"
+                            alt="Author 3"
+                            className="authorImage circular"
+                        />
+                        <Typography variant="subtitle1">Author 3</Typography>
+                        <Typography variant="body2">Author 3 bio goes here</Typography>
+                    </div>
+                </Grid>
+
                 <Grid item xs={12} sm={6} md={6} lg={4} className="column"
                       style={{
                           //center
@@ -237,17 +249,7 @@ function Footer() {
                 </Grid>
 
 
-                <Grid item xs={12} sm={4} className="column">
-                    <div className="author">
-                        <img
-                            src="/author3.jpg"
-                            alt="Author 3"
-                            className="authorImage circular"
-                        />
-                        <Typography variant="subtitle1">Author 3</Typography>
-                        <Typography variant="body2">Author 3 bio goes here</Typography>
-                    </div>
-                </Grid>
+
             </Grid>
         </div>
     );
