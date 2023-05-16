@@ -23,7 +23,7 @@ function CinemaSchedule() {
                         schedule.map((day) =>(
                             mustLoad += day.sessions.length
                         ))
-                        //document.getElementById("preloader").classList.add("none")
+                       //test
                     } else {
                         console.log(data);
                     }
