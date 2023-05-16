@@ -1,11 +1,12 @@
 import React from 'react';
+import './Styles/404.css';
 
 function NotFound() {
     document.title = "404 - Page not found";
   return (
-    <div
+    <div className="page-not-found"
     >
-      <h1>404</h1>
+      <h1 data-content="404">404</h1>
       <p>Page not found</p>
     </div>
   );
