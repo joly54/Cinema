@@ -3,8 +3,7 @@
     bottom: 20px;
     right: 20px;
     width: 40px;
-    height: 20px;
-    border: none;
+    height: 40px;
     background-color: #333;
     color: white;
     font-size: 14px;
@@ -26,6 +25,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: #333;
+    color: white;
+    font-size: 20px;
+    border: none;
+    outline: none;
 }
 
 .to-top-button button:focus {
