@@ -68,7 +68,6 @@ ul{
 p {
     margin-top: 15px;
     font-size: 22px;
-    margin-left: 5px!important;
-    font-weight: bold!important;
-    font-family: "Montserrat"!important;
+    margin-left: 5px;
+    font-weight: bold;
 }
