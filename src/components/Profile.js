@@ -188,9 +188,9 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={4}
-                                md={6}
-                                sm={8}
+                                lg={10}
+                                md={10}
+                                sm={10}
                                 xs={10}
                                 container
                                 justify="center"
