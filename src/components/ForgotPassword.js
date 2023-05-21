@@ -75,77 +75,79 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
         }
     };
     return (
-        <div className="container">
-            <Grid
-                lg={4}
-                md={8}
-                sm={10}
-                xs={12}
-                container
-                direction="row"
-                justify="center"
-                alignItems="center"
-                className="form"
-            >
-                <Grid item className="loginTitle">
-                    <Typography variant="h4" style={{ fontFamily: "Montserrat" }}>Forgot Password</Typography>
-                </Grid>
-                <Grid item xs={12} className={`loginInput ${isButtonClicked ? 'darken' : ''}`}>
-                    <input
-                        style={{
-                            fontFamily: "Montserrat" }}
-                        type="text"
-                        placeholder="Username"
-                        onChange={(e) => handleChangeUsername(e.target.value)}
-                        disabled={isUsernameDisabled}
-                    ></input>
-                </Grid>
-                {showConfirmationCode && (
-                    <Grid item xs={12} >
-                        <Grid className="loginInput">
-                            <input
-                                style={{ fontFamily: "Montserrat" }}
-                                type="text"
-                                placeholder="Confirmation Code"
-                                onChange={(e) => handleGetCode(e.target.value)}
-                            ></input>
-                        </Grid>
-                        <Grid className="loginInput">
-                            <input
-                                style={{ fontFamily: "Montserrat" }}
-                                type="password"
-                                placeholder="Enter New Password"
-                                onChange={(e) => handleGetNewPassword(e.target.value)}
-                            ></input>
-                        </Grid>
-                        <Grid className="loginInput">
-                            <input
-                                style={{ fontFamily: "Montserrat" }}
-                                type="password"
-                                placeholder="Repeat New Password"
-                                onChange={(e) => handleGetConfirmPassword(e.target.value)}
-                            ></input>
-                        </Grid>
+        <div className="div-container">
+            <div className="container">
+                <Grid
+                    lg={4}
+                    md={8}
+                    sm={10}
+                    xs={12}
+                    container
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    className="form"
+                >
+                    <Grid item className="loginTitle">
+                        <Typography variant="h4" style={{ fontFamily: "Montserrat" }}>Forgot Password</Typography>
                     </Grid>
-                )}
-                {isButtonClicked ? (
-                    <Button
-                        style={{ fontFamily: "Montserrat" }}
-                        className="btn"
-                        onClick={handleResetPassword}
-                    >
-                        Reset Password
-                    </Button>
-                ) : (
-                    <Button
-                        style={{ fontFamily: "Montserrat" }}
-                        className="btn"
-                        onClick={handleSendCode}
-                    >
-                        Send Code
-                    </Button>
-                )}
-            </Grid>
+                    <Grid item xs={12} className={`loginInput ${isButtonClicked ? 'darken' : ''}`}>
+                        <input
+                            style={{
+                                fontFamily: "Montserrat" }}
+                            type="text"
+                            placeholder="Username"
+                            onChange={(e) => handleChangeUsername(e.target.value)}
+                            disabled={isUsernameDisabled}
+                        ></input>
+                    </Grid>
+                    {showConfirmationCode && (
+                        <Grid item xs={12} >
+                            <Grid className="loginInput">
+                                <input
+                                    style={{ fontFamily: "Montserrat" }}
+                                    type="text"
+                                    placeholder="Confirmation Code"
+                                    onChange={(e) => handleGetCode(e.target.value)}
+                                ></input>
+                            </Grid>
+                            <Grid className="loginInput">
+                                <input
+                                    style={{ fontFamily: "Montserrat" }}
+                                    type="password"
+                                    placeholder="Enter New Password"
+                                    onChange={(e) => handleGetNewPassword(e.target.value)}
+                                ></input>
+                            </Grid>
+                            <Grid className="loginInput">
+                                <input
+                                    style={{ fontFamily: "Montserrat" }}
+                                    type="password"
+                                    placeholder="Repeat New Password"
+                                    onChange={(e) => handleGetConfirmPassword(e.target.value)}
+                                ></input>
+                            </Grid>
+                        </Grid>
+                    )}
+                    {isButtonClicked ? (
+                        <Button
+                            style={{ fontFamily: "Montserrat" }}
+                            className="btn"
+                            onClick={handleResetPassword}
+                        >
+                            Reset Password
+                        </Button>
+                    ) : (
+                        <Button
+                            style={{ fontFamily: "Montserrat" }}
+                            className="btn"
+                            onClick={handleSendCode}
+                        >
+                            Send Code
+                        </Button>
+                    )}
+                </Grid>
+            </div>
         </div>
     );
 }
