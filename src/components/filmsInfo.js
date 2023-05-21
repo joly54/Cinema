@@ -30,6 +30,7 @@ function FilmsInfo() {
     return (
         <div
             style={{
+                marginLeft: "8px",
                 height: "100%",
                 width: "100%",
                 justifyContent: "center",
@@ -42,6 +43,7 @@ function FilmsInfo() {
                 <Grid container spacing={2}
                       style={{
                           maxWidth: "100%",
+                          display: "flex",
                           justifyContent: "center",
                           alignItems: "center"
                       }}
@@ -101,7 +103,7 @@ function FilmsInfo() {
                             src={data["poster"]}
                             alt="poster"></img>
                     </Grid>
-                    <Grid container
+                    <Grid container xs={12} md={6}
                           style={
                               {
                                   display: "flex",

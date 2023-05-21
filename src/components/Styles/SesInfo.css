@@ -36,12 +36,44 @@
 }
 
 @media only screen and (max-width: 480px) {
+
+
     .screen{
         max-width: 80%;
     }
     .square {
-        width: 5%;
-        height: 0%;
+        width: 24px;
+        height: 24px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 360px) {
+    p {
+        font-size: 0.7rem !important;
+    }
+    .screen{
+        max-width: 80%;
+    }
+    .square {
+        width: 20px;
+        height: 20px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 300px) {
+    p {
+        font-size: 0.7rem !important;
+    }
+    .screen{
+        max-width: 80%;
+    }
+    .square {
+        width: 15px;
+        height: 15px;
         border-radius: 25%;
         padding-bottom: 5%;
     }
