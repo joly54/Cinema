@@ -188,8 +188,8 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={10}
-                                md={10}
+                                lg={5}
+                                md={5}
                                 sm={10}
                                 xs={10}
                                 container
