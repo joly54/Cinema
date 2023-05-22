@@ -76,6 +76,7 @@ function Profile() {
 
     return (
         <div style={{
+            height: "100vh",
 
         }}>
             <div className="profile-header">
