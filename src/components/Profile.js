@@ -75,8 +75,8 @@ function Profile() {
     }
 
     return (
-        <div style={{
-            height: "100vh",
+        <div className="div-div-container" style={{
+            minHeight: "100vh",
 
         }}>
             <div className="profile-header">
@@ -188,9 +188,9 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={12}
-                                md={5}
-                                sm={10}
+                                lg={6}
+                                md={6}
+                                sm={6}
                                 xs={10}
                                 container
                                 justify="center"

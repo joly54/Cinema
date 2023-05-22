@@ -41,28 +41,32 @@ p{
 }
 
 @media only screen and (max-width: 480px) {
-
-
-    .screen{
-        max-width: 80%;
-    }
     p{
-        height: 700%;
+        font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
+        height: 400%;
     }
     .square {
-        width: 24px;
-        height: 24px;
+        width: 25px;
+        height: 25px;
         border-radius: 25%;
         padding-bottom: 5%;
     }
 }
 
+
+
 @media only screen and (max-width: 380px) {
     p {
-        height: 1300%;
+        font-size: 0.7rem !important;       /* FOR SE*/
+        height: 400%;
     }
-    .screen{
-        max-width: 80%;
+
+}
+
+@media only screen and (max-width: 360px) {
+    p {
+        height: 800%;
+        font-size: 0.6rem !important;       /* GALAXY S8+*/
     }
     .square {
         width: 20px;
@@ -71,17 +75,15 @@ p{
         padding-bottom: 5%;
     }
 }
-
-@media only screen and (max-width: 300px) {
+@media only screen and (max-width: 280px) {
     p {
-        font-size: 0.7rem !important;
+        font-size: 0.6rem !important;
+        height: 500%;
     }
-    .screen{
-        max-width: 80%;
-    }
+
     .square {
-        width: 15px;
-        height: 15px;
+        width: 17px;
+        height: 17px;
         border-radius: 25%;
         padding-bottom: 5%;
     }
