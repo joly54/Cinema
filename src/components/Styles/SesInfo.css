@@ -4,6 +4,11 @@
     border-radius: 25%;
     margin: 3px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+
+}
+p{
+    height: 100%;
+    font-size: 1.5rem ;
 }
 
 .screen {
@@ -41,6 +46,9 @@
     .screen{
         max-width: 80%;
     }
+    p{
+        height: 700%;
+    }
     .square {
         width: 24px;
         height: 24px;
@@ -49,9 +57,9 @@
     }
 }
 
-@media only screen and (max-width: 360px) {
+@media only screen and (max-width: 380px) {
     p {
-        font-size: 0.7rem !important;
+        height: 1300%;
     }
     .screen{
         max-width: 80%;

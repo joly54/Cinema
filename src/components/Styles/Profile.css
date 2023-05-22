@@ -1,9 +1,19 @@
+
+
 .profile-container {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     padding: 20px;
     background-color: #5C0099;
+
+}
+
+.profile-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px; /* Add padding to avoid the white strip */
 }
 
 
@@ -49,13 +59,13 @@
 }
 
 .ticket-card h4 {
-    font-size: 18px;
+    font-size: 32px;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
 .ticket-card p {
-    font-size: 16px;
+    font-size: 20px;
     margin: 5px 0;
 }
 
@@ -73,3 +83,4 @@ p {
     margin-left: 5px;
     font-weight: bold;
 }
+
