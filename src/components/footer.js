@@ -63,6 +63,14 @@ function Footer() {
                                     fontFamily: "Montserrat",
                                     fontWeight: "bold",
                                 }}
+                            >
+                                Also a project manager
+                            </Typography>
+                            <Typography
+                                style={{
+                                    fontFamily: "Montserrat",
+                                    fontWeight: "bold",
+                                }}
                                 variant="body2">Backend - python & flask</Typography>
                             <Typography
                                 style={{
