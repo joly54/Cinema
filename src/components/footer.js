@@ -257,7 +257,7 @@ function Footer() {
                          }}
                     >
                         <Avatar
-                            src="https://avatars.githubusercontent.com/u/129663889?s=400&u=e9dedc0f9c4eaebda61dd75357696073004aaa1a&v=4"
+                            src="https://avatars.githubusercontent.com/u/126570227?v=4"
                             alt="Logo"
                             className="authorImage"
                         />
@@ -279,7 +279,7 @@ function Footer() {
                                     fontFamily: "Montserrat",
                                     fontWeight: "bold",
                                 }}
-                                variant="subtitle1">DMITRIY KUZMIK</Typography>
+                                variant="subtitle1">Khavrun Max</Typography>
                             <Typography
                                 style={{
                                     fontFamily: "Montserrat",
@@ -291,13 +291,13 @@ function Footer() {
                                     fontFamily: "Montserrat",
                                     fontWeight: "bold",
                                 }}
-                                variant="body2">Frontend - HTML/CSS & JS</Typography>
+                                variant="body2">Frontend - HTML/CSS/JS </Typography>
                             <Typography
                                 style={{
                                     fontFamily: "Montserrat",
                                     fontWeight: "bold",
                                 }}
-                                variant="body2">Moral and Mental support :)</Typography>
+                                variant="body2">Framework - react + material-ui</Typography>
                             <Grid
                                 xs={6}
                                 lg={6}
@@ -314,7 +314,7 @@ function Footer() {
                             >
                                 <Link
                                     className={"link"}
-                                    to={"https://github.com/31CRIMSON"}
+                                    to={"https://github.com/maxhavrun"}
                                     target={"_blank"}
                                     style={{
                                         color: "white",
@@ -325,7 +325,7 @@ function Footer() {
                                 </Link>
                                 <Link
                                     className={"link"}
-                                    to={"https://t.me/CRIMSON31"}
+                                    to={"https://t.me/max_havrun"}
                                     target={"_blank"}
                                     style={{
                                         color: "white",
@@ -335,7 +335,7 @@ function Footer() {
                                 </Link>
                                 <Link
                                     className={"link"}
-                                    to={"mailto:dmitriy.kuzzmik@gmail.com"}
+                                    to={"mailto:mkhavrun2@gmail.com"}
                                     target={"_blank"}
                                     style={{
                                         color: "white",
