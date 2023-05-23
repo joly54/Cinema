@@ -1,8 +1,8 @@
 .footer {
-    margin-top: 32px;
+    margin-top: 60px;
     background-color: #212529;
     color: #fff;
-    padding: 16px;
+    padding: 30px;
 }
 
 .link {
@@ -42,3 +42,4 @@
     width: 1px;
     border-right: 1px solid gray;
 }
+

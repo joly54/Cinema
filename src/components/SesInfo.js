@@ -133,6 +133,7 @@ function SesInfo({handlePayData}){
             height: "100%",
             width: "100%",
             //centering
+
             justifyContent: "center",
             alignItems: "center",
         }}
@@ -145,6 +146,7 @@ function SesInfo({handlePayData}){
                               maxWidth: "100%",
                               justifyContent: "center",
                               alignItems: "center",
+
                           }}
                     >
                         <Grid item xs={12} md={6}
@@ -153,19 +155,28 @@ function SesInfo({handlePayData}){
                         >
                             <Typography
                                 className="FilmInfo"
-                                style={{fontFamily: "Montserrat"}}
+                                style={{
+                                    fontFamily: "Montserrat",
+                                    marginLeft: "17px",
+                                }}
                                 variant="h4"
                             >
                                 {sessionInfo["title"]}
                             </Typography>
                             <Typography
-                                style={{fontFamily: "Montserrat"}}
+                                style={{
+                                    fontFamily: "Montserrat",
+                                    marginLeft: "17px",
+                                }}
                                 variant="h6"
                                 className="FilmInfo">
                                 {sessionInfo["date"] + " " + sessionInfo["time"] + " " + sessionInfo["seats"].length + " seats left"}
                             </Typography>
                             <br></br>
                             <Typography
+                                style={{
+                                    marginLeft: "17px",
+                                }}
                                 mt={2}
                                 className="FilmInfo"
                                 variant="h6"
@@ -173,8 +184,9 @@ function SesInfo({handlePayData}){
                                 {sessionInfo["description"]}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={6}
+                        <Grid item xs={11} md={6}
                               style={{
+                                  marginLeft: "17px",
                                   display: "flex",
                                   justifyContent: "center",
                                   alignItems: "center",
@@ -251,6 +263,7 @@ function SesInfo({handlePayData}){
                                                 setSelect((row * 12) + col + 1);}
                                             }>
                                                 <Typography
+                                                    className="typography"
                                                     style={{
                                                         fontSize: "1rem",
                                                         color: "white",
@@ -259,7 +272,6 @@ function SesInfo({handlePayData}){
                                                         fontWeight: "bold",
                                                         display: "flex",
                                                         alignItems: "center",
-                                                        height: "100%",
                                                         justifyContent: "center",
                                                     }}
                                                 >

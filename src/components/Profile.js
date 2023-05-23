@@ -75,8 +75,9 @@ function Profile() {
     }
 
     return (
-        <div style={{
-            height: "100vh",
+        <div className="div-div-container" style={{
+            minHeight: "100vh",
+
         }}>
             <div className="profile-header">
                 <h2>{email}</h2>
@@ -102,7 +103,6 @@ function Profile() {
                         spacing={1}
                         style={{
                             maxWidth: "100%",
-                            maxHeight: "100%",
                             margin: "auto",
                             flexWrap: "wrap",
                         }}
@@ -188,10 +188,10 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={4}
+                                lg={6}
                                 md={6}
-                                sm={8}
-                                xs={10}
+                                sm={6}
+                                xs={12}
                                 container
                                 justify="center"
                                 style={{
