@@ -29,21 +29,50 @@ p{
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-@media only screen and (max-width: 768px) {
-    .screen{
-        max-width: 80%;
+@media only screen and (max-width: 900px) {
+    p{
+        font-size: 1rem !important;           /* FOR XR, 12PRO, PIXEL5*/
+        height: 280%;
     }
     .square {
-        width: 7%;
-        height: 0%;
-        padding-bottom: 7%;
+        width: 60px;
+        height: 60px;
+        border-radius: 25%;
+        padding-bottom: 5%;
     }
 }
 
-@media only screen and (max-width: 480px) {
+
+@media only screen and (max-width: 780px) {
     p{
         font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
-        height: 400%;
+        height: 1800%;
+    }
+    .square {
+        width: 40px;
+        height: 40px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    p{
+        font-size: 0.8rem !important;
+        height: 900%;
+    }
+    .square {
+        width: 30px;
+        height: 30px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 420px) {
+    p{
+        font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
+        height: 550%;
     }
     .square {
         width: 25px;
@@ -55,12 +84,18 @@ p{
 
 
 
-@media only screen and (max-width: 380px) {
+@media only screen and (max-width: 394px) {
     p {
         font-size: 0.7rem !important;       /* FOR SE*/
-        height: 400%;
+        height: 460%;
     }
 
+    .square {
+        width: 24px;
+        height: 24px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
 }
 
 @media only screen and (max-width: 360px) {
