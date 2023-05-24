@@ -30,9 +30,9 @@ p{
 }
 
 @media only screen and (max-width: 900px) {
-    p{
-        font-size: 1rem !important;           /* FOR XR, 12PRO, PIXEL5*/
-        height: 280%;
+    .square p{
+        font-size: 1.1rem !important;
+        height: 5vh;
     }
     .square {
         width: 60px;
@@ -44,9 +44,9 @@ p{
 
 
 @media only screen and (max-width: 780px) {
-    p{
-        font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
-        height: 1800%;
+    .square p{
+        font-size: 0.9rem !important;
+        height: 4vh;
     }
     .square {
         width: 40px;
@@ -57,7 +57,7 @@ p{
 }
 
 @media only screen and (max-width: 550px) {
-    p{
+    .square p{
         font-size: 0.8rem !important;
         height: 900%;
     }
@@ -70,13 +70,13 @@ p{
 }
 
 @media only screen and (max-width: 420px) {
-    p{
+    .square p{
         font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
-        height: 550%;
+        height: 2.7vh;
     }
     .square {
-        width: 25px;
-        height: 25px;
+        width: 24px;
+        height: 24px;
         border-radius: 25%;
         padding-bottom: 5%;
     }
@@ -84,10 +84,10 @@ p{
 
 
 
-@media only screen and (max-width: 394px) {
-    p {
+@media only screen and (max-width: 389px) {
+    .square p{
         font-size: 0.7rem !important;       /* FOR SE*/
-        height: 460%;
+        height: 3.5vh;
     }
 
     .square {
@@ -98,9 +98,9 @@ p{
     }
 }
 
-@media only screen and (max-width: 360px) {
-    p {
-        height: 800%;
+@media only screen and (max-width: 361px) {
+    .square p{
+        height: 3vh;
         font-size: 0.6rem !important;       /* GALAXY S8+*/
     }
     .square {
@@ -111,9 +111,9 @@ p{
     }
 }
 @media only screen and (max-width: 280px) {
-    p {
+    .square p{
         font-size: 0.6rem !important;
-        height: 500%;
+        height: 2.5vh;
     }
 
     .square {

@@ -80,4 +80,10 @@ p {
 }
 
 
+@media only screen and (max-width: 280px){
 
+    h2 {
+        font-size: 15px!important;
+    }
+
+}

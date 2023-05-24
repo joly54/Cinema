@@ -252,7 +252,7 @@ function SesInfo({handlePayData}){
                                                 setSelect((row * 12) + col + 1);}
                                             }>
                                                 <Typography
-                                                    className="typography"
+
                                                     style={{
                                                         fontSize: "1rem",
                                                         color: "white",
