@@ -19,6 +19,7 @@ import "../src/components/Styles/App.css";
 import bcrypt from 'bcryptjs'
 import Footer from "./components/footer";
 import NotFound from "./components/404";
+import fav from "./components/img/fav.jpg";
 import md5 from "md5";
 function App() {
     useEffect(() => {
