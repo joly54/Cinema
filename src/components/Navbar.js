@@ -9,18 +9,20 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js.map';
-function Header({ loggedIn, handleLogout }) {
+
+function Header({loggedIn, handleLogout, additionals}) {
+    console.log(additionals);
     const navigate = useNavigate();
     return (
         <Navbar variant="dark" bg="dark" expand="lg">
             <Container fluid>
                 <Navbar.Brand
                     style={{
-                cursor: "pointer",
-                }
+                        cursor: "pointer",
                     }
-                    onClick={()=> navigate("/")}>Cinema</Navbar.Brand>
-                <Navbar.Toggle aria-controls="navbar-dark-example" />
+                    }
+                    onClick={() => navigate("/")}>Cinema</Navbar.Brand>
+                <Navbar.Toggle aria-controls="navbar-dark-example"/>
                 <Navbar.Collapse id="navbar-dark-example">
                     <Nav>
                         <Nav.Link>
@@ -30,24 +32,41 @@ function Header({ loggedIn, handleLogout }) {
                             <Link to={"/films"} className="nav-link">Films</Link>
                         </Nav.Link>
                     </Nav>
+                    {/*map by aditionals*/}
+                    {additionals.map((item, index) => {
+                        return (
+                            <Nav key={index}>
+                                <a
+                                    href={item.url}
+                                    className="nav-link"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    {item.title}
+                                </a>
+                            </Nav>
+                        );
+                    })}
+
                     <Nav>
                         <NavDropdown
                             id="nav-dropdown-dark-example"
                             title="Profile"
                             menuVariant="dark"
                         >
-                            {loggedIn?
+                            {loggedIn ?
                                 <>
-                                <div
-                                >
-                                    <NavDropdown.Item>
-                                        <Link to={"/profile"} className="nav-link">Profile</Link>
-                                    </NavDropdown.Item>
-                                    <NavDropdown.Item>
-                                        <Link to={"/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
-                                    </NavDropdown.Item>
-                                </div>
-                                    </>
+                                    <div
+                                    >
+                                        <NavDropdown.Item>
+                                            <Link to={"/profile"} className="nav-link">Profile</Link>
+                                        </NavDropdown.Item>
+                                        <NavDropdown.Item>
+                                            <Link to={"/login"} className="nav-link"
+                                                  onClick={handleLogout}>Logout</Link>
+                                        </NavDropdown.Item>
+                                    </div>
+                                </>
                                 :
                                 <>
                                     <div
@@ -56,7 +75,8 @@ function Header({ loggedIn, handleLogout }) {
                                             <Link to={"/login"} className="nav-link">Log in</Link>
                                         </NavDropdown.Item>
                                         <NavDropdown.Item>
-                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sing up</Link>
+                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sing
+                                                up</Link>
                                         </NavDropdown.Item>
                                     </div>
                                 </>
@@ -68,4 +88,5 @@ function Header({ loggedIn, handleLogout }) {
         </Navbar>
     );
 }
+
 export default Header;

@@ -17,6 +17,7 @@ import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
 import Footer from "./components/footer";
+import { SHA256 } from 'crypto-js';
 import NotFound from "./components/404";
 function App() {
     useEffect(() => {
@@ -37,6 +38,7 @@ function App() {
     const [sessionId, setsession] = useState(null);
     const [PayData, setPayData] = useState({});
     let validDue = localStorage.getItem('validDue');
+    const [addition, setAddition] = useState([]);
 
     function handleToastErr(text){
         toast.error(text, {
@@ -76,6 +78,10 @@ function App() {
                             console.log(data);
                             if (res.ok) {
                                 setIsLogin(true);
+                                if(data['additional'] !== undefined){
+                                    setAddition(data['additional']);
+                                }
+                                console.log(addition);
                             } else{
                                 localStorage.removeItem('token');
                                 localStorage.removeItem('username');
@@ -99,25 +105,27 @@ function App() {
         setPassword(value);
     }
     function handleLogin(){
+        const pass = SHA256(password).toString();
+        console.log(pass);
         api.login(
             username,
-            password
+            pass
         ).then(
             (res) => {
                 res.json().then(data => {
-                    console.log(data);
-                    if (res.ok) {
-                        setIsLogin(true);
-                        localStorage.setItem('token', data['token']);
-                        localStorage.setItem('username', username);
-                        localStorage.setItem('validDue', data['validDue']);
-                        handleToastSuc(data['message'])
-                        console.log(navigate)
-                        navigate("/profile");
-                    } else{
-                        handleToastErr(data['message'])
+                        console.log(data);
+                        if (res.ok) {
+                            setIsLogin(true);
+                            localStorage.setItem('token', data['token']);
+                            localStorage.setItem('username', username);
+                            localStorage.setItem('validDue', data['validDue']);
+                            handleToastSuc(data['message'])
+                            console.log(navigate)
+                            navigate("/profile");
+                        } else{
+                            handleToastErr(data['message'])
+                        }
                     }
-            }
                 )}
         ).catch(
             (err) => {
@@ -126,9 +134,10 @@ function App() {
         )
     }
     function handleRegister(){
+        const pass = SHA256(password).toString();
         api.register(
             username,
-            password
+            pass
         ).then(
             (res) => {
                 res.json().then(data =>{
@@ -160,26 +169,26 @@ function App() {
         setPayData(value)
         navigate("/Payment")
     }
-  return (
-      <ThemeProvider theme={theme}>
-      <div className="BackGroundColor">
-          <ToastContainer />
-          <Header loggedIn={isLogin} handleLogout={handleLogout}/>
-        <Routes>
-            <Route path="/" element={<Schedule />} />
-            <Route path="/films/:id" element={<FilmsInfo />} />
-            <Route path="/films" element={<Films />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
-            <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
-            <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
-            <Route path="/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
-            <Route path="/Payment" element={<Payment data={PayData}/>} />
-            <Route path="*" element={<NotFound />} />
-        </Routes>
-          <Footer />
-      </div>
-      </ThemeProvider>
-  );
+    return (
+        <ThemeProvider theme={theme}>
+            <div className="BackGroundColor">
+                <ToastContainer />
+                <Header loggedIn={isLogin} handleLogout={handleLogout} additionals={addition}/>
+                <Routes>
+                    <Route path="/" element={<Schedule />} />
+                    <Route path="/films/:id" element={<FilmsInfo />} />
+                    <Route path="/films" element={<Films />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
+                    <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
+                    <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
+                    <Route path="/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
+                    <Route path="/Payment" element={<Payment data={PayData}/>} />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+                <Footer />
+            </div>
+        </ThemeProvider>
+    );
 }
 export default App;

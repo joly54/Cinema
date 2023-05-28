@@ -13,7 +13,7 @@ function Preloader(){
                 alignItems: "center",
             }}
         >
-            <div className="spinner"></div>
+            <div className="dots"></div>
         </div>
     )
 }
