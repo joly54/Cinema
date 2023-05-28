@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/vin-cinema/static/css/main.24d47485.css",
-    "main.js": "/vin-cinema/static/js/main.ba712296.js",
+    "main.js": "/vin-cinema/static/js/main.96799dc1.js",
     "static/js/787.77c8afa4.chunk.js": "/vin-cinema/static/js/787.77c8afa4.chunk.js",
     "static/media/bootstrap.bundle.min.js.map": "/vin-cinema/static/media/bootstrap.bundle.min.js.6cf42f5405e43f88e807.map",
     "static/media/fav.jpg": "/vin-cinema/static/media/fav.49e184420cc173a6eaca.jpg",
     "index.html": "/vin-cinema/index.html",
     "main.24d47485.css.map": "/vin-cinema/static/css/main.24d47485.css.map",
-    "main.ba712296.js.map": "/vin-cinema/static/js/main.ba712296.js.map",
+    "main.96799dc1.js.map": "/vin-cinema/static/js/main.96799dc1.js.map",
     "787.77c8afa4.chunk.js.map": "/vin-cinema/static/js/787.77c8afa4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.24d47485.css",
-    "static/js/main.ba712296.js"
+    "static/js/main.96799dc1.js"
   ]
 }
