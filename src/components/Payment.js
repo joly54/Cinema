@@ -15,20 +15,47 @@ function Payment ({data}){
                 if (res.ok) {
                     res.json().then(data => {
                         console.log(data);
-                        toast.success("You successfully bought tickets!");
+                        toast.success("You successfully bought tickets!",{
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            pauseOnFocusLoss: false,
+                            theme: "colored",
+                            draggable: true
+                        });
                         navigate("/profile");
                     });
                 }
                 else {
                     res.json().then(data => {
                         console.log(data);
-                        toast.success(data["message"]);
+                        toast.success(data["message"],{
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            pauseOnFocusLoss: false,
+                            theme: "colored",
+                            draggable: true
+                        });
                     });
                 }
             })
             .catch(error => {
                 console.error(error);
-                toast.error("Failed to confirm payment");
+                toast.error("Failed to confirm payment", {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    pauseOnFocusLoss: false,
+                    theme: "colored",
+                    draggable: true
+                });
             });
     }
     return (

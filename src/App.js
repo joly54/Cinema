@@ -46,11 +46,13 @@ function App() {
     function handleToastErr(text){
         toast.error(text, {
             position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                pauseOnFocusLoss: false,
+                theme: "colored",
+                draggable: true
         });
     }
 
@@ -61,6 +63,8 @@ function App() {
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
+            pauseOnFocusLoss: false,
+            theme: "colored",
             draggable: true
         });
     }
@@ -122,7 +126,7 @@ function App() {
                             localStorage.setItem('token', data['token']);
                             localStorage.setItem('username', username);
                             localStorage.setItem('validDue', data['validDue']);
-                            handleToastSuc(data['message'])
+                            handleToastSuc("Welcome back ")
                             console.log(navigate)
                             navigate("/profile");
                         } else{

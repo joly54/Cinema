@@ -8,10 +8,11 @@ import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
 import './Styles/preloader.css';
 import Preloader from "./preloader";
-function SesInfo({handlePayData}){
+
+function SesInfo({handlePayData}) {
 
     //get current url
-    const session =  window.location.href.split("/")[window.location.href.split("/").length-1];
+    const session = window.location.href.split("/")[window.location.href.split("/").length - 1];
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
@@ -19,7 +20,7 @@ function SesInfo({handlePayData}){
     const username = localStorage.getItem("username");
     const token = localStorage.getItem("token");
     useEffect(() => {
-        if(!username || !token){
+        if (!username || !token) {
             toast.error("You are not logged in.",
                 {
                     position: "top-center",
@@ -27,13 +28,14 @@ function SesInfo({handlePayData}){
                     hideProgressBar: false,
                     closeOnClick: true,
                     pauseOnHover: false,
-                    draggable: true}
+                    draggable: true
+                }
             );
             //remove from history
             window.history.replaceState(null, null, "/Cinema");
             navigate("/login");
             return;
-        } else{
+        } else {
             api.checktoken(username, token)
                 .then(res => {
                     if (res.ok) {
@@ -50,7 +52,10 @@ function SesInfo({handlePayData}){
                                     hideProgressBar: false,
                                     closeOnClick: true,
                                     pauseOnHover: false,
-                                    draggable: true}
+                                    pauseOnFocusLoss: false,
+                                    theme: "colored",
+                                    draggable: true
+                                }
                             );
                             window.history.replaceState(null, null, "/Cinema");
                             navigate("/login");
@@ -60,11 +65,20 @@ function SesInfo({handlePayData}){
                 })
                 .catch(error => {
                     console.error(error);
-                    //toast message from server
+                    toast.error("Oops! Something went wrong.", {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        pauseOnFocusLoss: false,
+                        theme: "colored",
+                        draggable: true
+                    });
 
                     navigate("/")
                 });
-                }
+        }
         api.getSessionInfo(session)
             .then(res => {
                 if (res.ok) {
@@ -83,16 +97,27 @@ function SesInfo({handlePayData}){
             })
             .catch(error => {
                 console.error(error);
-                toast.error("Failed to get session info.");
+                toast.error("Failed to get session info.",{
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        pauseOnFocusLoss: false,
+                        theme: "colored",
+                        draggable: true
+                    }
+                    );
             });
     }, []);
-    Array.from({ length: 49 }, (_, i) => i + 1);
-    function setSelect(id){
-        if(document.getElementById(id).classList.contains("occupied"))
+    Array.from({length: 49}, (_, i) => i + 1);
+
+    function setSelect(id) {
+        if (document.getElementById(id).classList.contains("occupied"))
             return;
         document.getElementById(id).classList.toggle("selected");
         const items = selected;
-        if(document.getElementById(id).classList.contains("selected"))
+        if (document.getElementById(id).classList.contains("selected"))
             items.push(id);
         else
             items.splice(items.indexOf(id), 1);
@@ -100,13 +125,23 @@ function SesInfo({handlePayData}){
         document.getElementById("selected").innerHTML = selected;
 
     }
-    function buy(){
+
+    function buy() {
         api.buyTicket(session, localStorage.getItem("username"), localStorage.getItem("token"), selected)
             .then(res => {
                 if (res.ok) {
                     res.json().then(data => {
                         console.log(data);
-                        toast.success("Payment created successfully!");
+                        toast.success("Payment created successfully!",{
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            pauseOnFocusLoss: false,
+                            theme: "colored",
+                            draggable: true
+                        });
                         handlePayData(
                             {
                                 pay_id: data["id"],
@@ -122,98 +157,107 @@ function SesInfo({handlePayData}){
                 } else {
                     res.json().then(data => {
                         console.error(data);
-                        toast.error(data["message"]);
+                        toast.error(data["message"],{
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: false,
+                            pauseOnFocusLoss: false,
+                            theme: "colored",
+                            draggable: true
+                        });
                     });
                 }
             })
     }
+
     return (
         <div
-        style={{
-            height: "100%",
-            width: "100%",
-            //centering
+            style={{
+                height: "100%",
+                width: "100%",
+                //centering
 
-            justifyContent: "center",
-            alignItems: "center",
-        }}
+                justifyContent: "center",
+                alignItems: "center",
+            }}
         >
-            <ToastContainer />
-            <BackToTopButton />
+            <ToastContainer/>
+            <BackToTopButton/>
             {sessionInfo && sessionInfo["trailer"] ? <div>
-                    <Grid container spacing={2}
+                <Grid container spacing={2}
+                      style={{
+                          maxWidth: "100%",
+                          justifyContent: "center",
+                          alignItems: "center",
+
+                      }}
+                >
+                    <Grid item xs={12} md={6}
+                          style={{}}
+                    >
+                        <Typography
+                            className="FilmInfo"
+                            style={{
+                                fontFamily: "Montserrat",
+                                marginLeft: "17px",
+                            }}
+                            variant="h4"
+                        >
+                            {sessionInfo["title"]}
+                        </Typography>
+                        <Typography
+                            style={{
+                                fontFamily: "Montserrat",
+                                marginLeft: "17px",
+                            }}
+                            variant="h6"
+                            className="FilmInfo">
+                            {sessionInfo["date"] + " " + sessionInfo["time"] + " " + sessionInfo["seats"].length + " seats left"}
+                        </Typography>
+                        <br></br>
+                        <Typography
+                            style={{
+                                marginLeft: "17px",
+                            }}
+                            mt={2}
+                            className="FilmInfo"
+                            variant="h6"
+                        >
+                            {sessionInfo["description"]}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={11} md={6}
                           style={{
-                              maxWidth: "100%",
+                              marginLeft: "17px",
+                              display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
-
                           }}
                     >
-                        <Grid item xs={12} md={6}
-                              style={{
-                              }}
-                        >
-                            <Typography
-                                className="FilmInfo"
-                                style={{
-                                    fontFamily: "Montserrat",
-                                    marginLeft: "17px",
-                                }}
-                                variant="h4"
-                            >
-                                {sessionInfo["title"]}
-                            </Typography>
-                            <Typography
-                                style={{
-                                    fontFamily: "Montserrat",
-                                    marginLeft: "17px",
-                                }}
-                                variant="h6"
-                                className="FilmInfo">
-                                {sessionInfo["date"] + " " + sessionInfo["time"] + " " + sessionInfo["seats"].length + " seats left"}
-                            </Typography>
-                            <br></br>
-                            <Typography
-                                style={{
-                                    marginLeft: "17px",
-                                }}
-                                mt={2}
-                                className="FilmInfo"
-                                variant="h6"
-                            >
-                                {sessionInfo["description"]}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={11} md={6}
-                              style={{
-                                  marginLeft: "17px",
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                              }}
-                        >
-                            <iframe
-                                style={{borderRadius: "10px"}}
-                                title="Movie trailer"
-                                width="500"
-                                height="315"
-                                src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
-                                title="YouTube video player"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                allowFullScreen/>
-                        </Grid>
+                        <iframe
+                            style={{borderRadius: "10px"}}
+                            title="Movie trailer"
+                            width="500"
+                            height="315"
+                            src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
+                            title="YouTube video player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen/>
                     </Grid>
+                </Grid>
                 <Grid>
                     <div>
                         <div className="Seats"
-                        style={{
-                            maxWidth: "99%",
-                            justifyContent: "center",
-                            alignItems: "center",
-                        }}>
+                             style={{
+                                 maxWidth: "99%",
+                                 justifyContent: "center",
+                                 alignItems: "center",
+                             }}>
                             <img
-                            src={sessionInfo["poster"]}
-                            className="screen"
+                                src={sessionInfo["poster"]}
+                                className="screen"
                             >
                             </img>
                             <div style={{
@@ -258,9 +302,10 @@ function SesInfo({handlePayData}){
                                     <Grid key={row} item xs={15} container justifyContent="center">
                                         {[...Array(12)].map((_, col) => (
                                             <div id={(row * 12) + col + 1} className={
-                                                ( aviSeats.includes((row * 12) + col + 1) ? "available" : "occupied") + " square"
-                                            } onClick={()=>{
-                                                setSelect((row * 12) + col + 1);}
+                                                (aviSeats.includes((row * 12) + col + 1) ? "available" : "occupied") + " square"
+                                            } onClick={() => {
+                                                setSelect((row * 12) + col + 1);
+                                            }
                                             }>
                                                 <Typography
                                                     className="typography"
@@ -301,9 +346,10 @@ function SesInfo({handlePayData}){
                         </div>
                     </div>
                 </Grid>
-                </div> : <p>Loading...</p>}
+            </div> : <p>Loading...</p>}
         </div>
     );
 
 }
+
 export default SesInfo;
