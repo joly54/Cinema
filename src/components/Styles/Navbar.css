@@ -21,4 +21,14 @@ li a:hover {
 .RightMenu {
     float: right;
 }
+.additional{
+    padding: 0 1rem;
+    color: #96989a;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+.additional:hover{
+    color: #fff;
+    text-decoration: none;
+}
 
