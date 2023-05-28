@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import random
@@ -12,7 +13,8 @@ from email.message import EmailMessage
 from flask_admin.contrib.sqla import ModelView
 
 import qrcode
-from flask import Flask, jsonify, make_response, request, send_file, render_template, Response
+from flask import Flask, jsonify, make_response, request, send_file, render_template, Response, redirect, url_for, \
+    session
 from flask_admin import Admin
 from flask_cors import CORS
 from flask_restful import Api, Resource
@@ -40,7 +42,7 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "secretkey"
 db = SQLAlchemy(app)
-admin = Admin(app)
+admin = Admin(app, template_mode='bootstrap4', name='Vin-cinema')
 
 
 class Payment(db.Model):
@@ -108,11 +110,26 @@ class Tiket(db.Model):
     def __repr__(self):
         return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}')"
 
-admin.add_view(ModelView(User, db.session))
+#add user but dont show password
+class UserView(ModelView):
+    column_exclude_list = ('password', "token")
+
+    column_searchable_list = ('username',)
+    column_filters = ('username', "is_admin", )
+    column_editable_list = ('is_admin', "isEmailConfirmed")
+    can_create = False
+    can_delete = False
+    can_edit = True
+    can_view_details = True
+
+
+admin.add_view(UserView(User, db.session))
 admin.add_view(ModelView(Film, db.session))
 admin.add_view(ModelView(Sessions, db.session))
 admin.add_view(ModelView(Payment, db.session))
 admin.add_view(ModelView(Tiket, db.session))
+
+
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -124,8 +141,6 @@ def handle_exception(e):
         html = render_template('fail.html', message="Something went wrong. Please try again later.",
                                description="Error: " + str(e))
         return make_response(html, 500)
-
-
 def send_email(username, code):
     sender_email = config.sender_email
     password = config.password
