@@ -112,13 +112,13 @@ class Tiket(db.Model):
 
 #add user but dont show password
 class UserView(ModelView):
+    #show user id
+    column_list = ('id', 'username', 'is_admin', "isEmailConfirmed")
     column_exclude_list = ('password', "token")
 
     column_searchable_list = ('username',)
     column_filters = ('username', "is_admin", )
     column_editable_list = ('is_admin', "isEmailConfirmed")
-    can_create = False
-    can_delete = False
     can_edit = True
     can_view_details = True
 
