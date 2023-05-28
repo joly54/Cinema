@@ -169,6 +169,7 @@ while True:
         url - opens webapp url
         upload - uploads app.py
         chconsole - changes console
+        refilldb - refills database
         exit - exits
         ''')
         input("press enter to continue")
