@@ -19,6 +19,7 @@ import "../src/components/Styles/App.css";
 import bcrypt from 'bcryptjs'
 import Footer from "./components/footer";
 import NotFound from "./components/404";
+import md5 from "md5";
 function App() {
     useEffect(() => {
         Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
@@ -39,6 +40,7 @@ function App() {
     const [PayData, setPayData] = useState({});
     let validDue = localStorage.getItem('validDue');
     const [addition, setAddition] = useState([]);
+    const md5 = require('md5');
 
     function handleToastErr(text){
         toast.error(text, {
@@ -106,8 +108,7 @@ function App() {
     }
     function handleLogin(){
         //hash using bcrypt
-        const salt = bcrypt.genSaltSync(10);
-        const pass = bcrypt.hashSync(password, salt);
+        const pass = md5(password)
         console.log(pass);
         // console.log(username);
         api.login(
@@ -138,8 +139,7 @@ function App() {
     }
     function handleRegister(){
         //hash using bcrypt
-        const salt = bcrypt.genSaltSync(10);
-        const pass = bcrypt.hashSync(password, salt);
+        const pass = md5(password)
         api.register(
             username,
             pass
