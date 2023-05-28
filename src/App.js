@@ -16,9 +16,10 @@ import Cookies from 'js-cookie';
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
+import bcrypt from 'bcryptjs'
 import Footer from "./components/footer";
-import { SHA256 } from 'crypto-js';
 import NotFound from "./components/404";
+import md5 from "md5";
 function App() {
     useEffect(() => {
         Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
@@ -39,6 +40,7 @@ function App() {
     const [PayData, setPayData] = useState({});
     let validDue = localStorage.getItem('validDue');
     const [addition, setAddition] = useState([]);
+    const md5 = require('md5');
 
     function handleToastErr(text){
         toast.error(text, {
@@ -105,8 +107,10 @@ function App() {
         setPassword(value);
     }
     function handleLogin(){
-        const pass = SHA256(password).toString();
+        //hash using bcrypt
+        const pass = md5(password)
         console.log(pass);
+        // console.log(username);
         api.login(
             username,
             pass
@@ -134,7 +138,8 @@ function App() {
         )
     }
     function handleRegister(){
-        const pass = SHA256(password).toString();
+        //hash using bcrypt
+        const pass = md5(password)
         api.register(
             username,
             pass
