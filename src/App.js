@@ -110,11 +110,9 @@ function App() {
     function handleLogin(){
         //hash using bcrypt
         const pass = md5(password)
-        console.log(pass);
-        // console.log(username);
         api.login(
             username,
-            pass
+            md5(pass)
         ).then(
             (res) => {
                 res.json().then(data => {
@@ -143,7 +141,7 @@ function App() {
         const pass = md5(password)
         api.register(
             username,
-            pass
+            md5(pass)
         ).then(
             (res) => {
                 res.json().then(data =>{
