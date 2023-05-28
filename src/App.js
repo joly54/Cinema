@@ -16,8 +16,8 @@ import Cookies from 'js-cookie';
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
+import bcrypt from 'bcryptjs'
 import Footer from "./components/footer";
-import { SHA256 } from 'crypto-js';
 import NotFound from "./components/404";
 function App() {
     useEffect(() => {
@@ -105,8 +105,11 @@ function App() {
         setPassword(value);
     }
     function handleLogin(){
-        const pass = SHA256(password).toString();
+        //hash using bcrypt
+        const salt = bcrypt.genSaltSync(10);
+        const pass = bcrypt.hashSync(password, salt);
         console.log(pass);
+        // console.log(username);
         api.login(
             username,
             pass
@@ -134,7 +137,9 @@ function App() {
         )
     }
     function handleRegister(){
-        const pass = SHA256(password).toString();
+        //hash using bcrypt
+        const salt = bcrypt.genSaltSync(10);
+        const pass = bcrypt.hashSync(password, salt);
         api.register(
             username,
             pass
