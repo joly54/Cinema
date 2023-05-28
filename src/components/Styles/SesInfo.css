@@ -29,100 +29,7 @@ p{
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
 }
 
-@media only screen and (max-width: 900px) {
-    .square p{
-        font-size: 1.1rem !important;
-        height: 5vh;
-    }
-    .square {
-        width: 60px;
-        height: 60px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
 
-
-@media only screen and (max-width: 780px) {
-    .square p{
-        font-size: 0.9rem !important;
-        height: 4vh;
-    }
-    .square {
-        width: 40px;
-        height: 40px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
-
-@media only screen and (max-width: 550px) {
-    .square p{
-        font-size: 0.8rem !important;
-        height: 900%;
-    }
-    .square {
-        width: 30px;
-        height: 30px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
-
-@media only screen and (max-width: 420px) {
-    .square p{
-        font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
-        height: 2.7vh;
-    }
-    .square {
-        width: 24px;
-        height: 24px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
-
-
-
-@media only screen and (max-width: 389px) {
-    .square p{
-        font-size: 0.7rem !important;       /* FOR SE*/
-        height: 3.5vh;
-    }
-
-    .square {
-        width: 24px;
-        height: 24px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
-
-@media only screen and (max-width: 361px) {
-    .square p{
-        height: 3vh;
-        font-size: 0.6rem !important;       /* GALAXY S8+*/
-    }
-    .square {
-        width: 20px;
-        height: 20px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
-@media only screen and (max-width: 280px) {
-    .square p{
-        font-size: 0.6rem !important;
-        height: 2.5vh;
-    }
-
-    .square {
-        width: 17px;
-        height: 17px;
-        border-radius: 25%;
-        padding-bottom: 5%;
-    }
-}
 
 .available{
     background-color: #9f6bc5;
@@ -243,3 +150,138 @@ p{
         opacity: 1;
     }
 }
+
+@media only screen and (max-width: 900px) {
+    .square p{
+        font-size: 1.4rem !important;
+        height: 5vh;
+    }
+    .square {
+        width: 60px;
+        height: 60px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+
+@media only screen and (max-width: 800px) {
+    .square p{
+        font-size: 0.9rem !important;
+        height: 5vh;
+    }
+    .square {
+        width: 40px;
+        height: 40px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+@media only screen and (max-width: 769px) {
+    .square p{
+        font-size: 0.9rem !important;
+        height: 4vh;
+    }
+    .square {
+        width: 40px;
+        height: 40px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 559px) {
+    .square p{
+        font-size: 0.8rem !important;
+        height: 9vh;
+    }
+    .square {
+        width: 30px;
+        height: 30px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 559px) {
+    .square p{
+        font-size: 0.8rem !important;
+        height: 4vh;
+    }
+    .square {
+        width: 30px;
+        height: 30px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 530px) {
+    .square p{
+        font-size: 0.8rem !important;           /* FOR XR, 12PRO, PIXEL5*/
+        height: 2.7vh;
+    }
+    .square {
+        width: 24px;
+        height: 24px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+
+
+@media only screen and (max-width: 389px) {
+    .square p{
+        font-size: 0.7rem !important;       /* FOR SE*/
+        height: 3.5vh;
+    }
+
+    .square {
+        width: 24px;
+        height: 24px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+@media only screen and (max-width: 370px) {
+    .square p{
+        height: 3vh;
+        font-size: 0.6rem !important;       /* GALAXY S8+*/
+    }
+    .square {
+        width: 20px;
+        height: 20px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+@media only screen and (max-width: 320px) {
+    .square p{
+        font-size: 0.6rem !important;
+        height: 2.5vh;
+    }
+
+    .square {
+        width: 17px;
+        height: 17px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+@media screen and (min-width: 120px)and (max-width: 279px) {
+    .square p{
+        font-size: 0.3rem !important;
+        height: 2.5vh;
+    }
+
+    .square {
+        width: 9px;
+        height: 9px;
+        border-radius: 25%;
+        padding-bottom: 5%;
+    }
+}
+
+

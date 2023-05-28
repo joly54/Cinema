@@ -78,6 +78,7 @@
 
 @media screen and (max-width: 2560px) {
     .film-poster{
+
         width: 70%;
         object-fit: cover;
         border-radius: 5px;

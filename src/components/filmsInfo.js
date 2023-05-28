@@ -32,7 +32,6 @@ function FilmsInfo() {
             style={{
                 marginLeft: "8px",
                 height: "100%",
-                width: "100%",
                 justifyContent: "center",
                 alignItems: "center",
             }}
@@ -49,7 +48,6 @@ function FilmsInfo() {
                       }}
                 >
                     <Grid item xs={12} md={6}
-                          style={{}}
                     >
                         <Typography
                             className="FilmInfo"
@@ -82,7 +80,7 @@ function FilmsInfo() {
                           }}
                     >
                         <iframe
-                            style={{borderRadius: "10px"}}
+                            style={{borderRadius: "10px", marginTop: "1rem"}}
                             title="Movie trailer"
                             width="500"
                             height="315"
@@ -93,6 +91,7 @@ function FilmsInfo() {
                     </Grid>
                     <Grid
                         style={{
+                            maxWidth: "100%",
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
@@ -101,6 +100,7 @@ function FilmsInfo() {
                         }}
                     >
                         <img
+
                             className={"film-poster"}
                             src={data["poster"]}
                             alt="poster"></img>
