@@ -92,10 +92,10 @@ class User(db.Model):
     sesionValidTo = db.Column(db.Integer, nullable=False)
     codeToConfirmEmail = db.Column(db.String(16), nullable=False)
     isEmailConfirmed = db.Column(db.Boolean, nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
-        return f"User(username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}', sesionValidTo='{self.sesionValidTo}', codeToConfirmEmail='{self.codeToConfirmEmail}', isEmailConfirmed='{self.isEmailConfirmed}')"
-
+        return f"User(id='{self.id}', username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}', sesionValidTo='{self.sesionValidTo}', codeToConfirmEmail='{self.codeToConfirmEmail}', isEmailConfirmed='{self.isEmailConfirmed}', is_admin='{self.is_admin}')"
 
 class Tiket(db.Model):
     id = db.Column(db.String(255), primary_key=True)
@@ -466,7 +466,13 @@ class checkToken(Resource):
             return {'message': 'User not found'}, 404
         if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
             return {'message': 'Token not valid'}, 400
-        return {'message': 'Token valid'}, 200
+        additional = []
+        if user.is_admin:
+            additional.append({
+                "title": "Admin Panel",
+                "url": base_url + "/admin"
+            })
+        return {'message': 'Token valid', "additional": additional}, 200
 
 
 class ResendEmailValidationCode(Resource):
