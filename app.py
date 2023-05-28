@@ -8,10 +8,12 @@ import string
 import threading
 import time as systime
 from email.message import EmailMessage
-from datetime import datetime
+
+from flask_admin.contrib.sqla import ModelView
 
 import qrcode
 from flask import Flask, jsonify, make_response, request, send_file, render_template, Response
+from flask_admin import Admin
 from flask_cors import CORS
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
@@ -38,6 +40,7 @@ else:
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "secretkey"
 db = SQLAlchemy(app)
+admin = Admin(app)
 
 
 class Payment(db.Model):
@@ -105,6 +108,11 @@ class Tiket(db.Model):
     def __repr__(self):
         return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}')"
 
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Film, db.session))
+admin.add_view(ModelView(Sessions, db.session))
+admin.add_view(ModelView(Payment, db.session))
+admin.add_view(ModelView(Tiket, db.session))
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -223,10 +231,7 @@ class Login(Resource):
         user.token = get_random_string(32)
         user.sesionValidTo = int(systime.time()) + 3600 * 24
         db.session.commit()
-        resp = make_response(
-            jsonify({'message': 'Logged in successfully', "token": user.token, "validDue": user.sesionValidTo}), 200)
-        resp.set_cookie('token', user.token)
-        return resp
+        return {'message': 'Logged in successfully', "token": user.token, "validDue": user.sesionValidTo}, 200
 
 
 class Register(Resource):
@@ -369,7 +374,6 @@ class Schedule(Resource):
     def get(self):
         sessions = Sessions.query.all()
         answer = []
-        # get all aviable dates from sessions
         dates = {}
         for session in sessions:
             if session.date not in dates:
@@ -380,10 +384,11 @@ class Schedule(Resource):
                     "time": session.time,
                     "title": session.title,
                     "trailer": session.film.trailer,
-                    "seats": json.loads(session.seats),
+                    "seats": eval(session.seats),
                     "session_id": session.id,
                     "price": session.film.price,
                     "description": session.film.description,
+                    "film_id": session.film_id,
                     "poster": base_url + "/Posters/" + str(session.film_id)
                 }
             )
@@ -518,14 +523,6 @@ class UserInformation(Resource):
         res['username'] = user.username
         res['isEmailConfirmed'] = user.isEmailConfirmed
         tikets = Tiket.query.filter_by(username=username).all()
-        currentDate = datetime.strptime(systime.strftime("%Y.%m.%d"), "%Y.%m.%d")
-        for tiket in tikets:
-            if datetime.strptime(tiket.date, "%Y.%m.%d") < currentDate:
-                tikets.remove(tiket)
-                #delete from db
-                Tiket.query.filter_by(id=tiket.id).delete()
-                os.remove("tikets/" + tiket.id + ".png")
-        db.session.commit()
         res['tikets'] = []
         for tiket in tikets:
             data = {
@@ -591,11 +588,15 @@ class BuyTikets(Resource):
             return {'message': 'User not found'}, 404
         if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
             return {'message': 'Wrong token or ses_id expired'}, 400
+        if user.isEmailConfirmed == False:
+            return {'message': 'Email not confirmed'}, 400
         ses = Sessions.query.filter_by(id=ses_id).first()
         if ses is None:
             return {'message': 'Session not found'}, 404
 
         seats = json.loads(seats)
+        if len(seats) == 0:
+            return {'message': 'No seats selected'}, 400
         aviable_seats = json.loads(ses.seats)
         if not all(elem in aviable_seats for elem in seats):
             return {'message': 'Seats not available'}, 400
@@ -803,7 +804,7 @@ api.add_resource(GetSession, '/getSession')
 api.add_resource(send_poster, '/Posters/<id>')
 api.add_resource(confirm_Payment, '/confirmPayment')
 
-ban_list = ["31.42.178.38"]
+ban_list = []
 
 if __name__ == '__main__':
     with app.app_context():
