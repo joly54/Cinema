@@ -96,6 +96,8 @@ function FilmsInfo() {
                             display: "flex",
                             justifyContent: "center",
                             alignItems: "center",
+                            marginTop: "15px",
+                            marginBottom: "15px",
                         }}
                     >
                         <img
