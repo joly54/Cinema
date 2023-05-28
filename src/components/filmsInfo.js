@@ -103,7 +103,7 @@ function FilmsInfo() {
                             src={data["poster"]}
                             alt="poster"></img>
                     </Grid>
-                    <Grid container xs={12} md={6}
+                    <Grid container xs={12} md={6} lg={8}
                           style={
                               {
                                   display: "flex",

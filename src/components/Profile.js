@@ -83,7 +83,7 @@ function Profile() {
                 <h2>{email}</h2>
                 <h3>My Tickets</h3>
                 {status === false ? (
-                    <button className="btn" onClick={confirmEmail}>
+                    <button className="btn-confirm" onClick={confirmEmail}>
                         Confirm email
                     </button>
                 ) : null}
