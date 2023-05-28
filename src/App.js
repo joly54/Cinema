@@ -78,7 +78,9 @@ function App() {
                             console.log(data);
                             if (res.ok) {
                                 setIsLogin(true);
-                                setAddition(data['additional']);
+                                if(data['additional'] !== undefined){
+                                    setAddition(data['additional']);
+                                }
                                 console.log(addition);
                             } else{
                                 localStorage.removeItem('token');
