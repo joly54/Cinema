@@ -194,6 +194,7 @@ function SesInfo({handlePayData}){
                         >
                             <iframe
                                 style={{borderRadius: "10px"}}
+                                className="video-iframe"
                                 title="Movie trailer"
                                 width="500"
                                 height="315"
