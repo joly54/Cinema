@@ -19,6 +19,7 @@ import "../src/components/Styles/App.css";
 import bcrypt from 'bcryptjs'
 import Footer from "./components/footer";
 import NotFound from "./components/404";
+import fav from "./components/img/fav.jpg";
 import md5 from "md5";
 function App() {
     useEffect(() => {
@@ -45,11 +46,13 @@ function App() {
     function handleToastErr(text){
         toast.error(text, {
             position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                pauseOnFocusLoss: false,
+                theme: "colored",
+                draggable: true
         });
     }
 
@@ -60,6 +63,8 @@ function App() {
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: false,
+            pauseOnFocusLoss: false,
+            theme: "colored",
             draggable: true
         });
     }
@@ -109,11 +114,9 @@ function App() {
     function handleLogin(){
         //hash using bcrypt
         const pass = md5(password)
-        console.log(pass);
-        // console.log(username);
         api.login(
             username,
-            pass
+            md5(pass)
         ).then(
             (res) => {
                 res.json().then(data => {
@@ -123,7 +126,7 @@ function App() {
                             localStorage.setItem('token', data['token']);
                             localStorage.setItem('username', username);
                             localStorage.setItem('validDue', data['validDue']);
-                            handleToastSuc(data['message'])
+                            handleToastSuc("Welcome back ")
                             console.log(navigate)
                             navigate("/profile");
                         } else{
@@ -142,7 +145,7 @@ function App() {
         const pass = md5(password)
         api.register(
             username,
-            pass
+            md5(pass)
         ).then(
             (res) => {
                 res.json().then(data =>{
