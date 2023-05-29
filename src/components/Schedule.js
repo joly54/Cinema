@@ -78,7 +78,6 @@ function CinemaSchedule() {
                                         flexDirection: "column",
                                         justifyContent: "space-between",
                                         height: "100%",
-                                        border: "0",
                                     }}
                                 >
                                     <CardActionArea

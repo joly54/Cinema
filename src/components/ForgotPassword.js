@@ -4,9 +4,7 @@ import { Button, Grid, Typography } from "@material-ui/core";
 import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
 import './Styles/scrollBar.css';
 import './Styles/ForgotPassword.css';
-import md5 from "md5";
 function ForgotPassword({handleToastErr, handleToastSuc}) {
-    const md5 = require('md5');
     document.title = "Forgot Password";
     const [showConfirmationCode, setShowConfirmationCode] = useState(false);
     const [isUsernameDisabled, setIsUsernameDisabled] = useState(false);
@@ -58,7 +56,7 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
         }if (password !== confirmPassword) {
             handleToastErr("Check that the password is entered correctly")
         }else {
-            ResetPassword(username, code, md5(md5(password)))
+            ResetPassword(username, code, password)
                 .then(response=>{
                     if(response.ok){
                         handleToastSuc("Password reset");
