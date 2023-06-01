@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {Routes, Route, useNavigate} from 'react-router-dom';
+import {Route, Routes, useNavigate} from 'react-router-dom';
 import {toast, ToastContainer} from "react-toastify";
-import { createTheme, ThemeProvider } from '@material-ui/core/styles';
+import {createTheme, ThemeProvider} from '@material-ui/core/styles';
 import Header from './components/Navbar';
 import Profile from './components/Profile';
 import Films from './components/Films';
@@ -16,11 +16,9 @@ import Cookies from 'js-cookie';
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
-import bcrypt from 'bcryptjs'
 import Footer from "./components/footer";
 import NotFound from "./components/404";
-import fav from "./components/img/fav.jpg";
-import md5 from "md5";
+
 function App() {
     useEffect(() => {
         Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });

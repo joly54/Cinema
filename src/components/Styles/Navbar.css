@@ -32,3 +32,10 @@ li a:hover {
     text-decoration: none;
 }
 
+@media (max-width: 767px) {
+    .navbar-nav.collapse-cols {
+        column-count: 2;
+        column-gap: 2rem;
+    }
+}
+

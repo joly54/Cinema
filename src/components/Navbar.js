@@ -15,7 +15,9 @@ function Header({loggedIn, handleLogout, additionals}) {
     const navigate = useNavigate();
     return (
         <Navbar variant="dark" bg="dark" expand="lg">
-            <Container fluid>
+            <Container fluid
+
+            >
                 <Navbar.Brand
                     style={{
                         cursor: "pointer",
@@ -49,39 +51,25 @@ function Header({loggedIn, handleLogout, additionals}) {
                     })}
 
                     <Nav>
-                        <NavDropdown
-                            id="nav-dropdown-dark-example"
-                            title="Profile"
-                            menuVariant="dark"
-                        >
-                            {loggedIn ?
-                                <>
-                                    <div
-                                    >
-                                        <NavDropdown.Item>
-                                            <Link to={"/profile"} className="nav-link">Profile</Link>
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Item>
-                                            <Link to={"/login"} className="nav-link"
-                                                  onClick={handleLogout}>Logout</Link>
-                                        </NavDropdown.Item>
-                                    </div>
-                                </>
-                                :
-                                <>
-                                    <div
-                                    >
-                                        <NavDropdown.Item>
-                                            <Link to={"/login"} className="nav-link">Log in</Link>
-                                        </NavDropdown.Item>
-                                        <NavDropdown.Item>
-                                            <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sing
-                                                up</Link>
-                                        </NavDropdown.Item>
-                                    </div>
-                                </>
-                            }
-                        </NavDropdown>
+                        {loggedIn ? (
+                            <>
+                                <Nav.Link>
+                                    <Link to={"/profile"} className="nav-link">Profile</Link>
+                                </Nav.Link>
+                                <Nav.Link>
+                                    <Link to={"/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
+                                </Nav.Link>
+                            </>
+                        ) : (
+                            <>
+                                <Nav.Link>
+                                    <Link to={"/login"} className="nav-link">Log in</Link>
+                                </Nav.Link>
+                                <Nav.Link>
+                                    <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sign up</Link>
+                                </Nav.Link>
+                            </>
+                        )}
                     </Nav>
                 </Navbar.Collapse>
             </Container>

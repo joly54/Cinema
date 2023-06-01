@@ -83,6 +83,9 @@ function Films() {
                                                  loaded++;
                                                  e.target.onerror = null;
                                                  e.target.src = NotFoundImage;
+                                                 if (loaded === mustLoad) {
+                                                     document.getElementById("preloader").style.display = "none";
+                                                 }
                                              }
                                              }
                                              onLoad={
