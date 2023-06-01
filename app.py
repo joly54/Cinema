@@ -234,11 +234,11 @@ def after_request(response):
 
 class Login(Resource):
     def post(self):
-        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-        if ip in ban_list:
-            return {'message': 'max lox'}, 400
-        username = request.args.get('username')
-        password = request.args.get('password')
+        #get username and password from data
+        data = request.data.decode('utf-8')
+        data = json.loads(data)
+        username = data['username']
+        password = data['password']
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
             return {'message': 'Wrong username or password'}, 400
@@ -251,12 +251,10 @@ class Login(Resource):
 
 class Register(Resource):
     def post(self):
-        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-        if ip in ban_list:
-            return {'message': 'max lox'}, 400
-        username = request.args.get('username')
-        password = request.args.get('password')
-        print(password)
+        data = request.data.decode('utf-8')
+        data = json.loads(data)
+        username = data['username']
+        password = data['password']
         if username is None or password is None or not is_email(username):
             return {'message': 'Username not email'}, 400
         user = User.query.filter_by(username=username).first()
@@ -272,11 +270,8 @@ class Register(Resource):
                         isEmailConfirmed=False)
             db.session.add(user)
             db.session.commit()
-            resp = make_response(
-                jsonify({'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}), 200)
-            resp.set_cookie('token', token)
             sendValidationCode(username, user.codeToConfirmEmail)
-            return resp
+            return {'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}, 200
         return {'message': 'User already exists'}, 409
 
 
