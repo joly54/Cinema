@@ -258,12 +258,12 @@ def clearTicket():
 
 if __name__ == "__main__":
     with app.app_context():
-        if sys.argv[1] == "clear":
-            clearTicket()
-        elif sys.argv[1] == "fill":
+        if len(sys.argv) == 1:
             db.create_all()
             CreateAllFilms()
             CreateAllSessions(Film.query.all())
+        elif sys.argv[1] == "clear":
+            clearTicket()
         else:
             print("Wrong argument")
         # app.run(debug=True)
