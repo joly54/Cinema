@@ -232,7 +232,7 @@ function Profile() {
                                         <h4>{ticket.title}</h4>
                                         <p>Time: {ticket.time}</p>
                                         <p>Date: {ticket.date}</p>
-                                        <p>Seats: {ticket.number}</p>
+                                        <p>Seats: {ticket.seats.replace("[", "").replace("]", "")}</p>
                                         <Button
                                             variant="contained"
                                             color="primary"
