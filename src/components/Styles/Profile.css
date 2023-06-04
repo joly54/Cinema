@@ -46,7 +46,8 @@
     border-radius: 2rem;
     padding: 10px;
     margin-bottom: 10px;
-    width: 100%;
+    width: 300px;
+    height: 300px;
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out!important;
 }
 .ticket-card:hover {

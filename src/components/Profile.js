@@ -188,14 +188,13 @@ function Profile() {
                             <Grid
                                 item
                                 key={ticket.id}
-                                lg={6}
-                                md={6}
+                                lg={4}
+                                md={4}
                                 sm={6}
                                 xs={12}
                                 container
                                 justify="center"
                                 style={{
-                                    margin: "auto",
                                     justifyContent: "center",
                                 }}
                             >
