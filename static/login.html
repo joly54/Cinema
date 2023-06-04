@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-md5/2.18.0/md5.min.js"></script>
     <style>
         /* CSS styles from login.css */
         * {
@@ -87,21 +88,28 @@
     </style>
 </head>
 <body>
-<div class="container">
-    <form class="form" action="/adminlog" method="POST">
-        <div class="loginTitle">
-            <h4>LOGIN</h4>
-        </div>
-        <div class="loginInput">
-            <input type="text" name="username" placeholder="Username">
-        </div>
-        <div class="loginInput">
-            <input type="password" name="password" placeholder="Password">
-        </div>
-        <div class="loginButton">
-            <button type="submit" class="btn">Log in</button>
-        </div>
-    </form>
-</div>
+    <div class="container">
+        <form class="form" action="/adminlog" method="POST" onsubmit="hashPassword()">
+            <div class="loginTitle">
+                <h4>LOGIN</h4>
+            </div>
+            <div class="loginInput">
+                <input type="text" name="username" placeholder="Username">
+            </div>
+            <div class="loginInput">
+                <input type="password" id="passwordInput" name="password" placeholder="Password">
+            </div>
+            <div class="loginButton">
+                <button type="submit" class="btn">Log in</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function hashPassword() {
+            var passwordInput = document.getElementById("passwordInput");
+            passwordInput.value = md5(md5(passwordInput.value));
+        }
+    </script>
 </body>
 </html>
