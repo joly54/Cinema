@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        /* CSS styles from login.css */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #5C0099;
+            font-family: Montserrat, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .form {
+            width: 300px;
+            padding: 2rem;
+            background-color: #333;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            color: white;
+        }
+
+        .loginTitle {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .loginTitle h4 {
+            font-size: 1.5rem;
+        }
+
+        .loginInput input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            color: #333;
+            border: none;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #56376B;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: none;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            padding: 0.5rem;
+            margin-top: 1rem;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: scale(1.02);
+        }
+
+        .text-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            text-align: center;
+            color: gray;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .text-btn:hover {
+            color: #56376B;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form class="form" action="/adminlog" method="POST">
+        <div class="loginTitle">
+            <h4>LOGIN</h4>
+        </div>
+        <div class="loginInput">
+            <input type="text" name="username" placeholder="Username">
+        </div>
+        <div class="loginInput">
+            <input type="password" name="password" placeholder="Password">
+        </div>
+        <div class="loginButton">
+            <button type="submit" class="btn">Log in</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

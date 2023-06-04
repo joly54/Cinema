@@ -11,9 +11,10 @@ from email.message import EmailMessage
 
 import qrcode
 import requests
-from flask import Flask, make_response, send_file, render_template, Response
+from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import abort
 from flask import request
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
@@ -25,6 +26,7 @@ import config
 app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
+login_manager = LoginManager(app)
 is_local = config.is_local
 if is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
@@ -43,6 +45,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "secretkey"
 db = SQLAlchemy(app)
 admin = Admin(app, template_mode='bootstrap4', name='Vin-cinema')
+
 
 
 class Payment(db.Model):
@@ -96,6 +99,20 @@ class User(db.Model):
     isEmailConfirmed = db.Column(db.Boolean, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
+    def is_active(self):
+        # Customize the logic to determine if the user is active or not
+        # For example, you could check if the user's email is confirmed or any other condition
+        return self.is_admin
+
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
     def __repr__(self):
         return f"User(id='{self.id}', username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}', sesionValidTo='{self.sesionValidTo}', codeToConfirmEmail='{self.codeToConfirmEmail}', isEmailConfirmed='{self.isEmailConfirmed}', is_admin='{self.is_admin}')"
 
@@ -113,23 +130,110 @@ class Tiket(db.Model):
 
 
 # add user but dont show password
-class UserView(ModelView):
-    # show user id
-    column_list = ('id', 'username', 'is_admin', "isEmailConfirmed")
-    column_exclude_list = ('password', "token")
 
-    column_searchable_list = ('username',)
-    column_filters = ('username', "is_admin",)
-    column_editable_list = ('is_admin', "isEmailConfirmed")
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+class PaymentView(ModelView):
+    column_list = ('id', 'user_id', 'ses_id', 'seats', 'time', 'amount', 'expired', 'confirmed')
     can_edit = True
     can_view_details = True
 
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
 
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('adminlog'))
+
+
+class FilmView(ModelView):
+    column_list = ('id', 'title', 'duration', 'trailer', 'description', 'price')
+    can_edit = True
+    can_view_details = True
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('adminlog'))
+
+
+class SessionsView(ModelView):
+    column_list = ('id', 'title', 'film', 'seats', 'time', 'date')
+    can_edit = True
+    can_view_details = True
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('adminlog'))
+
+
+class UserView(ModelView):
+    column_list = ('id', 'username', 'is_admin', 'isEmailConfirmed')
+    column_exclude_list = ('password', 'token')
+    column_searchable_list = ('username',)
+    column_filters = ('username', 'is_admin')
+    column_editable_list = ('is_admin', 'isEmailConfirmed')
+    can_edit = True
+    can_view_details = True
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('adminlog'))
+
+
+class TiketView(ModelView):
+    column_list = ('id', 'date', 'time', 'title', 'seats', 'username')
+    can_edit = True
+    can_view_details = True
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('adminlog'))
+
+
+admin.add_view(PaymentView(Payment, db.session))
+admin.add_view(FilmView(Film, db.session))
+admin.add_view(SessionsView(Sessions, db.session))
 admin.add_view(UserView(User, db.session))
-admin.add_view(ModelView(Film, db.session))
-admin.add_view(ModelView(Sessions, db.session))
-admin.add_view(ModelView(Payment, db.session))
-admin.add_view(ModelView(Tiket, db.session))
+admin.add_view(TiketView(Tiket, db.session))
+
+
+@app.route('/adminlog', methods=['GET', 'POST'])
+def adminlog():
+    if current_user.is_authenticated:
+        return redirect(url_for('admin.index'))
+    print(current_user.is_authenticated)
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            login_user(user)
+            return redirect(url_for('admin.index'))
+        else:
+            flash('Invalid username or password.', 'error')
+
+    return render_template('login.html')
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
 
 @app.errorhandler(Exception)
@@ -749,6 +853,7 @@ import requests
 import time
 
 BANNED_IPS = []
+WHITE_LIST = ["127.0.0.1", "91.225.38.69"]
 REQUEST_THRESHOLD = 200
 TIME_WINDOW = 60  # Time window in seconds
 
@@ -776,36 +881,39 @@ class BanMiddleware:
     def __call__(self, environ, start_response):
         #get real ip
         ip_address = environ.get('HTTP_X_REAL_IP', environ.get('REMOTE_ADDR'))
+        print(ip_address)
 
         # Check if the IP is already banned
         if ip_address in BANNED_IPS:
             start_response('403 Forbidden', [('Content-Type', 'text/plain')])
             return [b'Forbidden']
 
-        current_time = time.time()
+        # Check if the IP is whitelisted
+        if ip_address not in WHITE_LIST:
+            current_time = time.time()
+            if ip_address in user_requests:
+                requests_info = user_requests[ip_address]
+                num_requests, last_request_time = requests_info
 
-        if ip_address in user_requests:
-            requests_info = user_requests[ip_address]
-            num_requests, last_request_time = requests_info
-
-            if current_time - last_request_time > TIME_WINDOW:
-                # Reset the count if the time window has passed
-                num_requests = 1
+                if current_time - last_request_time > TIME_WINDOW:
+                    # Reset the count if the time window has passed
+                    num_requests = 1
+                else:
+                    num_requests += 1
             else:
-                num_requests += 1
-        else:
-            num_requests = 1
+                num_requests = 1
 
-        # Update the user_requests dictionary with the new count and timestamp
-        user_requests[ip_address] = (num_requests, current_time)
+            # Update the user_requests dictionary with the new count and timestamp
+            user_requests[ip_address] = (num_requests, current_time)
 
-        print(num_requests)
-        if num_requests > REQUEST_THRESHOLD:
-            BANNED_IPS.append(ip_address)
-            send_notification(f'IP {ip_address} is banned')
+            print(num_requests)
+            if num_requests > REQUEST_THRESHOLD:
+                BANNED_IPS.append(ip_address)
+                send_notification(f'IP {ip_address} is banned')
 
-            start_response('403 Forbidden', [('Content-Type', 'text/plain')])
-            return [b'Forbidden']
+                start_response('403 Forbidden', [('Content-Type', 'text/plain')])
+                return [b'Forbidden']
+
 
         return self.app(environ, start_response)
 
