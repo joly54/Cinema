@@ -774,7 +774,8 @@ class BanMiddleware:
         self.app = app
 
     def __call__(self, environ, start_response):
-        ip_address = environ.get('REMOTE_ADDR')
+        #get real ip
+        ip_address = environ.get('HTTP_X_REAL_IP', environ.get('REMOTE_ADDR'))
 
         # Check if the IP is already banned
         if ip_address in BANNED_IPS:
