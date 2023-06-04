@@ -10,14 +10,12 @@ import time as systime
 from email.message import EmailMessage
 
 import qrcode
-import requests
 from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
-from flask import abort
 from flask import request
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 
@@ -229,11 +227,11 @@ def adminlog():
     return render_template('login.html')
 
 
-@app.route('/logout')
-@login_required
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logout_user()
-    return redirect(url_for('login'))
+    return redirect(url_for('adminlog'))
+
 
 
 @app.errorhandler(Exception)
@@ -564,7 +562,7 @@ class checkToken(Resource):
         if user.is_admin:
             additional.append({
                 "title": "Admin Panel",
-                "url": base_url + "/admin"
+                "url": base_url + "/adminlog"
             })
         return {'message': 'Token valid', "additional": additional}, 200
 
