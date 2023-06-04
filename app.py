@@ -1,4 +1,3 @@
-import hashlib
 import json
 import os
 import random
@@ -10,12 +9,13 @@ import threading
 import time as systime
 from email.message import EmailMessage
 
-from flask_admin.contrib.sqla import ModelView
-
 import qrcode
-from flask import Flask, jsonify, make_response, request, send_file, render_template, Response, redirect, url_for, \
-    session
+import requests
+from flask import Flask, make_response, send_file, render_template, Response
+from flask import abort
+from flask import request
 from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
@@ -442,8 +442,6 @@ class send_poster(Resource):
     def get(self, id):
         filename = "/home/vincinemaApi/Cinema/Posters/" + id + ".jpg"
         ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
-        if ip in ban_list:
-            filename = "/home/vincinemaApi/Cinema/Posters/" + "Untitled.jpg"
         if not os.path.isfile(filename):
             return {'message': 'Poster not found'}, 404
         return send_file(filename, mimetype='image/png')
@@ -747,6 +745,73 @@ class GetSession(Resource):
         return ans, 200
 
 
+import requests
+import time
+
+BANNED_IPS = []
+REQUEST_THRESHOLD = 200
+TIME_WINDOW = 60  # Time window in seconds
+
+user_requests = {}  # Dictionary to store the number of requests per user and the last request timestamp
+
+
+def send_notification(text):
+    bot_token = config.bot_token
+    chat_id = '800918003'
+    message_text = text
+
+    url = f'https://api.telegram.org/bot{bot_token}/sendMessage'
+    payload = {
+        'chat_id': chat_id,
+        'text': message_text
+    }
+
+    response = requests.post(url, data=payload)
+
+
+class BanMiddleware:
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        ip_address = environ.get('REMOTE_ADDR')
+
+        # Check if the IP is already banned
+        if ip_address in BANNED_IPS:
+            start_response('403 Forbidden', [('Content-Type', 'text/plain')])
+            return [b'Forbidden']
+
+        current_time = time.time()
+
+        if ip_address in user_requests:
+            requests_info = user_requests[ip_address]
+            num_requests, last_request_time = requests_info
+
+            if current_time - last_request_time > TIME_WINDOW:
+                # Reset the count if the time window has passed
+                num_requests = 1
+            else:
+                num_requests += 1
+        else:
+            num_requests = 1
+
+        # Update the user_requests dictionary with the new count and timestamp
+        user_requests[ip_address] = (num_requests, current_time)
+
+        print(num_requests)
+        if num_requests > REQUEST_THRESHOLD:
+            BANNED_IPS.append(ip_address)
+            send_notification(f'IP {ip_address} is banned')
+
+            start_response('403 Forbidden', [('Content-Type', 'text/plain')])
+            return [b'Forbidden']
+
+        return self.app(environ, start_response)
+
+
+
+app.wsgi_app = BanMiddleware(app.wsgi_app)
+
 api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
@@ -770,8 +835,6 @@ api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
 api.add_resource(send_poster, '/Posters/<id>')
 api.add_resource(confirm_Payment, '/confirmPayment')
-
-ban_list = []
 
 if __name__ == '__main__':
     with app.app_context():
