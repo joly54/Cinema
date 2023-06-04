@@ -205,6 +205,13 @@ admin.add_view(SessionsView(Sessions, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(TiketView(Tiket, db.session))
 
+@app.route('/admin')
+def admin():
+    #check if user is admin
+    if current_user.is_authenticated and current_user.is_admin:
+        return redirect(url_for('admin.index'))
+    return redirect(url_for('adminlog'))
+
 
 @app.route('/adminlog', methods=['GET', 'POST'])
 def adminlog():
