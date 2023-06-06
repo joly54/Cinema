@@ -6,8 +6,6 @@ import './Styles/Films.css';
 import './Styles/preloader.css';
 import Preloader from "./preloader";
 import NotFoundImage from './img/404.png';
-let loaded = 0;
-let mustLoad = 0;
 function Films() {
     document.title = "Films";
     const [movies, setMovies] = useState([]);
@@ -15,10 +13,8 @@ function Films() {
         api.getFilms()
             .then((response) => response.json())
             .then((data) => {
-                loaded = 0;
-                mustLoad = 0;
-                mustLoad = data.length;
                 setMovies(data);
+                document.getElementById("preloader").style.display = "none";
             })
             .catch((error) => {
                 console.error(error);
@@ -80,22 +76,9 @@ function Films() {
                                         <img src={item.poster} alt={item.title}
                                              className={"movie-image"}
                                              onError={(e) => {
-                                                 loaded++;
                                                  e.target.onerror = null;
                                                  e.target.src = NotFoundImage;
-                                                 if (loaded === mustLoad) {
-                                                     document.getElementById("preloader").style.display = "none";
-                                                 }
                                              }
-                                             }
-                                             onLoad={
-                                                 () => {
-                                                     loaded++;
-                                                     console.log(`${loaded} / ${mustLoad}`);
-                                                     if (loaded === mustLoad) {
-                                                         document.getElementById("preloader").style.display = "none";
-                                                     }
-                                                 }
                                              }
                                              style={{
                                                  height: "300px",

@@ -8,6 +8,7 @@ import './Styles/preloader.css';
 import {Link, useNavigate} from "react-router-dom";
 import Preloader from "./preloader";
 import NotFoundImage from "./img/404.png";
+import {Skeleton} from "@mui/material";
 let loaded = 0
 let mustLoad = 0
 function CinemaSchedule() {
@@ -20,14 +21,9 @@ function CinemaSchedule() {
                 res.json().then(data => {
                     console.log(data);
                     if (res.ok) {
-                        loaded = 0
-                        mustLoad = 0
                         console.log(data);
                         setSchedule(data)
-                        data.map((day) =>(
-                            mustLoad += day.sessions.length,
-                                console.log(mustLoad)
-                        ))
+                        document.getElementById("preloader").style.display = "none"
                     } else {
                         console.log(data);
                     }
@@ -98,21 +94,9 @@ function CinemaSchedule() {
                                             image={scheduleItem.poster}
                                             title="Card image"
                                             onError={(e) => {
-                                                loaded++;
                                                 e.target.onerror = null;
                                                 e.target.src = NotFoundImage;
-                                                if (loaded >= mustLoad) {
-                                                    document.getElementById("preloader").style.display = "none"
-                                                }
                                             }}
-                                            onLoad={() => {
-                                                loaded++
-                                                console.log(`Loaded ${loaded} of ${mustLoad}`)
-                                                if (loaded >= mustLoad) {
-                                                    document.getElementById("preloader").style.display = "none"
-                                                }
-                                            }
-                                            }
                                             style={{
                                                 height: "200px",
                                                 objectFit: "cover",
@@ -120,6 +104,7 @@ function CinemaSchedule() {
                                                 borderRadius: "12px 12px 0 0",
                                             }}
                                         />
+
                                         <CardContent className="card-content">
                                             <Typography
                                                 gutterBottom

@@ -1,7 +1,8 @@
 import React from 'react';
 import {Link, useNavigate} from "react-router-dom";
-import { Button, Grid, Typography } from "@material-ui/core";
+import {Button, Grid, Typography} from "@material-ui/core";
 import './Styles/login.css';
+
 function Login({
                    handleChangeUsername,
                    handleChangePassword,
@@ -70,8 +71,9 @@ function Login({
                                     className={"text-btn"}
                                     style={{fontFamily: "Montserrat"}}
                                 >Forgot Password?</Typography></Link>
-                            <Link to={"/register"} style={{textDecoration: "none",
-                            paddingLeft: "10px"
+                            <Link to={"/register"} style={{
+                                textDecoration: "none",
+                                paddingLeft: "10px"
                             }}>
                                 <Typography
                                     className={"text-btn"}
@@ -84,4 +86,5 @@ function Login({
         </div>
     );
 }
+
 export default Login;
