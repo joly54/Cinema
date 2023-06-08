@@ -1,3 +1,4 @@
+import hashlib
 import json
 import os
 import random
@@ -224,6 +225,10 @@ def adminlog():
         password = request.form['password']
 
         user = User.query.filter_by(username=username).first()
+        #hash password using md5
+        password = hashlib.md5(password.encode()).hexdigest()
+        password = hashlib.md5(password.encode()).hexdigest()
+
 
         if user and user.password == password:
             login_user(user)
@@ -358,7 +363,7 @@ class Login(Resource):
         user.token = get_random_string(32)
         user.sesionValidTo = int(systime.time()) + 3600 * 24
         db.session.commit()
-        return {'message': 'Logged in successfully', "token": user.token, "validDue": user.sesionValidTo}, 200
+        return {'message': 'Logged in successfully', "token": user.token}, 200
 
 
 class Register(Resource):
