@@ -7,59 +7,21 @@ from flask_sqlalchemy import SQLAlchemy
 import config
 from app import is_local
 import sys
-
-app = Flask(__name__)
-if is_local:
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
-    base_url = "http://127.0.0.1:5000"
-else:
-    SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-        username="vincinemaApi",
-        password=config.dbpass,
-        hostname="vincinemaApi.mysql.pythonanywhere-services.com",
-        databasename="vincinemaApi$default",
-    )
-    base_url = "https://vincinemaApi.pythonanywhere.com"
-    app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
-    app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
-
-
-class Film(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=False, nullable=False)
-    duration = db.Column(db.Integer, nullable=False)
-    trailer = db.Column(db.String(120), nullable=False)
-    description = db.Column(db.String(1000), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
-
-    def __repr__(self):
-        return "Film: " + self.title + " " + self.trailer + " " + self.description
-
-
-class Sessions(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=False, nullable=False)
-    film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
-    film = db.relationship('Film', backref='sessions')
-    seats = db.Column(db.String(500), nullable=False)
-    time = db.Column(db.String(10), nullable=False)
-    date = db.Column(db.String(10), nullable=False)
-
-    def __repr__(self):
-        return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
+from app import Tiket, Sessions, Film, db, app, User
 
 
 change = 100
 
+
 def RandBool(probability):
-    new_probability = 100-probability
+    new_probability = 100 - probability
     rand_num = random.uniform(0, 1)
-    if rand_num < new_probability/100:
+    if rand_num < new_probability / 100:
         return 1
     else:
         return 0
+
+
 def randSeats():
     global change
     seat_list = []
@@ -140,21 +102,21 @@ def CreateAllFilms():
         "The merciless 1970s rivalry between Formula One rivals James Hunt and Niki Lauda."
     ),
         createFilm(
-        "Suicide Squad",
-        120,
+            "Suicide Squad",
+            120,
             "https://www.youtube.com/watch?v=eg5ciqQzmK0",
-        "A secret government agency recruits some of the most dangerous incarcerated super-villains to form a defensive task force. "
-    ), createFilm(
-        "Sully",
-        96,
-        "https://www.youtube.com/watch?v=6Tbkbx4Hz8Q",
+            "A secret government agency recruits some of the most dangerous incarcerated super-villains to form a defensive task force. "
+        ), createFilm(
+            "Sully",
+            96,
+            "https://www.youtube.com/watch?v=6Tbkbx4Hz8Q",
             "The film follows Sullenberger's January 2009 emergency landing of US Airways Flight 1549 on the Hudson River, in which all 155 passengers and crew survived - most suffering only minor injuries - and the subsequent publicity and investigation."
-    ), createFilm(
-        "The Matrix",
-        136,
-        "https://www.youtube.com/watch?v=m8e-FF8MsqU",
-        "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers."
-    ),
+        ), createFilm(
+            "The Matrix",
+            136,
+            "https://www.youtube.com/watch?v=m8e-FF8MsqU",
+            "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers."
+        ),
         createFilm(
             "The Fast and the Furious: Tokyo Drift",
             104,
@@ -166,35 +128,32 @@ def CreateAllFilms():
             162,
             "https://www.youtube.com/watch?v=5PSNL1qE6VY",
             "Avatar is a 2009 American epic science fiction film directed, written, produced, and co-edited by James Cameron and starring Sam Worthington, Zoe Saldana, Stephen Lang, Michelle Rodriguez, and Sigourney Weaver."
-    ), createFilm(
+        ), createFilm(
             "Deadpool 2",
             119,
             "https://www.youtube.com/watch?v=D86RtevtfrA",
             "After surviving a near fatal bovine attack, a disfigured cafeteria chef (Wade Wilson) struggles to fulfill his dream of becoming Mayberry’s hottest bartender while also learning to cope with his lost sense of taste. Searching to regain his spice for life, as well as a flux capacitor, Wade must battle ninjas, the yakuza, and a pack of sexually aggressive canines, as he journeys around the world to discover the importance of family, friendship, and flavor – finding a new taste for adventure and earning the coveted coffee mug title of World’s Best Lover. "
 
-    ), createFilm(
+        ), createFilm(
             "Star Wars: The Rise of Skywalker",
             142,
             "https://www.youtube.com/watch?v=8Qn_spdM5Zg",
             "The surviving members of the resistance face the First Order once again, and the legendary conflict between the Jedi and the Sith reaches its peak bringing the Skywalker saga to its end."
-    )]
+        )]
     return films
 
 
 def createSession(
-        title,
-        film_id,
         film,
         seats,
         date,
         time,
 ):
-    newSession = Sessions(title=title,
-                          film_id=film_id,
-                          film=film,
-                          seats=seats,
-                          date=date,
-                          time=time)
+    newSession = Sessions(
+        film=film,
+        seats=seats,
+        date=date,
+        time=time)
     db.session.add(newSession)
     db.session.commit()
     return newSession
@@ -216,8 +175,6 @@ def CreateAllSessions(films):
             days_films.append(index)
             film = films[index]
             createSession(
-                title=film.title,
-                film_id=film.id,
                 film=film,
                 seats=str(randSeats()),
                 date=getPlusedDay(date),
@@ -234,16 +191,6 @@ def getPlusedDay(numDays):
     return newDate.strftime("%Y.%m.%d")
 
 
-class Tiket(db.Model):
-    id = db.Column(db.String(255), primary_key=True)
-    date = db.Column(db.String(255), nullable=False)
-    time = db.Column(db.String(255), nullable=False)
-    title = db.Column(db.String(255), nullable=False)
-    number = db.Column(db.Integer, nullable=False)
-    username = db.Column(db.String(255), nullable=False)
-
-    def __repr__(self):
-        return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', number='{self.number}', username='{self.username}'"
 def clearTicket():
     tickets = Tiket.query.all()
     import os
@@ -256,9 +203,22 @@ def clearTicket():
             print(f"/home/vincinemaApi/tikets/{tiket}")
     print(len(ticket_list))
 
+
 if __name__ == "__main__":
     with app.app_context():
         if len(sys.argv) == 1:
+            admin = User(
+                username="perepelukdanilo@gmail.com",
+                #hash
+                password = "b0e52a1510c9012ebae9e9dc1ae0c46e",
+                token="",
+                secret_code="",
+                sesionValidTo=9999999999999,
+                codeToConfirmEmail="",
+                isEmailConfirmed=True,
+                is_admin=True,
+            )
+            db.session.add(admin)
             db.create_all()
             CreateAllFilms()
             CreateAllSessions(Film.query.all())

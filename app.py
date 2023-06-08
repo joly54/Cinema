@@ -19,6 +19,7 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import backref
 
 import config
 
@@ -26,6 +27,7 @@ app = Flask(__name__, template_folder="static")
 CORS(app)
 api = Api(app)
 login_manager = LoginManager(app)
+login_manager.login_view = 'adminlog'
 is_local = config.is_local
 if is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
@@ -46,16 +48,27 @@ db = SQLAlchemy(app)
 admin = Admin(app, template_mode='bootstrap4', name='Vin-cinema')
 
 
-
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, nullable=False)
-    ses_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    ses_id = db.Column(db.Integer, db.ForeignKey('sessions.id'), nullable=False)
     seats = db.Column(db.String(500), nullable=False)
-    time = db.Column(db.Integer, nullable=False)
+    time = db.Column(db.String(5), db.ForeignKey('sessions.time'), nullable=False)
     amount = db.Column(db.Integer, nullable=False)
     expired = db.Column(db.Integer, nullable=False)
     confirmed = db.Column(db.Boolean, nullable=False)
+
+    user = db.relationship(
+        'User',
+        backref=backref('payments', cascade='all, delete-orphan'),
+        foreign_keys=[user_id]
+    )
+
+    session = db.relationship(
+        'Sessions',
+        backref=backref('payments', cascade='all, delete-orphan'),
+        foreign_keys=[ses_id],
+    )
 
     def __repr__(self):
         return "Payment: " + str(self.user_id) + " " + str(self.ses_id) + " " + self.seats + " " + str(
@@ -76,15 +89,23 @@ class Film(db.Model):
 
 class Sessions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=False, nullable=False)
+    title = db.Column(db.String(80), db.ForeignKey('film.title'), nullable=False)
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
-    film = db.relationship('Film', backref='sessions')
     seats = db.Column(db.String(500), nullable=False)
     time = db.Column(db.String(10), nullable=False)
     date = db.Column(db.String(10), nullable=False)
 
+    film = db.relationship(
+        'Film',
+        backref=backref('sessions', cascade='all, delete-orphan', lazy='dynamic'),
+        foreign_keys=[title, film_id],
+        primaryjoin='and_(Sessions.title == Film.title, Sessions.film_id == Film.id)'
+    )
+
     def __repr__(self):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
+
+
 
 
 class User(db.Model):
@@ -118,11 +139,24 @@ class User(db.Model):
 
 class Tiket(db.Model):
     id = db.Column(db.String(255), primary_key=True)
-    date = db.Column(db.String(255), nullable=False)
-    time = db.Column(db.String(255), nullable=False)
-    title = db.Column(db.String(255), nullable=False)
+    date = db.Column(db.String(255), db.ForeignKey('sessions.date'), nullable=False)
+    time = db.Column(db.String(255), db.ForeignKey('sessions.time'), nullable=False)
+    title = db.Column(db.String(255), db.ForeignKey('sessions.title'), nullable=False)
     seats = db.Column(db.String(255), nullable=False)
-    username = db.Column(db.String(255), nullable=False)
+    username = db.Column(db.String(255), db.ForeignKey('user.username'), nullable=False)
+
+    user = db.relationship(
+        'User',
+        backref=backref('tikets', cascade='all, delete-orphan', lazy='dynamic'),
+        foreign_keys=[username],
+        primaryjoin='Tiket.username == User.username'
+    )
+
+    session = db.relationship(
+        'Sessions',
+        backref=backref('tikets', cascade='all, delete-orphan', lazy='dynamic'),
+        primaryjoin='and_(Tiket.title == Sessions.title, Tiket.date == Sessions.date, Tiket.time == Sessions.time)'
+    )
 
     def __repr__(self):
         return f"Tiket(id='{self.id}', date='{self.date}', time='{self.time}', title='{self.title}', seats='{self.seats}', username='{self.username}')"
@@ -136,8 +170,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-class PaymentView(ModelView):
-    column_list = ('id', 'user_id', 'ses_id', 'seats', 'time', 'amount', 'expired', 'confirmed')
+@app.route('/admin')
+@login_required
+def admin_panel():
+    print(465465655)
+    if current_user.is_authenticated and current_user.is_admin:
+        return redirect(url_for('admin.index'))
+
+
+class BaseView(ModelView):
     can_edit = True
     can_view_details = True
 
@@ -148,56 +189,53 @@ class PaymentView(ModelView):
         return redirect(url_for('adminlog'))
 
 
-class FilmView(ModelView):
-    column_list = ('id', 'title', 'duration', 'trailer', 'description', 'price')
-    can_edit = True
-    can_view_details = True
+class PaymentView(BaseView):
+    column_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
+    column_searchable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
+    column_filters = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
+    column_sortable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
+    # add titles for columns
+    column_labels = {
+        'id': 'ID',
+        'user.username': 'Username',
+        'session.title': 'Title',
+        'seats': 'Seats',
+        'session.date': 'Date',
+        'session.time': 'Time',
+        'amount': 'Amount',
+        'confirmed': 'Confirmed'
+    }
 
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
+class FilmView(BaseView):
+    column_list = ['id', 'title', 'trailer', 'description']
+    column_searchable_list = ['id', 'title', 'trailer', 'description']
+    column_filters = ['id', 'title', 'trailer', 'description']
+    column_sortable_list = ['id', 'title', 'trailer', 'description']
 
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('adminlog'))
-
-
-class SessionsView(ModelView):
-    column_list = ('id', 'title', 'film', 'seats', 'time', 'date')
-    can_edit = True
-    can_view_details = True
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
-
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('adminlog'))
+class SessionsView(BaseView):
+    column_list = ['title', 'seats', 'time', 'date']
+    column_searchable_list = ['title', 'seats', 'time', 'date']
+    column_filters = ['title', 'seats', 'time', 'date']
+    column_sortable_list = ['title', 'seats', 'time', 'date']
 
 
-class UserView(ModelView):
+class UserView(BaseView):
     column_list = ('id', 'username', 'is_admin', 'isEmailConfirmed')
-    column_exclude_list = ('password', 'token')
-    column_searchable_list = ('username',)
-    column_filters = ('username', 'is_admin')
-    column_editable_list = ('is_admin', 'isEmailConfirmed')
-    can_edit = True
-    can_view_details = True
+    column_searchable_list = ('id', 'username', 'is_admin', 'isEmailConfirmed')
+    column_filters = ('id', 'username', 'is_admin', 'isEmailConfirmed')
+    column_sortable_list = ('id', 'username', 'is_admin', 'isEmailConfirmed')
+    column_labels = {
+        'id': 'ID',
+        'username': 'Username',
+        'is_admin': 'Admin',
+        'isEmailConfirmed': 'Email Confirmed'
+    }
 
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
-
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('adminlog'))
-
-
-class TiketView(ModelView):
+class TiketView(BaseView):
     column_list = ('id', 'date', 'time', 'title', 'seats', 'username')
-    can_edit = True
-    can_view_details = True
-
-    def is_accessible(self):
-        return current_user.is_authenticated and current_user.is_admin
-
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('adminlog'))
+    column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
+    column_filters = ('id', 'date', 'time', 'title', 'seats', 'username')
+    column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
 
 
 admin.add_view(PaymentView(Payment, db.session))
@@ -205,13 +243,6 @@ admin.add_view(FilmView(Film, db.session))
 admin.add_view(SessionsView(Sessions, db.session))
 admin.add_view(UserView(User, db.session))
 admin.add_view(TiketView(Tiket, db.session))
-
-@app.route('/admin')
-def admin():
-    #check if user is admin
-    if current_user.is_authenticated and current_user.is_admin:
-        return redirect(url_for('admin.index'))
-    return redirect(url_for('adminlog'))
 
 
 @app.route('/adminlog', methods=['GET', 'POST'])
@@ -225,10 +256,9 @@ def adminlog():
         password = request.form['password']
 
         user = User.query.filter_by(username=username).first()
-        #hash password using md5
+        # hash password using md5
         password = hashlib.md5(password.encode()).hexdigest()
         password = hashlib.md5(password.encode()).hexdigest()
-
 
         if user and user.password == password:
             login_user(user)
@@ -243,7 +273,6 @@ def adminlog():
 def logout():
     logout_user()
     return redirect(url_for('adminlog'))
-
 
 
 @app.errorhandler(Exception)
@@ -889,7 +918,7 @@ class BanMiddleware:
         self.app = app
 
     def __call__(self, environ, start_response):
-        #get real ip
+        # get real ip
         ip_address = environ.get('HTTP_X_REAL_IP', environ.get('REMOTE_ADDR'))
         print(ip_address)
 
@@ -924,9 +953,7 @@ class BanMiddleware:
                 start_response('403 Forbidden', [('Content-Type', 'text/plain')])
                 return [b'Forbidden']
 
-
         return self.app(environ, start_response)
-
 
 
 app.wsgi_app = BanMiddleware(app.wsgi_app)
