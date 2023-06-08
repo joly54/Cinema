@@ -77,11 +77,11 @@ class Payment(db.Model):
 
 class Film(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80), unique=False, nullable=False)
+    title = db.Column(db.String(80), unique=False, nullable=False, index=True)
     duration = db.Column(db.Integer, nullable=False)
     trailer = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
-    price = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Integer, nullable=False, index=True)
 
     def __repr__(self):
         return "Film: " + self.title + " " + self.trailer + " " + self.description
@@ -92,8 +92,8 @@ class Sessions(db.Model):
     title = db.Column(db.String(80), db.ForeignKey('film.title'), nullable=False)
     film_id = db.Column(db.Integer, db.ForeignKey('film.id'), nullable=False)
     seats = db.Column(db.String(500), nullable=False)
-    time = db.Column(db.String(10), nullable=False)
-    date = db.Column(db.String(10), nullable=False)
+    time = db.Column(db.String(10), nullable=False, index=True)
+    date = db.Column(db.String(10), nullable=False, index=True)
 
     film = db.relationship(
         'Film',
@@ -205,18 +205,21 @@ class PaymentView(BaseView):
         'amount': 'Amount',
         'confirmed': 'Confirmed'
     }
+    column_editable_list = ['confirmed']
 
 class FilmView(BaseView):
     column_list = ['id', 'title', 'trailer', 'description']
     column_searchable_list = ['id', 'title', 'trailer', 'description']
     column_filters = ['id', 'title', 'trailer', 'description']
     column_sortable_list = ['id', 'title', 'trailer', 'description']
+    column_editable_list = ['title', 'trailer', 'description']
 
 class SessionsView(BaseView):
     column_list = ['title', 'seats', 'time', 'date']
     column_searchable_list = ['title', 'seats', 'time', 'date']
     column_filters = ['title', 'seats', 'time', 'date']
     column_sortable_list = ['title', 'seats', 'time', 'date']
+    column_editable_list = ['seats', 'time', 'date']
 
 
 class UserView(BaseView):
@@ -230,6 +233,7 @@ class UserView(BaseView):
         'is_admin': 'Admin',
         'isEmailConfirmed': 'Email Confirmed'
     }
+    column_editable_list = ('is_admin', 'isEmailConfirmed', 'username')
 
 class TiketView(BaseView):
     column_list = ('id', 'date', 'time', 'title', 'seats', 'username')
