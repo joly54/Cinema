@@ -106,8 +106,6 @@ class Sessions(db.Model):
         return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
 
 
-
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
@@ -190,10 +188,14 @@ class BaseViewer(ModelView):
 
 
 class PaymentView(BaseViewer):
-    column_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
-    column_searchable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
-    column_filters = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
-    column_sortable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
+    column_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount",
+                   "confirmed"]
+    column_searchable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount",
+                              "confirmed"]
+    column_filters = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount",
+                      "confirmed"]
+    column_sortable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount",
+                            "confirmed"]
     # add titles for columns
     column_labels = {
         'id': 'ID',
@@ -207,12 +209,14 @@ class PaymentView(BaseViewer):
     }
     column_editable_list = ['confirmed']
 
+
 class FilmView(BaseViewer):
     column_list = ['id', 'title', 'trailer', 'description']
     column_searchable_list = ['id', 'title', 'trailer', 'description']
     column_filters = ['id', 'title', 'trailer', 'description']
     column_sortable_list = ['id', 'title', 'trailer', 'description']
     column_editable_list = ['title', 'trailer', 'description']
+
 
 class SessionsView(BaseViewer):
     column_list = ['title', 'seats', 'time', 'date']
@@ -235,6 +239,7 @@ class UserView(BaseViewer):
     }
     column_editable_list = ('is_admin', 'isEmailConfirmed', 'username')
 
+
 class TiketView(BaseViewer):
     column_list = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
@@ -249,11 +254,12 @@ class LogoutView(BaseView):
         logout_user()
         return redirect(url_for('adminlog'))
 
-admin.add_view(UserView(User, db.session))
-admin.add_view(FilmView(Film, db.session))
-admin.add_view(SessionsView(Sessions, db.session))
-admin.add_view(PaymentView(Payment, db.session))
-admin.add_view(TiketView(Tiket, db.session))
+
+admin.add_view(UserView(User, db.session, name="Users"))
+admin.add_view(FilmView(Film, db.session, name="Films"))
+admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
+admin.add_view(PaymentView(Payment, db.session, name="Payments"))
+admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
 admin.add_view(LogoutView(name="Logout"))
 
 
