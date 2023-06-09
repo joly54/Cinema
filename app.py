@@ -13,7 +13,7 @@ from email.message import EmailMessage
 import qrcode
 from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import request
-from flask_admin import Admin
+from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -178,7 +178,7 @@ def admin_panel():
         return redirect(url_for('admin.index'))
 
 
-class BaseView(ModelView):
+class BaseViewer(ModelView):
     can_edit = True
     can_view_details = True
 
@@ -189,7 +189,7 @@ class BaseView(ModelView):
         return redirect(url_for('adminlog'))
 
 
-class PaymentView(BaseView):
+class PaymentView(BaseViewer):
     column_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
     column_searchable_list = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
     column_filters = ['id', "user.username", "session.title", "seats", "session.date", "session.time", "amount", "confirmed"]
@@ -207,14 +207,14 @@ class PaymentView(BaseView):
     }
     column_editable_list = ['confirmed']
 
-class FilmView(BaseView):
+class FilmView(BaseViewer):
     column_list = ['id', 'title', 'trailer', 'description']
     column_searchable_list = ['id', 'title', 'trailer', 'description']
     column_filters = ['id', 'title', 'trailer', 'description']
     column_sortable_list = ['id', 'title', 'trailer', 'description']
     column_editable_list = ['title', 'trailer', 'description']
 
-class SessionsView(BaseView):
+class SessionsView(BaseViewer):
     column_list = ['title', 'seats', 'time', 'date']
     column_searchable_list = ['title', 'seats', 'time', 'date']
     column_filters = ['title', 'seats', 'time', 'date']
@@ -222,7 +222,7 @@ class SessionsView(BaseView):
     column_editable_list = ['seats', 'time', 'date']
 
 
-class UserView(BaseView):
+class UserView(BaseViewer):
     column_list = ('id', 'username', 'is_admin', 'isEmailConfirmed')
     column_searchable_list = ('id', 'username', 'is_admin', 'isEmailConfirmed')
     column_filters = ('id', 'username', 'is_admin', 'isEmailConfirmed')
@@ -235,18 +235,26 @@ class UserView(BaseView):
     }
     column_editable_list = ('is_admin', 'isEmailConfirmed', 'username')
 
-class TiketView(BaseView):
+class TiketView(BaseViewer):
     column_list = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_filters = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
 
 
-admin.add_view(PaymentView(Payment, db.session))
+class LogoutView(BaseView):
+
+    @expose('/')
+    def index(self):
+        logout_user()
+        return redirect(url_for('adminlog'))
+
+admin.add_view(UserView(User, db.session))
 admin.add_view(FilmView(Film, db.session))
 admin.add_view(SessionsView(Sessions, db.session))
-admin.add_view(UserView(User, db.session))
+admin.add_view(PaymentView(Payment, db.session))
 admin.add_view(TiketView(Tiket, db.session))
+admin.add_view(LogoutView(name="Logout"))
 
 
 @app.route('/adminlog', methods=['GET', 'POST'])
