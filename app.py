@@ -339,10 +339,6 @@ def send_email(username, code):
 
 
 def sendTiket(username, tikets):
-    threading.Thread(target=th_sendTiket, args=(username, tikets)).start()
-
-
-def th_sendTiket(username, tikets):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
@@ -353,12 +349,12 @@ def th_sendTiket(username, tikets):
         seat_list += str(seat) + " "
 
     body = """
-       Your ticket is attached to this email.
-       film: {}
-       date: {}
-       time: {}
-       Seats seats: {}
-       """.format(tikets.title, tikets.date, tikets.time, seat_list)
+           Your ticket is attached to this email.
+           film: {}
+           date: {}
+           time: {}
+           Seats seats: {}
+           """.format(tikets.title, tikets.date, tikets.time, seat_list)
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject
@@ -948,7 +944,6 @@ api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
 
 # Ticket Management
-
 api.add_resource(BuyTikets, '/buyTikets')
 api.add_resource(confirm_Payment, '/confirmPayment')
 
