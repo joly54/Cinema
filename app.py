@@ -896,16 +896,21 @@ class BanMiddleware:
 
         if ip_address not in us_req:
             us_req[ip_address] = []
-        us_req[ip_address].append(time.time())
-        for i in range(len(us_req[ip_address])):
-            if us_req[ip_address][i] < time.time() - TIME_WINDOW:
-                us_req[ip_address].remove(us_req[ip_address][i])
-        if len(us_req[ip_address]) > REQUEST_THRESHOLD:
+
+        current_time = time.time()
+
+        us_req[ip_address].append(current_time)
+
+        # Remove old requests
+        us_req[ip_address] = [t for t in us_req[ip_address] if t > current_time - TIME_WINDOW]
+
+        print("IP: ", ip_address, "Requests: ", len(us_req[ip_address]))
+
+        if len(us_req[ip_address]) > REQUEST_THRESHOLD and ip_address not in WHITE_LIST and not (current_user.is_authenticated and current_user.is_admin):
             BANNED_IPS.append(ip_address)
             send_notification(f"IP {ip_address} was banned")
             start_response('403 Forbidden', [('Content-Type', 'text/plain')])
             return [b'Forbidden']
-
 
         return self.app(environ, start_response)
 
