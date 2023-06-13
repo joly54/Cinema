@@ -667,7 +667,7 @@ class BuyTikets(Resource):
     def post(self):
         seats = request.headers.get('seats')
         ses_id = request.args.get('sessions_id')
-        if current_user.username is None or current_user.token is None or seats is None or ses_id is None:
+        if current_user.username is None or seats is None or ses_id is None:
             return {'message': 'Wrong data'}, 400
         user = User.query.filter_by(username=current_user.username).first()
         if user is None:
