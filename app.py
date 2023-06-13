@@ -860,7 +860,7 @@ import requests
 import time
 
 BANNED_IPS = []
-WHITE_LIST = ["127.0.0.1", "91.225.38.69"]
+WHITE_LIST = ["127.0.0.1", "91.225.38.80"]
 REQUEST_THRESHOLD = 200
 TIME_WINDOW = 60  # Time window in seconds
 
