@@ -688,6 +688,7 @@ class BuyTikets(Resource):
             ses_id=ses.id,
             seats=str(seats),
             amount=ses.film.price * len(seats),
+            time=ses.time,
             expired=int(systime.time()) + 60 * 5,
             confirmed=False,
             user=current_user
