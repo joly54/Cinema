@@ -9,7 +9,6 @@ from app import is_local
 import sys
 from app import Tiket, Sessions, Film, db, app, User
 
-
 change = 100
 
 
@@ -206,20 +205,24 @@ def clearTicket():
 
 if __name__ == "__main__":
     with app.app_context():
+        db.create_all()
         if len(sys.argv) == 1:
-            admin = User(
-                username="perepelukdanilo@gmail.com",
-                #hash
-                password = "b0e52a1510c9012ebae9e9dc1ae0c46e",
-                token="",
-                secret_code="",
-                sesionValidTo=9999999999999,
-                codeToConfirmEmail="",
-                isEmailConfirmed=True,
-                is_admin=True,
-            )
-            db.session.add(admin)
-            db.create_all()
+            # check if admin exist
+            admin = User.query.filter_by(is_admin=True).first()
+            if not admin:
+                admin = User(
+                    username="perepelukdanilo@gmail.com",
+                    # hash
+                    password="b0e52a1510c9012ebae9e9dc1ae0c46e",
+                    token="dfgsdfs",
+                    secret_code="sgdf",
+                    sesionValidTo=12,
+                    codeToConfirmEmail="",
+                    isEmailConfirmed=True,
+                    is_admin=True,
+                )
+                db.session.add(admin)
+                db.session.commit()
             CreateAllFilms()
             CreateAllSessions(Film.query.all())
         elif sys.argv[1] == "clear":

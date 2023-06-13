@@ -8,10 +8,11 @@ import ssl
 import string
 import threading
 import time as systime
+import uuid
 from email.message import EmailMessage
 
 import qrcode
-from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
+from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash, jsonify
 from flask import request
 from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
@@ -24,8 +25,10 @@ from sqlalchemy.orm import backref
 import config
 
 app = Flask(__name__, template_folder="static")
-CORS(app)
+CORS(app, supports_credentials=True)
 api = Api(app)
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
 login_manager = LoginManager(app)
 login_manager.login_view = 'adminlog'
 is_local = config.is_local
@@ -110,16 +113,12 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-    token = db.Column(db.String(255), nullable=False)
     secret_code = db.Column(db.String(8), nullable=False)
-    sesionValidTo = db.Column(db.Integer, nullable=False)
     codeToConfirmEmail = db.Column(db.String(16), nullable=False)
     isEmailConfirmed = db.Column(db.Boolean, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
     def is_active(self):
-        # Customize the logic to determine if the user is active or not
-        # For example, you could check if the user's email is confirmed or any other condition
         return self.is_admin
 
     def get_id(self):
@@ -132,11 +131,10 @@ class User(db.Model):
         return False
 
     def __repr__(self):
-        return f"User(id='{self.id}', username='{self.username}', password='{self.password}', token='{self.token}', secret_code='{self.secret_code}', sesionValidTo='{self.sesionValidTo}', codeToConfirmEmail='{self.codeToConfirmEmail}', isEmailConfirmed='{self.isEmailConfirmed}', is_admin='{self.is_admin}')"
-
+        return "User: " + self.username + " " + self.password + " " + self.secret_code + " " + self.codeToConfirmEmail + " " + str(self.isEmailConfirmed) + " " + str(self.is_admin)
 
 class Tiket(db.Model):
-    id = db.Column(db.String(255), primary_key=True)
+    id = db.Column(db.String(255), primary_key=True, default=str(uuid.uuid4()))
     date = db.Column(db.String(255), db.ForeignKey('sessions.date'), nullable=False)
     time = db.Column(db.String(255), db.ForeignKey('sessions.time'), nullable=False)
     title = db.Column(db.String(255), db.ForeignKey('sessions.title'), nullable=False)
@@ -255,12 +253,28 @@ class LogoutView(BaseView):
         return redirect(url_for('adminlog'))
 
 
+class FillDB(BaseView):
+    @expose('/')
+    def index(self):
+        # check if db is empty
+        if Film.query.first() is None:
+            import os
+            os.system("python newFilingFilms.py")
+        else:
+            return redirect(url_for('admin.index'))
+        return redirect(url_for('admin.index'))
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+
 admin.add_view(UserView(User, db.session, name="Users"))
 admin.add_view(FilmView(Film, db.session, name="Films"))
 admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
 admin.add_view(PaymentView(Payment, db.session, name="Payments"))
 admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
 admin.add_view(LogoutView(name="Logout"))
+admin.add_view(FillDB(name="Fill Database"))
 
 
 @app.route('/adminlog', methods=['GET', 'POST'])
@@ -322,19 +336,27 @@ def send_email(username, code):
         server.send_message(msg)
 
 
-def sendTiket(username, tiket):
+def sendTiket(username, tikets):
+    threading.Thread(target=th_sendTiket, args=(username, tikets)).start()
+
+
+def th_sendTiket(username, tikets):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
     subject = "Your ticket"
 
+    seat_list = ""
+    for seat in tikets.seats:
+        seat_list += str(seat) + " "
+
     body = """
-    Your ticket is attached to this email.
-    film: {}
-    date: {}
-    time: {}
-    Seats seats: {}
-    """.format(tiket.title, tiket.date, tiket.time, tiket.seats)
+       Your ticket is attached to this email.
+       film: {}
+       date: {}
+       time: {}
+       Seats seats: {}
+       """.format(tikets.title, tikets.date, tikets.time, seat_list)
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject
@@ -343,35 +365,10 @@ def sendTiket(username, tiket):
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.login(sender_email, password)
-        with open(f"tikets/{tiket.id}.png", 'rb') as f:
+        with open(f"tikets/{tikets.id}.png", 'rb') as f:
             file_data = f.read()
-            file_name = f"{tiket.title} {tiket.time} Seats: {tiket.seats} {tiket.date}.png"
+            file_name = f"{tikets.title} {tikets.time} Seats: {seat_list} {tikets.date}.png"
         msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
-        server.send_message(msg)
-
-
-def sendManyTikets(username, tikets):
-    sender_email = config.sender_email
-    password = config.password
-    receiver_email = username
-    subject = "Your tickets"
-
-    body = f"""
-    Your tikets for {tikets[0]['title']} {tikets[0]['date']} {tikets[0]['time']} are attached to this email.
-    """
-    msg = EmailMessage()
-    msg.set_content(body)
-    msg['Subject'] = subject
-    msg['To'] = receiver_email
-    msg['From'] = sender_email
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.login(sender_email, password)
-        for tiket in tikets:
-            with open(f"tikets/{tiket['id']}.png", 'rb') as f:
-                file_data = f.read()
-                file_name = f"Seats: {tiket['seats']} {tiket['title']} {tiket['time']} {tiket['date']}.png"
-            msg.add_attachment(file_data, maintype='image', subtype='png', filename=file_name)
         server.send_message(msg)
 
 
@@ -398,7 +395,7 @@ def after_request(response):
 
 class Login(Resource):
     def post(self):
-        # get username and password from data
+        print(request.cookies)
         data = request.data.decode('utf-8')
         data = json.loads(data)
         username = data['username']
@@ -406,11 +403,8 @@ class Login(Resource):
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
             return {'message': 'Wrong username or password'}, 400
-
-        user.token = get_random_string(32)
-        user.sesionValidTo = int(systime.time()) + 3600 * 24
-        db.session.commit()
-        return {'message': 'Logged in successfully', "token": user.token}, 200
+        login_user(user)
+        return {"message": "OK"}, 200
 
 
 class Register(Resource):
@@ -423,19 +417,17 @@ class Register(Resource):
             return {'message': 'Username not email'}, 400
         user = User.query.filter_by(username=username).first()
         if user is None:
-            token = get_random_string(32)
             secret_code = get_random_string(8)
             user = User(username=username,
                         password=password,
-                        token=token,
                         secret_code=secret_code,
-                        sesionValidTo=int(systime.time()) + 3600 * 24,
                         codeToConfirmEmail=get_random_string(16),
                         isEmailConfirmed=False)
             db.session.add(user)
             db.session.commit()
             sendValidationCode(username, user.codeToConfirmEmail)
-            return {'message': 'Registered successfully', "token": token, "validDue": user.sesionValidTo}, 200
+            login_user(user)
+            return {'message': 'Registered successfully'}, 200
         return {'message': 'User already exists'}, 409
 
 
@@ -451,6 +443,10 @@ class isEmailConfirmed(Resource):
 
 
 def sendValidationCode(username, code):
+    threading.Thread(target=th_sendValidationCode, args=(username, code)).start()
+
+
+def th_sendValidationCode(username, code):
     sender_email = config.sender_email
     password = config.password
     receiver_email = username
@@ -523,15 +519,6 @@ class ResetPassword(Resource):
         return {'message': 'Password reset successfully'}, 200
 
 
-class Display(Resource):
-    def get(self):
-        users = User.query.all()
-        for user in users:
-            print(
-                f"Username: {user.username} Password: {user.password} Token: {user.token} Secret code: {user.secret_code}")
-        return {'message': 'Data displayed successfully'}, 200
-
-
 class Schedule(Resource):
     def get(self):
         sessions = Sessions.query.all()
@@ -568,31 +555,6 @@ class DisplayTikets(Resource):
         return {'message': 'Data displayed successfully'}, 200
 
 
-class getTikets(Resource):
-    def get(self):
-        username = request.args.get('username')
-        token = request.args.get('token')
-
-        tikets = Tiket.query.filter_by(username=username).all()
-        user = User.query.filter_by(username=username).first()
-        if user is None:
-            return {'message': 'User not found'}, 404
-        print(f"username: {username} token: {token} user.token: {user.token}")
-        if user.token != token or int(systime.time()) > user.sesionValidTo:
-            return {'message': 'Wrong token or sessoin expired'}, 400
-        tiketslist = []
-        for tiket in tikets:
-            tiketslist.append({
-                "date": tiket.date,
-                "title": tiket.title,
-                "time": tiket.time,
-                "seats": tiket.seats,
-                "id": tiket.id,
-                "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
-            })
-        return {"message": "succes", "tikets": tiketslist}, 200
-
-
 class serve_image(Resource):
     def get(self, id):
         filename = "/home/vincinemaApi/tikets/" + id
@@ -608,22 +570,14 @@ class send_poster(Resource):
         return send_file(filename, mimetype='image/png')
 
 
-class checkToken(Resource):
+class get_nav(Resource):
     def get(self):
-        token = request.args.get('token')
-        username = request.args.get('username')
-        user = User.query.filter_by(username=username).first()
-        if user is None:
-            return {'message': 'User not found'}, 404
-        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
-            return {'message': 'Token not valid'}, 400
-        additional = []
-        if user.is_admin:
-            additional.append({
+        if current_user.is_authenticated and current_user.is_admin:
+            return [{
                 "title": "Admin Panel",
                 "url": base_url + "/adminlog"
-            })
-        return {'message': 'Token valid', "additional": additional}, 200
+            }], 200
+        return [], 200
 
 
 class ResendEmailValidationCode(Resource):
@@ -660,17 +614,12 @@ class userConfirmEmail(Resource):
 
 class UserInformation(Resource):
     def get(self):
-        token = request.args.get('token')
-        username = request.args.get('username')
-        user = User.query.filter_by(username=username).first()
-        if user is None:
-            return {'message': 'User not found'}, 404
-        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
-            return {'message': 'Wrong token or session expired'}, 400
+        if not current_user.is_authenticated:
+            return {'message': 'User not logged in'}, 400
         res = {}
-        res['username'] = user.username
-        res['isEmailConfirmed'] = user.isEmailConfirmed
-        tikets = Tiket.query.filter_by(username=username).all()
+        res['username'] = current_user.username
+        res['isEmailConfirmed'] = current_user.isEmailConfirmed
+        tikets = Tiket.query.filter_by(username=current_user.username).all()
         res['tikets'] = []
         for tiket in tikets:
             data = {
@@ -716,22 +665,13 @@ def checkPayment(id, expired):
 
 class BuyTikets(Resource):
     def post(self):
-        username = request.headers.get('username')
-        token = request.headers.get('token')
         seats = request.headers.get('seats')
         ses_id = request.args.get('sessions_id')
-        if username is None or token is None or seats is None or ses_id is None:
-            return {'message': 'Missing data',
-                    "username": username,
-                    "token": token,
-                    "seats": seats,
-                    "ses_id": ses_id
-                    }, 400
-        user = User.query.filter_by(username=username).first()
+        if current_user.username is None or current_user.token is None or seats is None or ses_id is None:
+            return {'message': 'Wrong data'}, 400
+        user = User.query.filter_by(username=current_user.username).first()
         if user is None:
             return {'message': 'User not found'}, 404
-        if token != user.token or username != user.username or int(systime.time()) > user.sesionValidTo:
-            return {'message': 'Wrong token or ses_id expired'}, 400
         if user.isEmailConfirmed == False:
             return {'message': 'Email not confirmed'}, 400
         ses = Sessions.query.filter_by(id=ses_id).first()
@@ -837,6 +777,14 @@ class dbinfo(Resource):
         return str(table_names), 200
 
 
+class is_user_Authenticated(Resource):
+    def get(self):
+        if current_user.is_authenticated:
+            return {'message': 'User is authenticated'}, 200
+        else:
+            return {'message': 'User is not authenticated'}, 400
+
+
 class getFilms(Resource):
     def get(self):
         films = Film.query.all()
@@ -906,6 +854,12 @@ class GetSession(Resource):
         return ans, 200
 
 
+class logout_us(Resource):
+    def get(self):
+        logout_user()
+        return {'message': 'User logged out'}, 200
+
+
 import requests
 import time
 
@@ -938,7 +892,6 @@ class BanMiddleware:
     def __call__(self, environ, start_response):
         # get real ip
         ip_address = environ.get('HTTP_X_REAL_IP', environ.get('REMOTE_ADDR'))
-        print(ip_address)
 
         # Check if the IP is already banned
         if ip_address in BANNED_IPS:
@@ -953,7 +906,6 @@ class BanMiddleware:
                 num_requests, last_request_time = requests_info
 
                 if current_time - last_request_time > TIME_WINDOW:
-                    # Reset the count if the time window has passed
                     num_requests = 1
                 else:
                     num_requests += 1
@@ -962,8 +914,6 @@ class BanMiddleware:
 
             # Update the user_requests dictionary with the new count and timestamp
             user_requests[ip_address] = (num_requests, current_time)
-
-            print(num_requests)
             if num_requests > REQUEST_THRESHOLD:
                 BANNED_IPS.append(ip_address)
                 send_notification(f'IP {ip_address} is banned')
@@ -976,29 +926,37 @@ class BanMiddleware:
 
 app.wsgi_app = BanMiddleware(app.wsgi_app)
 
+# User Authentication and Account Management
 api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
 api.add_resource(FogotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
-api.add_resource(Display, '/display')
-api.add_resource(Schedule, '/schedule')
-api.add_resource(DisplayTikets, '/displayTikets')
-api.add_resource(getTikets, '/getTikets')
-api.add_resource(serve_image, '/tikets/<id>')
 api.add_resource(ConfirmEmail, '/confirmEmail')
 api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
-api.add_resource(checkToken, '/checkToken')
 api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 api.add_resource(userConfirmEmail, '/userConfirmEmail')
-api.add_resource(UserInformation, '/userinfo')
-api.add_resource(BuyTikets, '/buyTikets')
+api.add_resource(get_nav, '/getnav')
+api.add_resource(is_user_Authenticated, '/isUserAuthenticated')
+api.add_resource(logout_us, '/logout')
+
+# Displaying Information
+api.add_resource(DisplayTikets, '/displayTikets')
 api.add_resource(getSessionInfo, '/getSessionInfo')
-api.add_resource(dbinfo, '/dbinfo')
 api.add_resource(getFilms, '/getFilms')
+api.add_resource(Schedule, '/schedule')
 api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
-api.add_resource(send_poster, '/Posters/<id>')
+
+# Ticket Management
+api.add_resource(serve_image, '/tikets/<id>')
+api.add_resource(BuyTikets, '/buyTikets')
 api.add_resource(confirm_Payment, '/confirmPayment')
+
+# User Information
+api.add_resource(UserInformation, '/userinfo')
+
+# Database Information
+api.add_resource(dbinfo, '/dbinfo')
 
 if __name__ == '__main__':
     with app.app_context():
