@@ -557,7 +557,7 @@ class DisplayTikets(Resource):
         return {'message': 'Data displayed successfully'}, 200
 
 
-class serve_image(Resource):
+class ticket_qr(Resource):
     def get(self, id):
         filename = "/home/vincinemaApi/tikets/" + id
         return send_file(filename, mimetype='image/png')
@@ -956,7 +956,8 @@ api.add_resource(confirm_Payment, '/confirmPayment')
 api.add_resource(UserInformation, '/userinfo')
 
 # image
-api.add_resource(serve_image, '/Posters/<id>')
+api.add_resource(ticket_qr, '/tikets/<id>')
+api.add_resource(send_poster, '/Posters/<id>')
 
 # Database Information
 api.add_resource(dbinfo, '/dbinfo')
