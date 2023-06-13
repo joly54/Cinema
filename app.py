@@ -131,7 +131,9 @@ class User(db.Model):
         return False
 
     def __repr__(self):
-        return "User: " + self.username + " " + self.password + " " + self.secret_code + " " + self.codeToConfirmEmail + " " + str(self.isEmailConfirmed) + " " + str(self.is_admin)
+        return "User: " + self.username + " " + self.password + " " + self.secret_code + " " + self.codeToConfirmEmail + " " + str(
+            self.isEmailConfirmed) + " " + str(self.is_admin)
+
 
 class Tiket(db.Model):
     id = db.Column(db.String(255), primary_key=True, default=str(uuid.uuid4()))
@@ -686,10 +688,9 @@ class BuyTikets(Resource):
             ses_id=ses.id,
             seats=str(seats),
             amount=ses.film.price * len(seats),
-            time=int(systime.time()),
             expired=int(systime.time()) + 60 * 5,
             confirmed=False,
-            user = current_user
+            user=current_user
         )
         for seat in seats:
             aviable_seats.remove(seat)
