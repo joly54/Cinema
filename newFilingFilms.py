@@ -214,9 +214,7 @@ if __name__ == "__main__":
                     username="perepelukdanilo@gmail.com",
                     # hash
                     password="b0e52a1510c9012ebae9e9dc1ae0c46e",
-                    token="dfgsdfs",
                     secret_code="sgdf",
-                    sesionValidTo=12,
                     codeToConfirmEmail="",
                     isEmailConfirmed=True,
                     is_admin=True,
