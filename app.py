@@ -669,15 +669,13 @@ class BuyTikets(Resource):
         ses_id = request.args.get('sessions_id')
         if current_user.username is None or seats is None or ses_id is None:
             return {'message': 'Wrong data'}, 400
-        user = User.query.filter_by(username=current_user.username).first()
-        if user is None:
-            return {'message': 'User not found'}, 404
-        if user.isEmailConfirmed == False:
+        if not current_user.is_authenticated:
+            return {'message': 'User not logged in'}, 400
+        if current_user.isEmailConfirmed == False:
             return {'message': 'Email not confirmed'}, 400
         ses = Sessions.query.filter_by(id=ses_id).first()
         if ses is None:
             return {'message': 'Session not found'}, 404
-
         seats = json.loads(seats)
         if len(seats) == 0:
             return {'message': 'No seats selected'}, 400
@@ -685,13 +683,13 @@ class BuyTikets(Resource):
         if not all(elem in aviable_seats for elem in seats):
             return {'message': 'Seats not available'}, 400
         pay = Payment(
-            user_id=user.id,
             ses_id=ses.id,
             seats=str(seats),
             amount=ses.film.price * len(seats),
             time=int(systime.time()),
             expired=int(systime.time()) + 60 * 5,
-            confirmed=False
+            confirmed=False,
+            user = current_user
         )
         for seat in seats:
             aviable_seats.remove(seat)
