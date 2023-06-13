@@ -948,7 +948,7 @@ api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
 
 # Ticket Management
-api.add_resource(serve_image, '/tikets/<id>')
+
 api.add_resource(BuyTikets, '/buyTikets')
 api.add_resource(confirm_Payment, '/confirmPayment')
 
