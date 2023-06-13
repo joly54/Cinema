@@ -955,6 +955,9 @@ api.add_resource(confirm_Payment, '/confirmPayment')
 # User Information
 api.add_resource(UserInformation, '/userinfo')
 
+#image
+api.add_resource(serve_image, '/Posters/<id>')
+
 # Database Information
 api.add_resource(dbinfo, '/dbinfo')
 
