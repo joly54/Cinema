@@ -40,7 +40,7 @@ function Login({
                         <input
                             style={{fontFamily: "Montserrat"}}
                             type="text"
-                            placeholder="Username"
+                            placeholder="Email"
                             onChange={(e) => handleChangeUsername(e.target.value)}
                         ></input>
                     </Grid>
@@ -78,7 +78,7 @@ function Login({
                                 <Typography
                                     className={"text-btn"}
                                     style={{fontFamily: "Montserrat"}}
-                                >Register</Typography></Link>
+                                >Dont have account?</Typography></Link>
                         </Grid>
                     </Grid>
                 </Grid>

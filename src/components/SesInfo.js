@@ -17,68 +17,19 @@ function SesInfo({handlePayData}) {
     const [sessionInfo, setSessionInfo] = useState([]);
     const [aviSeats, setAviSeats] = useState([]);
     const [selected, setSelected] = useState([]);
-    const username = localStorage.getItem("username");
-    const token = localStorage.getItem("token");
     useEffect(() => {
-        if (!username || !token) {
-            toast.error("You are not logged in.",
-                {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: true
-                }
-            );
-            //remove from history
-            window.history.replaceState(null, null, "/Cinema");
-            navigate("/login");
-            return;
-        } else {
-            api.checktoken(username, token)
-                .then(res => {
-                    if (res.ok) {
-                        res.json().then(data => {
-                            console.log(data);
-                        });
-                    } else {
-                        res.json().then(data => {
-                            console.error(data);
-                            toast.error("Your session has expired. Please log in again.",
-                                {
-                                    position: "top-center",
-                                    autoClose: 5000,
-                                    hideProgressBar: false,
-                                    closeOnClick: true,
-                                    pauseOnHover: false,
-                                    pauseOnFocusLoss: false,
-                                    theme: "colored",
-                                    draggable: true
-                                }
-                            );
-                            window.history.replaceState(null, null, "/Cinema");
-                            navigate("/login");
-                            return;
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    toast.error("Oops! Something went wrong.", {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: false,
-                        pauseOnFocusLoss: false,
-                        theme: "colored",
-                        draggable: true
-                    });
 
-                    navigate("/")
-                });
-        }
+        api.isAuthenticated()
+            .then((res) => {
+                if (res.ok) {
+                } else {
+                    navigate('/login');
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
         api.getSessionInfo(session)
             .then(res => {
                 if (res.ok) {
@@ -127,7 +78,7 @@ function SesInfo({handlePayData}) {
     }
 
     function buy() {
-        api.buyTicket(session, localStorage.getItem("username"), localStorage.getItem("token"), selected)
+        api.buyTicket(session, selected)
             .then(res => {
                 if (res.ok) {
                     res.json().then(data => {

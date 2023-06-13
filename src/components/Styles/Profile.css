@@ -105,3 +105,16 @@ p {
     }
 
 }
+
+.distabled {
+    background-color: #917c9e !important;
+    color: #fff !important;
+    padding: 0.5rem 1rem !important;
+    border: none !important;
+    border-radius: 0.4rem !important;
+    font-size: 1.2rem !important;
+    cursor: pointer !important;
+    height: 45px;
+    box-shadow: 0 0 11px rgba(33, 33, 33, 0.2)!important;
+    width: 250px !important;
+}

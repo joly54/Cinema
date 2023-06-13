@@ -21,7 +21,7 @@ import NotFound from "./components/404";
 
 function App() {
     useEffect(() => {
-        Cookies.set('cookieName', 'cookieValue', { sameSite: 'none', secure: "Lax" });
+        Cookies.set('cookieName', 'cookieValue', {sameSite: 'none', secure: "Lax"});
     }, []);
     const theme = createTheme({
         palette: {
@@ -34,27 +34,26 @@ function App() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [isLogin, setIsLogin] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
     const [sessionId, setsession] = useState(null);
     const [PayData, setPayData] = useState({});
-    let validDue = localStorage.getItem('validDue');
     const [addition, setAddition] = useState([]);
     const md5 = require('md5');
 
-    function handleToastErr(text){
+    function handleToastErr(text) {
         toast.error(text, {
             position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: false,
-                pauseOnFocusLoss: false,
-                theme: "colored",
-                draggable: true
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            pauseOnFocusLoss: false,
+            theme: "colored",
+            draggable: true
         });
     }
 
-    function handleToastSuc(text){
+    function handleToastSuc(text) {
         toast.success(text, {
             position: "top-center",
             autoClose: 5000,
@@ -67,49 +66,47 @@ function App() {
         });
     }
 
-    useEffect(() =>{
-        if (validDue) {
-            let now = new Date()/1000
-            if (now > validDue) {
-                localStorage.removeItem('token');
-                localStorage.removeItem('username');
-                localStorage.removeItem('validDue');
-                setIsLogin(false);
-                navigate('/login');
-            }
-            api.checktoken(localStorage.getItem("username"), localStorage.getItem("token"))
-                .then((res) => {
-                    res.json().then(data => {
-                            console.log(data);
-                            if (res.ok) {
-                                setIsLogin(true);
-                                if(data['additional'] !== undefined){
-                                    setAddition(data['additional']);
-                                }
-                                console.log(addition);
-                            } else{
-                                localStorage.removeItem('token');
-                                localStorage.removeItem('username');
-                                localStorage.removeItem('validDue');
-                                setIsLogin(false);
-                                handleToastErr("Your session expired, please login again");
-                                navigate('/login');
-                            }
-                        }
+    useEffect(() => {
+        api.isAuthenticated()
+            .then((res) => {
+                if (res.ok) {
+                    setIsLogin(true);
+                } else {
+                    setIsLogin(false);
+                    navigate('/login');
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
 
-                    )})
-        } else {
-            setIsLogin(false);
-        }
-    }, [navigate, validDue])
-    function handleChangeUsername(value){
+        api.get_navbar()
+            .then((res) => {
+                res.json()
+                    .then(data => {
+                        console.log(data);
+                        if (res.ok) {
+                            setAddition(data);
+                        } else {
+                            handleToastErr(data['message']);
+                        }
+                    })
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, []);
+
+    function handleChangeUsername(value) {
         setUsername(value);
         console.log(username);
     }
-    function handleChangePassword(value){
+
+    function handleChangePassword(value) {
         setPassword(value);
     }
-    function handleLogin(){
+
+    function handleLogin() {
         //hash using bcrypt
         const pass = md5(password)
         api.login(
@@ -121,24 +118,22 @@ function App() {
                         console.log(data);
                         if (res.ok) {
                             setIsLogin(true);
-                            localStorage.setItem('token', data['token']);
-                            localStorage.setItem('username', username);
-                            localStorage.setItem('validDue', data['validDue']);
                             handleToastSuc("Welcome back ")
-                            console.log(navigate)
                             navigate("/profile");
-                        } else{
+                        } else {
                             handleToastErr(data['message'])
                         }
                     }
-                )}
+                )
+            }
         ).catch(
             (err) => {
                 console.log(err)
             }
         )
     }
-    function handleRegister(){
+
+    function handleRegister() {
         //hash using bcrypt
         const pass = md5(password)
         api.register(
@@ -146,16 +141,13 @@ function App() {
             md5(pass)
         ).then(
             (res) => {
-                res.json().then(data =>{
+                res.json().then(data => {
                         console.log(data);
-                        if(res.ok){
+                        if (res.ok) {
                             setIsLogin(true);
-                            localStorage.setItem('token', data['token']);
-                            localStorage.setItem('username', username);
-                            localStorage.setItem('validDue', data['validDue']);
                             handleToastSuc(data['message'])
                             navigate('/profile');
-                        }else {
+                        } else {
                             handleToastErr(data['message'])
                         }
                     }
@@ -164,37 +156,55 @@ function App() {
         )
 
     }
-    function handleLogout(){
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('validDue');
-        setIsLogin(false);
-        navigate('/login');
+
+    function handleLogout() {
+        api.logout()
+            .then((res) => {
+                if (res.ok) {
+                    setIsLogin(false);
+                    navigate('/login');
+                } else {
+                    handleToastErr("Something went wrong")
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
-    function handleChangePayData(value){
+
+    function handleChangePayData(value) {
         setPayData(value)
         navigate("/Payment")
     }
+
     return (
         <ThemeProvider theme={theme}>
             <div className="BackGroundColor">
-                <ToastContainer />
+                <ToastContainer/>
                 <Header loggedIn={isLogin} handleLogout={handleLogout} additionals={addition}/>
                 <Routes>
-                    <Route path="/" element={<Schedule />} />
-                    <Route path="/films/:id" element={<FilmsInfo />} />
-                    <Route path="/films" element={<Films />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} handleLogin={handleLogin}/>} />
-                    <Route path="/register"  element={<Register handleRegister={handleRegister} handleChangeUsername={handleChangeUsername} handleChangePassword={handleChangePassword} />}/>
-                    <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername} handleToastErr={handleToastErr} handleToastSuc={handleToastSuc}/>} />
-                    <Route path="/sessionInfo/:id" element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} />} />
-                    <Route path="/Payment" element={<Payment data={PayData}/>} />
-                    <Route path="*" element={<NotFound />} />
+                    <Route path="/" element={<Schedule/>}/>
+                    <Route path="/films/:id" element={<FilmsInfo/>}/>
+                    <Route path="/films" element={<Films/>}/>
+                    <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername}
+                                                         handleChangePassword={handleChangePassword}
+                                                         handleLogin={handleLogin}/>}/>
+                    <Route path="/register" element={<Register handleRegister={handleRegister}
+                                                               handleChangeUsername={handleChangeUsername}
+                                                               handleChangePassword={handleChangePassword}/>}/>
+                    <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername}
+                                                                           handleToastErr={handleToastErr}
+                                                                           handleToastSuc={handleToastSuc}/>}/>
+                    <Route path="/sessionInfo/:id"
+                           element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData}/>}/>
+                    <Route path="/Payment" element={<Payment data={PayData}/>}/>
+                    <Route path="*" element={<NotFound/>}/>
                 </Routes>
-                <Footer />
+                <Footer/>
             </div>
         </ThemeProvider>
     );
 }
+
 export default App;

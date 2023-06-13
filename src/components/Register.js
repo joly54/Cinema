@@ -42,7 +42,7 @@ function Register(
                         <input
                             style={{fontFamily: "Montserrat"}}
                             type="text"
-                            placeholder="Username"
+                            placeholder="Email"
                             onChange={(e) => handleChangeUsername(e.target.value)}
                         ></input>
                     </Grid>

@@ -66,7 +66,7 @@ function Header({loggedIn, handleLogout, additionals}) {
                                     <Link to={"/login"} className="nav-link">Log in</Link>
                                 </Nav.Link>
                                 <Nav.Link>
-                                    <Link to={"/register"} className="nav-link" onClick={handleLogout}>Sign up</Link>
+                                    <Link to={"/register"} className="nav-link">Sign up</Link>
                                 </Nav.Link>
                             </>
                         )}

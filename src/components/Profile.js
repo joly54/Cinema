@@ -35,7 +35,7 @@ function Profile() {
         setOpen(false);
     };
     const navigate = useNavigate();
-    const [email] = useState(localStorage.getItem('username') === null ? "null" : localStorage.getItem('username'));
+    const [email, setEmail] = useState("");
     const [status, setStatus] = useState("");
     const [tickets, setTickets] = useState([]);
     const token = localStorage.getItem('token');
@@ -49,6 +49,7 @@ function Profile() {
                         .then(data => {
                             console.log(data);
                             setStatus(data["isEmailConfirmed"]);
+                            setEmail(data["username"]);
                             data["tikets"].sort((a, b) => {
                                 return new Date(a.date) - new Date(b.date);
                             });
@@ -58,7 +59,7 @@ function Profile() {
                     navigate('/login', { replace: true });
                 }
             });
-    }, []);
+    }, [email, navigate, token]);
 
     function confirmEmail() {
         fetch(baseurl + `/resendEmailValidationCode?username=${email}`)

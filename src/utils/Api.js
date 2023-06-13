@@ -1,12 +1,35 @@
-export const baseurl = "https://vincinemaapi.pythonanywhere.com/";
-
+const local = true
+export const baseurl = local ? 'http://127.0.0.1:5000/' : "https://vincinemaapi.pythonanywhere.com/"
 export const login = (username, password) => {
     const json = JSON.stringify({username: username, password: password})
-    return fetch(`${baseurl}/login`, {method: 'POST', body: json})
+    return fetch(`${baseurl}/login`, {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: json
+        }
+    )
 }
+
+export const isAuthenticated = () => {
+    return fetch(`${baseurl}/isUserAuthenticated`, {credentials: 'include'})
+}
+
+export const logout = () => {
+    return fetch(`${baseurl}/logout`, {credentials: 'include'})
+}
+
+
 export const register = (username, password) => {
     const json = JSON.stringify({username: username, password: password})
-    return fetch(`${baseurl}/register?username=${username}&password=${password}`, {method: 'POST', body: json})
+    return fetch(`${baseurl}/register?username=${username}&password=${password}`,
+        {
+            credentials: 'include',
+            method: 'POST',
+            body: json})
 }
 export const forgotPasswordConfirm = (username) => {
     return fetch(`${baseurl}/forgot-password?username=${username}`, {method: 'POST'})
@@ -15,13 +38,21 @@ export const forgotPasswordConfirm = (username) => {
 export const ResetPassword = (username, code, password) => {
     return fetch(`${baseurl}/reset-password?username=${username}&secret_code=${code}&password=${password}`, {method: 'POST'})
 }
-export const userInfo = (username, token) => {
-    return fetch(`${baseurl}/userinfo?username=${username}&token=${token}`)
-}
-export const checktoken = (username, token) => {
-    return fetch(`${baseurl}/checkToken?username=${username}&token=${token}`)
+export const userInfo = () => {
+    return fetch(`${baseurl}/userinfo`,
+        {
+            credentials: 'include',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+        }
+    )
 }
 
+export const get_navbar = () => {
+    return fetch(`${baseurl}/getnav`, {credentials: 'include'})
+}
 
 export const schedule = () => {
     return fetch(`${baseurl}/schedule`)
@@ -36,11 +67,10 @@ export const getFilms = () => {
 export const getSessions = (film_id) => {
     return fetch(`${baseurl}/getSessions?film_id=${film_id}`)
 }
-export const buyTicket = (ses, username, token, seats) => {
+export const buyTicket = (ses, seats) => {
     return fetch(`${baseurl}/buyTikets?sessions_id=${ses}`, {
+        credentials: 'include',
         method: 'POST', headers: {
-            username: username,
-            token: token,
             seats: "[" + seats + "]"
         }
     })
