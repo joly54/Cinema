@@ -861,10 +861,10 @@ import time
 
 BANNED_IPS = []
 WHITE_LIST = ["127.0.0.1", "91.225.38.80"]
-REQUEST_THRESHOLD = 200
-TIME_WINDOW = 60  # Time window in seconds
+REQUEST_THRESHOLD = 300
+TIME_WINDOW = 60
 
-user_requests = {}  # Dictionary to store the number of requests per user and the last request timestamp
+us_req = {}
 
 
 def send_notification(text):
@@ -894,28 +894,18 @@ class BanMiddleware:
             start_response('403 Forbidden', [('Content-Type', 'text/plain')])
             return [b'Forbidden']
 
-        # Check if the IP is whitelisted
-        if ip_address not in WHITE_LIST:
-            current_time = time.time()
-            if ip_address in user_requests:
-                requests_info = user_requests[ip_address]
-                num_requests, last_request_time = requests_info
+        if ip_address not in us_req:
+            us_req[ip_address] = []
+        us_req[ip_address].append(time.time())
+        for i in range(len(us_req[ip_address])):
+            if us_req[ip_address][i] < time.time() - TIME_WINDOW:
+                us_req[ip_address].remove(us_req[ip_address][i])
+        if len(us_req[ip_address]) > REQUEST_THRESHOLD:
+            BANNED_IPS.append(ip_address)
+            send_notification(f"IP {ip_address} was banned")
+            start_response('403 Forbidden', [('Content-Type', 'text/plain')])
+            return [b'Forbidden']
 
-                if current_time - last_request_time > TIME_WINDOW:
-                    num_requests = 1
-                else:
-                    num_requests += 1
-            else:
-                num_requests = 1
-
-            # Update the user_requests dictionary with the new count and timestamp
-            user_requests[ip_address] = (num_requests, current_time)
-            if num_requests > REQUEST_THRESHOLD:
-                BANNED_IPS.append(ip_address)
-                send_notification(f'IP {ip_address} is banned')
-
-                start_response('403 Forbidden', [('Content-Type', 'text/plain')])
-                return [b'Forbidden']
 
         return self.app(environ, start_response)
 
