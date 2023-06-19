@@ -555,7 +555,7 @@ class DisplayTikets(Resource):
 
 class ticket_qr(Resource):
     def get(self, id):
-        filename = "/home/vincinemaApi/tikets/" + id
+        filename = "tikets/" + id
         return send_file(filename, mimetype='image/png')
 
 
@@ -735,6 +735,8 @@ class confirm_Payment(Resource):
             "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
         }
         img = qrcode.make(data)
+        if not os.path.exists("tikets"):
+            os.makedirs("tikets")
         img.save("tikets/" + tiket.id + '.png')
         db.session.add(tiket)
         db.session.commit()
