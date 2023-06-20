@@ -72,8 +72,11 @@ function SesInfo({handlePayData}) {
             items.push(id);
         else
             items.splice(items.indexOf(id), 1);
+        items.sort(function (a, b) {
+            return a - b;
+        });
         setSelected(items)
-        document.getElementById("selected").innerHTML = selected;
+        document.getElementById("selected").innerHTML = items.length + " seats";
 
     }
 
@@ -231,7 +234,7 @@ function SesInfo({handlePayData}) {
                                         marginRight: "0.5rem"
                                     }}
                                 >
-                                    Selected seats:
+                                    Selected:
                                 </Typography>
                                 <Typography
                                     component="h1"

@@ -1,4 +1,4 @@
-const local = true
+const local = false
 export const baseurl = local ? 'http://127.0.0.1:5000/' : "https://vincinemaapi.pythonanywhere.com/"
 export const login = (username, password) => {
     const json = JSON.stringify({username: username, password: password})
