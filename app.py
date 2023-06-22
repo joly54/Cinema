@@ -12,7 +12,8 @@ import uuid
 from email.message import EmailMessage
 
 import qrcode
-from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash, jsonify
+from flasgger import Swagger
+from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import request
 from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
@@ -22,9 +23,13 @@ from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 
+SWAGGER_URL = '/docs'
+API_URL = '/swagger'
+
 import config
 
 app = Flask(__name__, template_folder="static")
+swagger = Swagger(app)
 CORS(app, supports_credentials=True)
 api = Api(app)
 app.config['SESSION_COOKIE_SECURE'] = True
@@ -393,6 +398,31 @@ def after_request(response):
 
 class Login(Resource):
     def post(self):
+        """
+        Authenticate user credentials and initiate a login session.
+
+        ---
+        parameters:
+          - name: body
+            in: body
+            required: true
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user.
+                password:
+                  type: string
+                  description: The password of the user.
+
+        responses:
+          200:
+            description: Authentication successful. Returns a success message.
+          400:
+            description: Invalid username or password. Returns an error message.
+
+        """
         print(request.cookies)
         data = request.data.decode('utf-8')
         data = json.loads(data)
@@ -400,19 +430,48 @@ class Login(Resource):
         password = data['password']
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
-            return {'message': 'Wrong username or password'}, 400
+            return {'message': 'Invalid username or password'}, 400
         login_user(user)
-        return {"message": "OK"}, 200
+        return {"message": "Authentication successful"}, 200
 
 
 class Register(Resource):
     def post(self):
+        """
+        Register a new user with the provided username and password.
+
+        ---
+        parameters:
+          - name: body
+            in: body
+            required: true
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The email address to be used as the username.
+                password:
+                  type: string
+                  description: The password for the new user.
+
+        responses:
+          200:
+            description: Registration successful. Returns a success message.
+          400:
+            description: Invalid username or password format. Returns an error message.
+          409:
+            description: User already exists. Returns an error message.
+
+        """
         data = request.data.decode('utf-8')
         data = json.loads(data)
         username = data['username']
         password = data['password']
+
         if username is None or password is None or not is_email(username):
-            return {'message': 'Username not email'}, 400
+            return {'message': 'Invalid username format. Please provide a valid email address.'}, 400
+
         user = User.query.filter_by(username=username).first()
         if user is None:
             secret_code = get_random_string(8)
@@ -425,7 +484,8 @@ class Register(Resource):
             db.session.commit()
             sendValidationCode(username, user.codeToConfirmEmail)
             login_user(user)
-            return {'message': 'Registered successfully'}, 200
+            return {'message': 'Registration successful'}, 200
+
         return {'message': 'User already exists'}, 409
 
 
@@ -463,62 +523,156 @@ def th_sendValidationCode(username, code):
 
 class ConfirmEmail(Resource):
     def get(self):
+        """
+        Confirm the email address of a user.
+
+        ---
+        parameters:
+          - name: username
+            in: query
+            type: string
+            required: true
+            description: The username (email address) of the user.
+          - name: code
+            in: query
+            type: string
+            required: false
+            description: The verification code sent to the user's email address.
+
+        responses:
+          200:
+            description: Email confirmation status or success messages returned.
+          400:
+            description: Invalid verification code or email already confirmed. Returns an error message.
+          404:
+            description: User not found. Returns an error message.
+
+        """
         username = request.args.get('username')
         code = request.args.get('code')
         user = User.query.filter_by(username=username).first()
+
         if user is None:
             return {'message': 'User not found'}, 404
-        if code == "-1":
 
+        if code == "-1":
             if user.isEmailConfirmed:
                 return {'message': 'Email confirmed'}, 200
             else:
                 return {'message': 'Email not confirmed'}, 200
+
         if user.isEmailConfirmed:
             return {'message': 'Email already confirmed'}, 400
+
         if code is None:
             sendValidationCode(username, user.codeToConfirmEmail)
-            return {'message': 'Email sent successfully'}, 200
+            return {'message': 'Verification code sent successfully'}, 200
+
         if user.codeToConfirmEmail != code:
-            return {'message': 'Wrong code'}, 400
+            return {'message': 'Invalid verification code'}, 400
+
         if code == user.codeToConfirmEmail:
             user.isEmailConfirmed = True
             db.session.commit()
             return {'message': 'Email confirmed'}, 200
 
 
-class FogotPassword(Resource):
+class ForgotPassword(Resource):
     def post(self):
+        """
+        Initiate the password reset process for a user.
+
+        ---
+        parameters:
+          - name: username
+            in: query
+            type: string
+            required: true
+            description: The username (email address) of the user.
+
+        responses:
+          200:
+            description: Password reset email sent successfully.
+          404:
+            description: User not found. Returns an error message.
+
+        """
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
+
         if user is None:
             return {'message': 'User not found'}, 404
+
         user.secret_code = get_random_string(8)
         User.query.filter_by(username=username).update(dict(secret_code=user.secret_code))
         db.session.commit()
+
         send_email(username, user.secret_code)
-        return {'message': 'Email sent successfully'}, 200
+        return {'message': 'Password reset email sent successfully'}, 200
 
 
 class ResetPassword(Resource):
     def post(self):
+        """
+        Reset the password for a user.
+
+        ---
+        parameters:
+          - name: username
+            in: query
+            type: string
+            required: true
+            description: The username (email address) of the user.
+          - name: password
+            in: query
+            type: string
+            required: true
+            description: The new password for the user.
+          - name: secret_code
+            in: query
+            type: string
+            required: true
+            description: The secret code sent to the user for password reset.
+
+        responses:
+          200:
+            description: Password reset successful. Returns a success message.
+          400:
+            description: Invalid secret code or user not found. Returns an error message.
+          404:
+            description: User not found. Returns an error message.
+
+        """
         username = request.args.get('username')
         password = request.args.get('password')
         secret_code = request.args.get('secret_code')
-        # return {"Secret code": secret_code, "Password": password, "Username": username, "Message": "OK"},200
+
         user = User.query.filter_by(username=username).first()
+
         if user is None:
             return {'message': 'User not found'}, 404
+
         if user.secret_code != secret_code:
-            return {'message': 'Wrong secret code'}, 400
+            return {'message': 'Invalid secret code'}, 400
+
         user.password = password
         user.secret_code = get_random_string(8)
         User.query.filter_by(username=username).update(dict(password=password, secret_code=user.secret_code))
-        return {'message': 'Password reset successfully'}, 200
+
+        return {'message': 'Password reset successful'}, 200
 
 
 class Schedule(Resource):
     def get(self):
+        """
+        Get the schedule of movie sessions.
+
+        ---
+        responses:
+          200:
+            description: Schedule retrieved successfully. Returns a list of sessions grouped by date.
+
+        """
         sessions = Sessions.query.all()
         answer = []
         dates = {}
@@ -568,8 +722,17 @@ class send_poster(Resource):
         return send_file(filename, mimetype='image/png')
 
 
-class get_nav(Resource):
+class GetNav(Resource):
     def get(self):
+        """
+        Get the navigation links for the current user.
+
+        ---
+        responses:
+          200:
+            description: Navigation links retrieved successfully. Returns a list of navigation links.
+
+        """
         if current_user.is_authenticated and current_user.is_admin:
             return [{
                 "title": "Admin Panel",
@@ -580,16 +743,40 @@ class get_nav(Resource):
 
 class ResendEmailValidationCode(Resource):
     def get(self):
+        """
+        Resend the email validation code to a user.
+
+        ---
+        parameters:
+          - name: username
+            in: query
+            type: string
+            required: true
+            description: The username (email address) of the user.
+
+        responses:
+          200:
+            description: Email validation code resent successfully.
+          400:
+            description: Email already confirmed. Returns an error message.
+          404:
+            description: User not found. Returns an error message.
+
+        """
         username = request.args.get('username')
         user = User.query.filter_by(username=username).first()
+
         if user is None:
             return {'message': 'User not found'}, 404
-        if user.isEmailConfirmed == True:
+
+        if user.isEmailConfirmed:
             return {'message': 'Email already confirmed'}, 400
+
         user.codeToConfirmEmail = get_random_string(16)
         db.session.commit()
+
         sendValidationCode(username, user.codeToConfirmEmail)
-        return {'message': 'Email sent successfully'}, 200
+        return {'message': 'Email validation code resent successfully'}, 200
 
 
 class userConfirmEmail(Resource):
@@ -612,6 +799,19 @@ class userConfirmEmail(Resource):
 
 class UserInformation(Resource):
     def get(self):
+
+        """
+                Get the information of the currently logged-in user.
+
+                ---
+                responses:
+                  200:
+                    description: User information retrieved successfully. Returns user information.
+                  400:
+                    description: User not logged in. Returns an error message.
+
+                """
+
         if not current_user.is_authenticated:
             return {'message': 'User not logged in'}, 400
         res = {}
@@ -663,6 +863,41 @@ def checkPayment(id, expired):
 
 class BuyTikets(Resource):
     def post(self):
+
+        """
+                Create a payment for buying tickets.
+
+                ---
+                parameters:
+                  - name: sessions_id
+                    in: query
+                    type: integer
+                    required: true
+                    description: The ID of the session for which tickets are being purchased.
+
+                requestBody:
+                  required: true
+                  content:
+                    application/json:
+                      schema:
+                        type: object
+                        properties:
+                          seats:
+                            type: array
+                            items:
+                              type: string
+                            description: The seats to be purchased.
+
+                responses:
+                  200:
+                    description: Payment created successfully. Returns the payment details.
+                  400:
+                    description: Wrong data or user not logged in or email not confirmed. Returns an error message.
+                  404:
+                    description: Session not found. Returns an error message.
+
+                """
+
         seats = request.headers.get('seats')
         ses_id = request.args.get('sessions_id')
         if current_user.username is None or seats is None or ses_id is None:
@@ -710,6 +945,28 @@ class BuyTikets(Resource):
 
 class confirm_Payment(Resource):
     def get(self):
+
+        """
+                Confirm a payment and generate tickets.
+
+                ---
+                parameters:
+                  - name: payment_id
+                    in: query
+                    type: integer
+                    required: true
+                    description: The ID of the payment to confirm.
+
+                responses:
+                  200:
+                    description: Payment confirmed and tickets generated successfully.
+                  400:
+                    description: Payment already confirmed or an error occurred. Returns an error message.
+                  404:
+                    description: Payment not found. Returns an error message.
+
+                """
+
         id = request.args.get('payment_id')
         payment = Payment.query.filter_by(id=id).first()
         if payment is None:
@@ -744,23 +1001,45 @@ class confirm_Payment(Resource):
         return {"message": "Tikets bought successfully"}, 200
 
 
-class getSessionInfo(Resource):
+class GetSessionInfo(Resource):
     def get(self):
-        ses_id = request.args.get('ses_id')
-        ses = Sessions.query.filter_by(id=ses_id).first()
-        if ses is None:
+        """
+        Get information about a session.
+
+        ---
+        parameters:
+          - name: ses_id
+            in: query
+            type: integer
+            required: true
+            description: The ID of the session to retrieve information about.
+
+        responses:
+          200:
+            description: Session information retrieved successfully.
+          404:
+            description: Session not found. Returns an error message.
+
+        """
+        session_id = request.args.get('ses_id')
+        session = Sessions.query.filter_by(id=session_id).first()
+
+        if session is None:
             return {'message': 'Session not found'}, 404
-        ans = {}
-        ans['message'] = 'Success'
-        ans['title'] = ses.title
-        film = Film.query.filter_by(id=ses.film_id).first()
-        ans['title'] = film.title
-        ans['trailer'] = film.trailer
-        ans['seats'] = json.loads(ses.seats)
-        ans['description'] = film.description
-        ans['price'] = film.price
-        ans['poster'] = base_url + "/Posters/" + str(film.id)
-        return ans, 200
+
+        response = {}
+        response['message'] = 'Success'
+        response['title'] = session.title
+
+        film = Film.query.filter_by(id=session.film_id).first()
+        response['film_title'] = film.title
+        response['trailer'] = film.trailer
+        response['seats'] = json.loads(session.seats)
+        response['description'] = film.description
+        response['price'] = film.price
+        response['poster'] = base_url + "/posters/" + str(film.id)
+
+        return response, 200
 
 
 class dbinfo(Resource):
@@ -775,20 +1054,43 @@ class dbinfo(Resource):
         return str(table_names), 200
 
 
-class is_user_Authenticated(Resource):
+class IsUserAuthenticated(Resource):
     def get(self):
+        """
+        Check if the user is authenticated.
+
+        ---
+        responses:
+          200:
+            description: User is authenticated.
+          400:
+            description: User is not authenticated.
+
+        """
         if current_user.is_authenticated:
             return {'message': 'User is authenticated'}, 200
         else:
             return {'message': 'User is not authenticated'}, 400
 
 
-class getFilms(Resource):
+class GetFilms(Resource):
     def get(self):
+        """
+        Get information about all films.
+
+        ---
+        responses:
+          200:
+            description: Film information retrieved successfully.
+          404:
+            description: No films found. Returns an empty list.
+
+        """
         films = Film.query.all()
-        res = []
+        response = []
+
         for film in films:
-            res.append({
+            film_data = {
                 "id": film.id,
                 "duration": film.duration,
                 "title": film.title,
@@ -796,12 +1098,38 @@ class getFilms(Resource):
                 "price": film.price,
                 "trailer": film.trailer,
                 "poster": base_url + "/Posters/" + str(film.id)
-            })
-        return res, 200
+            }
+            response.append(film_data)
+
+        if len(response) == 0:
+            return [], 404
+
+        return response, 200
 
 
 class getSessions(Resource):
     def get(self):
+
+        """
+                Get sessions for a specific film.
+
+                ---
+                parameters:
+                  - name: film_id
+                    in: query
+                    type: integer
+                    required: true
+                    description: The ID of the film.
+
+                responses:
+                  200:
+                    description: Sessions retrieved successfully.
+                  400:
+                    description: Bad request. Invalid film ID.
+                  404:
+                    description: Film not found.
+                """
+
         id = request.args.get('film_id')
         try:
             id = int(id)
@@ -831,6 +1159,25 @@ class getSessions(Resource):
 
 class GetSession(Resource):
     def get(self):
+
+        """
+                Get details of a specific session.
+
+                ---
+                parameters:
+                  - name: ses_id
+                    in: query
+                    type: integer
+                    required: true
+                    description: The ID of the session.
+
+                responses:
+                  200:
+                    description: Session details retrieved successfully.
+                  404:
+                    description: Session or associated film not found.
+                """
+
         ses_id = request.args.get('ses_id')
         ses = Sessions.query.filter_by(id=ses_id).first()
         ans = {}
@@ -908,7 +1255,8 @@ class BanMiddleware:
 
         print("IP: ", ip_address, "Requests: ", len(us_req[ip_address]))
 
-        if len(us_req[ip_address]) > REQUEST_THRESHOLD and ip_address not in WHITE_LIST and not (current_user.is_authenticated and current_user.is_admin):
+        if len(us_req[ip_address]) > REQUEST_THRESHOLD and ip_address not in WHITE_LIST and not (
+                current_user.is_authenticated and current_user.is_admin):
             BANNED_IPS.append(ip_address)
             send_notification(f"IP {ip_address} was banned")
             start_response('403 Forbidden', [('Content-Type', 'text/plain')])
@@ -922,20 +1270,20 @@ app.wsgi_app = BanMiddleware(app.wsgi_app)
 # User Authentication and Account Management
 api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
-api.add_resource(FogotPassword, '/forgot-password')
+api.add_resource(ForgotPassword, '/forgot-password')
 api.add_resource(ResetPassword, '/reset-password')
 api.add_resource(ConfirmEmail, '/confirmEmail')
 api.add_resource(isEmailConfirmed, '/isEmailConfirmed')
 api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 api.add_resource(userConfirmEmail, '/userConfirmEmail')
-api.add_resource(get_nav, '/getnav')
-api.add_resource(is_user_Authenticated, '/isUserAuthenticated')
+api.add_resource(GetNav, '/getnav')
+api.add_resource(IsUserAuthenticated, '/isUserAuthenticated')
 api.add_resource(logout_us, '/logout')
 
 # Displaying Information
 api.add_resource(DisplayTikets, '/displayTikets')
-api.add_resource(getSessionInfo, '/getSessionInfo')
-api.add_resource(getFilms, '/getFilms')
+api.add_resource(GetSessionInfo, '/getSessionInfo')
+api.add_resource(GetFilms, '/getFilms')
 api.add_resource(Schedule, '/schedule')
 api.add_resource(getSessions, '/getSessions')
 api.add_resource(GetSession, '/getSession')
