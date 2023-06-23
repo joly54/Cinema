@@ -12,7 +12,6 @@ import ForgotPassword from "./components/ForgotPassword";
 import SesInfo from "./components/SesInfo";
 import FilmsInfo from "./components/filmsInfo";
 import Payment from "./components/Payment"
-import Cookies from 'js-cookie';
 import * as api from "./utils/Api";
 import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
@@ -20,9 +19,6 @@ import Footer from "./components/footer";
 import NotFound from "./components/404";
 
 function App() {
-    useEffect(() => {
-        Cookies.set('cookieName', 'cookieValue', {sameSite: 'none', secure: "Lax"});
-    }, []);
     const theme = createTheme({
         palette: {
             primary: {
