@@ -68,11 +68,15 @@ export const getSessions = (film_id) => {
     return fetch(`${baseurl}/getSessions?film_id=${film_id}`)
 }
 export const buyTicket = (ses, seats) => {
+    const json = JSON.stringify({seats: seats})
     return fetch(`${baseurl}/buyTikets?sessions_id=${ses}`, {
         credentials: 'include',
-        method: 'POST', headers: {
-            seats: "[" + seats + "]"
-        }
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: json
     })
 }
 
