@@ -29,10 +29,17 @@ app = Flask(__name__, template_folder="static")
 swagger = Swagger(app)
 CORS(app, supports_credentials=True)
 api = Api(app)
-app.config['SESSION_COOKIE_SECURE'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['REMEMBER_COOKIE_SAMESITE'] = 'None'
+app.config['REMEMBER_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+
+
 login_manager = LoginManager(app)
 login_manager.login_view = 'adminlog'
+
 is_local = config.is_local
 if is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
@@ -297,7 +304,7 @@ def adminlog():
         password = hashlib.md5(password.encode()).hexdigest()
 
         if user and user.password == password:
-            login_user(user)
+            login_user(user, remember=True)
             return redirect(url_for('admin.index'))
         else:
             flash('Invalid username or password.', 'error')
