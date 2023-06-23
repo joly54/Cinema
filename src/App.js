@@ -26,7 +26,6 @@ function App() {
             },
         },
     });
-    document.cookie = 'cookieName=cookieValue; SameSite=Lax';
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
