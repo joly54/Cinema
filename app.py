@@ -354,8 +354,9 @@ def sendTiket(username, tikets):
     subject = "Your ticket"
 
     seat_list = ""
-    for seat in tikets.seats:
-        seat_list += str(seat) + " "
+    for seat in eval(tikets.seats):
+        seat_list += str(seat) + ", "
+    seat_list = seat_list[:-2]
 
     body = """
            Your ticket is attached to this email.
