@@ -23,9 +23,6 @@ from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
 
-SWAGGER_URL = '/docs'
-API_URL = '/swagger'
-
 import config
 
 app = Flask(__name__, template_folder="static")
@@ -431,7 +428,7 @@ class Login(Resource):
         user = User.query.filter_by(username=username).first()
         if user is None or user.password != password:
             return {'message': 'Invalid username or password'}, 400
-        login_user(user)
+        login_user(user, remember=True)
         return {"message": "Authentication successful"}, 200
 
 
@@ -863,7 +860,6 @@ def checkPayment(id, expired):
 
 class BuyTikets(Resource):
     def post(self):
-
         """
                 Create a payment for buying tickets.
 
@@ -874,6 +870,19 @@ class BuyTikets(Resource):
                     type: integer
                     required: true
                     description: The ID of the session for which tickets are being purchased.
+                  - name: body
+                    in: body
+                    required: true
+                    schema:
+                      type: object
+                      properties:
+                        seats:
+                            type: array
+                            items:
+                                type: integer
+                            description: The seats to be purchased.
+                      example:
+                        seats: [1, 2, 3]
 
                 requestBody:
                   required: true
@@ -884,37 +893,41 @@ class BuyTikets(Resource):
                         properties:
                           seats:
                             type: array
-                            items:
-                              type: string
+                            items: integer
                             description: The seats to be purchased.
 
                 responses:
                   200:
                     description: Payment created successfully. Returns the payment details.
                   400:
-                    description: Wrong data or user not logged in or email not confirmed. Returns an error message.
+                    description: Invalid data or user not logged in or email not confirmed. Returns an error message.
                   404:
                     description: Session not found. Returns an error message.
-
                 """
 
-        seats = request.headers.get('seats')
+        data = request.data.decode('utf-8')
+        print(data)
+        data = json.loads(data)
+        seats = data['seats']
         ses_id = request.args.get('sessions_id')
+
         if current_user.username is None or seats is None or ses_id is None:
-            return {'message': 'Wrong data'}, 400
+            return {'message': 'Invalid data'}, 400
         if not current_user.is_authenticated:
             return {'message': 'User not logged in'}, 400
-        if current_user.isEmailConfirmed == False:
+        if not current_user.isEmailConfirmed:
             return {'message': 'Email not confirmed'}, 400
+
         ses = Sessions.query.filter_by(id=ses_id).first()
         if ses is None:
             return {'message': 'Session not found'}, 404
-        seats = json.loads(seats)
         if len(seats) == 0:
             return {'message': 'No seats selected'}, 400
-        aviable_seats = json.loads(ses.seats)
-        if not all(elem in aviable_seats for elem in seats):
+
+        available_seats = json.loads(ses.seats)
+        if not all(elem in available_seats for elem in seats):
             return {'message': 'Seats not available'}, 400
+
         pay = Payment(
             ses_id=ses.id,
             seats=str(seats),
@@ -924,22 +937,25 @@ class BuyTikets(Resource):
             confirmed=False,
             user=current_user
         )
+
         for seat in seats:
-            aviable_seats.remove(seat)
-        ses.seats = str(aviable_seats)
+            available_seats.remove(seat)
+
+        ses.seats = str(available_seats)
         db.session.add(pay)
         db.session.commit()
         threading.Thread(target=checkPayment, args=(pay.id, pay.expired)).start()
+
         return {
             'message': 'Payment created',
             'id': pay.id,
-            "amount": pay.amount,
-            "Pay_created": pay.time,
-            "expired": pay.expired,
-            "title": ses.title,
-            "date": ses.date,
-            "time": ses.time,
-            "seats": pay.seats
+            'amount': pay.amount,
+            'Pay_created': pay.time,
+            'expired': pay.expired,
+            'title': ses.title,
+            'date': ses.date,
+            'time': ses.time,
+            'seats': pay.seats
         }, 200
 
 
