@@ -5,8 +5,10 @@ import {useNavigate} from "react-router-dom";
 import "./Styles/pay_history.css";
 
 function PayHistory({
-                        setPayData
+                        setPayData,
+                        moneyFormat,
                     }) {
+    document.title = "Pay history";
 
     const navigate = useNavigate();
 
@@ -67,36 +69,33 @@ function PayHistory({
                             direction="row"
                             justifyContent="center"
                             alignItems="baseline"
-
-                            style={
-                            {
-                                marginBottom: "1rem",
-                                cursor: "pointer",
-                            }}
-                            {...(!item.confirmed ? {onClick: () => {
-                                    setPayData({
-                                        pay_id: item.id,
-                                        pay_amount: item.amount,
-                                        pay_title: item.title,
-                                        pay_time: item.time,
-                                        pay_date: item.date,
-                                        pay_seats: item.seats.join(", "),
-                                    });
-                                    navigate("/payment");
-                                }} : {})}
-                        >
+                            >
                             <div
+                                {...(!item.confirmed ? {
+                                    onClick: () => {
+                                        setPayData({
+                                            pay_id: item.id,
+                                            pay_amount: item.amount,
+                                            pay_title: item.title,
+                                            pay_time: item.time,
+                                            pay_date: item.date,
+                                            pay_seats: item.seats.join(", "),
+                                        });
+                                        navigate("/payment");
+                                    }
+                                } : {})}
                                 className={item.confirmed ? "confirmed" : "not_confirmed"}
                                 style={{
                                     backgroundColor: item.confirmed ? "rgb(220 252 231)" : "rgb(254 205 211)",
                                     padding: "1rem",
                                     width: "60%",
+
                                     borderRadius: "0.5rem",
                                 }}
                             >
                                 <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
                                     <h5>{item.title}</h5>
-                                    <h5>{item.amount} UAH</h5>
+                                    <h5>{moneyFormat(item.amount)} UAH</h5>
                                 </Grid>
                                 <Grid container direction="row" justifyContent="space-between" alignItems="baseline">
                                     <p>{item.seats.length === 1 ? "Seat: " : "Seats: "}{item.seats.join(", ")}</p>

@@ -6,7 +6,7 @@ import './Styles/Payment.css'
 import './Styles/scrollBar.css';
 import {useNavigate} from "react-router-dom";
 
-function Payment ({data}){
+function Payment ({data, moneyFormat}){
     document.title = "Payment";
     const navigate = useNavigate();
     function confirmPayment() {
@@ -100,7 +100,7 @@ function Payment ({data}){
                             <Typography className="payInfo" variant="h6">Date: {data["pay_date"]};</Typography>
                             <Typography className="payInfo" variant="h6">Time: {data["pay_time"]};</Typography>
                             <Typography className="payInfo" variant="h6">Seats: {data["pay_seats"]};</Typography>
-                            <Typography className="payInfo" variant="h6">Price: {data["pay_amount"]}UAH</Typography>
+                            <Typography className="payInfo" variant="h6">Price: {moneyFormat(data["pay_amount"])}UAH</Typography>
                         </Grid>
                         <Typography variant="h6" style={{fontFamily: "Montserrat"}}>Card number:</Typography>
                         <input

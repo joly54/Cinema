@@ -9,7 +9,7 @@ import './Styles/scrollBar.css';
 import './Styles/preloader.css';
 import Preloader from "./preloader";
 
-function SesInfo({handlePayData}) {
+function SesInfo({handlePayData, moneyFormatter}) {
 
     //get current url
     const session = window.location.href.split("/")[window.location.href.split("/").length - 1];
@@ -37,7 +37,7 @@ function SesInfo({handlePayData}) {
                         console.log(data);
                         setSessionInfo(data);
                         setAviSeats(data["seats"])
-                        document.title = data["title"] + " - " + data["date"] + " " + data["time"] + " " + data["price"] + "UAH";
+                        document.title = data["title"] + " - " + data["date"] + " " + data["time"] + " " + moneyFormatter(data["price"]) + "UAH";
                     });
                 } else {
                     res.json().then(data => {
@@ -64,21 +64,37 @@ function SesInfo({handlePayData}) {
     Array.from({length: 49}, (_, i) => i + 1);
 
     function setSelect(id) {
-        if (document.getElementById(id).classList.contains("occupied"))
+        if (document.getElementById(id).classList.contains("occupied")) {
             return;
+        }
+
         document.getElementById(id).classList.toggle("selected");
-        const items = selected;
-        if (document.getElementById(id).classList.contains("selected"))
+
+        const items = [...selected];
+
+        if (document.getElementById(id).classList.contains("selected")) {
             items.push(id);
-        else
-            items.splice(items.indexOf(id), 1);
-        items.sort(function (a, b) {
+        } else {
+            const index = items.indexOf(id);
+            if (index !== -1) {
+                items.splice(index, 1);
+            }
+        }
+
+        items.sort(function(a, b) {
             return a - b;
         });
-        setSelected(items)
-        document.getElementById("selected").innerHTML = items.length + " seats";
 
+        setSelected(items);
+
+        const seatCountText = items.length === 1 ? " seat" : " seats";
+        document.getElementById("selected").innerHTML = items.length + seatCountText +
+            " Total: " + moneyFormatter(items.length * sessionInfo["price"]) + " UAH";
+        if (items.length === 0) {
+            document.getElementById("selected").innerHTML = "";
+        }
     }
+
 
     function buy() {
         api.buyTicket(session, selected)

@@ -27,6 +27,12 @@ function App() {
             },
         },
     });
+
+    const money_formatter = (value) =>{
+        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
+    }
+
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -193,9 +199,9 @@ function App() {
                                                                            handleToastErr={handleToastErr}
                                                                            handleToastSuc={handleToastSuc}/>}/>
                     <Route path="/sessionInfo/:id"
-                           element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData}/>}/>
-                    <Route path="/Payment" element={<Payment data={PayData}/>}/>
-                    <Route path="/pay_history" element={<Pay_history setPayData={setPayData}/>}/>
+                           element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} moneyFormatter={money_formatter}/>}/>
+                    <Route path="/Payment" element={<Payment data={PayData} moneyFormat={money_formatter} />}/>
+                    <Route path="/pay_history" element={<Pay_history setPayData={setPayData} moneyFormat={money_formatter}/>}/>
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
                 <Footer/>
