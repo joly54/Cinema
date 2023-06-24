@@ -174,7 +174,7 @@ function Profile() {
                                                 fontWeight: 'semi-bold',
                                             }}
                                         >
-                                            Get qr code
+                                            ADDITIONAL INFO
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -195,7 +195,10 @@ function Profile() {
                     <DialogContentText id="alert-dialog-slide-description">
                         <p style={{
                             textAlign: 'center'
-                        }}>Seats: </p>
+                        }}>Seat{
+                            ticket.seats ? ticket.seats.length > 1 ? 's' : null : null
+                        }: {ticket.seats ? ticket.seats.join(', ') : null
+                        }</p>
                         <h1 style={{
                             textAlign: 'center'
                         }}>Your QR-code</h1>
@@ -238,29 +241,6 @@ function Profile() {
                     ) : null}
                 </DialogContent>
                 <DialogActions>
-                    <Button
-                        onClick={() => {
-                            const printContents = document.getElementById('qr-code');
-                            const originalContents = document.body.innerHTML;
-                            const title = `
-                <ul>
-                  <li>Movie: ${ticket.title}</li>
-                  <li>Time: ${ticket.time}</li>
-                  <li>Date: ${ticket.date}</li>
-                  <li>Seat: ${ticket.number}</li>
-                </ul>
-              `;
-                            const printContainer = document.createElement('div');
-                            printContainer.innerHTML = title + printContents.outerHTML;
-                            document.body.innerHTML = printContainer.innerHTML;
-                            window.print();
-                            document.body.innerHTML = originalContents;
-                            //reload page
-                            window.location.reload();
-                        }}
-                    >
-                        Print QR-code
-                    </Button>
                     <Button onClick={handleClose}>Okay</Button>
                 </DialogActions>
             </Dialog>
