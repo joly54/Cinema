@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
 import Footer from "./components/footer";
 import NotFound from "./components/404";
+import Pay_history from "./components/pay_history";
 
 function App() {
     const theme = createTheme({
@@ -194,6 +195,7 @@ function App() {
                     <Route path="/sessionInfo/:id"
                            element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData}/>}/>
                     <Route path="/Payment" element={<Payment data={PayData}/>}/>
+                    <Route path="/pay_history" element={<Pay_history setPayData={setPayData}/>}/>
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
                 <Footer/>

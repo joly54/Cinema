@@ -28,10 +28,10 @@ function Header({loggedIn, handleLogout, additionals}) {
                 <Navbar.Collapse id="navbar-dark-example">
                     <Nav>
                         <Nav.Link>
-                            <Link to={"/"} className="nav-link">Schedule</Link>
+                            <Link to={"/films"} className="nav-link">Films</Link>
                         </Nav.Link>
                         <Nav.Link>
-                            <Link to={"/films"} className="nav-link">Films</Link>
+                            <Link to={"/"} className="nav-link">Schedule</Link>
                         </Nav.Link>
                     </Nav>
                     {/*map by aditionals*/}
@@ -55,6 +55,9 @@ function Header({loggedIn, handleLogout, additionals}) {
                             <>
                                 <Nav.Link>
                                     <Link to={"/profile"} className="nav-link">Profile</Link>
+                                </Nav.Link>
+                                <Nav.Link>
+                                    <Link to={"/pay_history"} className="nav-link">History</Link>
                                 </Nav.Link>
                                 <Nav.Link>
                                     <Link to={"/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
