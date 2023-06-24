@@ -88,6 +88,9 @@ function Profile() {
             </div>
             <div
                 className="profile-container"
+                style={{
+                    minWidth: '300px'
+                }}
             >
                 <BackToTopButton />
                 <ToastContainer />
@@ -95,6 +98,11 @@ function Profile() {
                     <Grid
                         container
                         spacing={2}
+                        style={{
+                            width: '100%', // Используйте фиксированную ширину вместо minWidth
+                            display: 'flex',
+                            justifyContent: 'center',
+                        }}
                     >
                         {tickets.map((ticket) => (
                             <Grid
@@ -103,7 +111,12 @@ function Profile() {
                                 xs={12}
                                 sm={6}
                                 md={4}
-                                lg={4}
+                                lg={2}
+                                style={{
+                                    minWidth: '300px',
+                                    marginLeft: '5px',
+                                    marginRight: '5px'
+                                }}
                             >
                                 <Card
                                     className="ticket-card"
@@ -111,8 +124,8 @@ function Profile() {
                                         borderRadius: '1.5rem',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        justifyContent: 'space-between',
                                         cursor: 'pointer',
+                                        minWidth: '300px',
                                     }}
                                     onClick={() => {
                                         //get src
