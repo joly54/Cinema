@@ -151,7 +151,6 @@ function Profile() {
                                         <h4>{ticket.title}</h4>
                                         <p>Time: {ticket.time}</p>
                                         <p>Date: {ticket.date}</p>
-                                        <p>Seats: {ticket.seats.replace('[', '').replace(']', '')}</p>
                                         <Button
                                             variant="contained"
                                             color="primary"
@@ -194,9 +193,12 @@ function Profile() {
                 <DialogTitle>{"Your qr code"}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-slide-description">
-                        <Typography variant="body1" color="textPrimary">
-                            Your qr code
-                        </Typography>
+                        <p style={{
+                            textAlign: 'center'
+                        }}>Seats: </p>
+                        <h1 style={{
+                            textAlign: 'center'
+                        }}>Your QR-code</h1>
                     </DialogContentText>
                     <img
                         id="qr-code"
@@ -257,7 +259,7 @@ function Profile() {
                             window.location.reload();
                         }}
                     >
-                        Print
+                        Print QR-code
                     </Button>
                     <Button onClick={handleClose}>Okay</Button>
                 </DialogActions>
