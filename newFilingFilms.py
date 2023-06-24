@@ -28,8 +28,10 @@ def randSeats():
         if RandBool(change):
             seat_list.append(i)
     change *= 0.98
-    print(change)
     return seat_list
+
+
+id_f = 1
 
 
 def createFilm(
@@ -38,13 +40,17 @@ def createFilm(
         trailer,
         description,
 ):
-    newFilm = Film(title=title,
-                   duration=duration,
-                   trailer=trailer,
-                   description=description,
-                   price=random.randint(20, 30) * 10 - 1)
+    global id_f
+    newFilm = Film(
+        id=id_f,
+        title=title,
+        duration=duration,
+        trailer=trailer,
+        description=description,
+        price=random.randint(20, 30) * 10 - 1)
     db.session.add(newFilm)
     db.session.commit()
+    id_f += 1
     return newFilm
 
 
@@ -194,13 +200,10 @@ def clearTicket():
     tickets = Tiket.query.all()
     import os
     ticket_list = os.listdir("/home/vincinemaApi/tikets")
-    print(len(ticket_list))
     for tiket in ticket_list:
         if tiket.split(".")[0] not in [ticket.id for ticket in tickets]:
             os.remove(f"/home/vincinemaApi/tikets/{tiket}")
             ticket_list.remove(tiket)
-            print(f"/home/vincinemaApi/tikets/{tiket}")
-    print(len(ticket_list))
 
 
 if __name__ == "__main__":

@@ -11,7 +11,6 @@ import time as systime
 import uuid
 from email.message import EmailMessage
 
-import qrcode
 from flasgger import Swagger
 from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import request
@@ -21,6 +20,7 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from qrcode_styled import QRCodeStyled
 from sqlalchemy.orm import backref
 
 import config
@@ -35,6 +35,12 @@ app.config['SESSION_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SAMESITE'] = 'None'
 app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+
+app.config['TIMEZONE'] = 'Europe/Kiev'
+#set app title
+app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
+
+
 
 
 login_manager = LoginManager(app)
@@ -65,7 +71,7 @@ class Payment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     ses_id = db.Column(db.Integer, db.ForeignKey('sessions.id'), nullable=False)
     seats = db.Column(db.String(500), nullable=False)
-    time = db.Column(db.String(5), db.ForeignKey('sessions.time'), nullable=False)
+    time = db.Column(db.String(5), db.ForeignKey('sessions.time'), nullable=True)
     amount = db.Column(db.Integer, nullable=False)
     expired = db.Column(db.Integer, nullable=False)
     confirmed = db.Column(db.Boolean, nullable=False)
@@ -115,7 +121,8 @@ class Sessions(db.Model):
     )
 
     def __repr__(self):
-        return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats
+        return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats + " " + str(self.time) + " " + str(
+            self.date)
 
 
 class User(db.Model):
@@ -217,6 +224,7 @@ class PaymentView(BaseViewer):
         'confirmed': 'Confirmed'
     }
     column_editable_list = ['confirmed']
+    can_create = False
 
 
 class FilmView(BaseViewer):
@@ -830,7 +838,7 @@ class UserInformation(Resource):
                 "date": tiket.date,
                 "title": tiket.title,
                 "time": tiket.time,
-                "seats": tiket.seats,
+                "seats": eval(tiket.seats),
                 "id": tiket.id,
                 "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
             }
@@ -969,27 +977,25 @@ class BuyTikets(Resource):
 
 class confirm_Payment(Resource):
     def get(self):
-
         """
-                Confirm a payment and generate tickets.
+        Confirm a payment and generate tickets.
 
-                ---
-                parameters:
-                  - name: payment_id
-                    in: query
-                    type: integer
-                    required: true
-                    description: The ID of the payment to confirm.
+        ---
+        parameters:
+          - name: payment_id
+            in: query
+            type: integer
+            required: true
+            description: The ID of the payment to confirm.
 
-                responses:
-                  200:
-                    description: Payment confirmed and tickets generated successfully.
-                  400:
-                    description: Payment already confirmed or an error occurred. Returns an error message.
-                  404:
-                    description: Payment not found. Returns an error message.
-
-                """
+        responses:
+          200:
+            description: Payment confirmed and tickets generated successfully.
+          400:
+            description: Payment already confirmed or an error occurred. Returns an error message.
+          404:
+            description: Payment not found. Returns an error message.
+        """
 
         id = request.args.get('payment_id')
         payment = Payment.query.filter_by(id=id).first()
@@ -1015,14 +1021,19 @@ class confirm_Payment(Resource):
             "id": tiket.id,
             "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
         }
-        img = qrcode.make(data)
+
+        qr = QRCodeStyled()
+        qr_image = qr.get_image(str(data))
+
         if not os.path.exists("tikets"):
             os.makedirs("tikets")
-        img.save("tikets/" + tiket.id + '.png')
+        qr_image.save("tikets/" + tiket.id + '.png', 'PNG', lossless=False, quality=80, method=2)
+
         db.session.add(tiket)
         db.session.commit()
         sendTiket(username, tiket)
-        return {"message": "Tikets bought successfully"}, 200
+
+        return {"message": "Tickets bought successfully"}, 200
 
 
 class GetSessionInfo(Resource):
@@ -1223,6 +1234,46 @@ class GetSession(Resource):
         return ans, 200
 
 
+
+class History(Resource):
+    def get(self):
+
+        """
+           Get the history of all bookings made by the user.
+
+           ---
+           responses:
+             200:
+               description: History retrieved successfully.
+             400:
+               description: User is not authenticated.
+             404:
+               description: User has not made any bookings.
+           """
+
+        if current_user.is_authenticated:
+            user_id = current_user.id
+            payments = Payment.query.filter_by(user_id=user_id).all()
+            response = []
+            for payment in payments:
+                payment_data = {
+                    "id": payment.id,
+                    "amount": payment.amount,
+                    'Pay_created': payment.time,
+                    "expired": payment.expired,
+                    "title": payment.session.title,
+                    "date": payment.session.date,
+                    "time": payment.session.time,
+                    "confirmed": payment.confirmed,
+                    "seats": json.loads(payment.seats),
+                }
+                response.append(payment_data)
+                response.reverse()
+            return response, 200
+        else:
+            return {'message': 'User is not authenticated'}, 400
+
+
 class logout_us(Resource):
     def get(self):
         logout_user()
@@ -1238,6 +1289,7 @@ REQUEST_THRESHOLD = 300
 TIME_WINDOW = 60
 
 us_req = {}
+
 
 
 def send_notification(text):
@@ -1318,6 +1370,7 @@ api.add_resource(confirm_Payment, '/confirmPayment')
 
 # User Information
 api.add_resource(UserInformation, '/userinfo')
+api.add_resource(History, '/history')
 
 # image
 api.add_resource(ticket_qr, '/tikets/<id>')
