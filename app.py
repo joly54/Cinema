@@ -413,7 +413,7 @@ def sendTiket(username, tikets):
            film: {}
            date: {}
            time: {}
-           Seats seats: {}
+           Seats: {}
            """.format(tikets.title, tikets.date, tikets.time, seat_list)
     msg = EmailMessage()
     msg.set_content(body)
