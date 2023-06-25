@@ -1306,7 +1306,7 @@ class getSessions(Resource):
         res = {}
         film = Film.query.filter_by(id=id).first()
         res['title'] = film.title
-        res['poster'] = base_url + "/Posters/" + str(film.id)
+        res['poster'] = base_url + "/Posters/" + film.pos
         res['trailer'] = film.trailer
         res['description'] = film.description
         res['price'] = film.price
