@@ -14,21 +14,20 @@ from email.message import EmailMessage
 import qrcode
 from PIL import Image
 from flasgger import Swagger
-from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash, session
+from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import request
-from flask_admin import Admin, expose, BaseView, form
+from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
+from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.image.styledpil import StyledPilImage
-from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
 from qrcode.image.styles.colormasks import ImageColorMask
+from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
+from sqlalchemy import DateTime
 from sqlalchemy.orm import backref
-from sqlalchemy import DateTime, CheckConstraint
-from flask_migrate import Migrate
-from wtforms import SelectField
 
 import config
 
@@ -242,18 +241,6 @@ class FilmView(BaseViewer):
 
     form_columns = ['title', 'trailer', 'description', 'price', 'pos']
 
-    def scaffold_form(self):
-        form_class = super().scaffold_form()
-
-        # Define choices for pos field
-        image_list = os.listdir('Posters')
-        image_choices = [(i, i) for i in image_list if i.find('.')!=-1]
-
-        # Create a custom SelectField for pos with choices
-        form_class.pos = SelectField('Pos', choices=image_choices)
-
-        return form_class
-
 
 class SessionsView(BaseViewer):
     column_list = ['title', 'seats', 'time', 'date']
@@ -350,7 +337,7 @@ class FillDB(BaseView):
 class all_images(BaseView):
     @expose('/')
     def index(self):
-        images = os.listdir('Posters')
+        images = os.listdir(base_dir + 'Posters')
         for image in images:
             if image.find(".") == -1:
                 images.remove(image)
