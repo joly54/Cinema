@@ -47,7 +47,7 @@ def createFilm(
         duration=duration,
         trailer=trailer,
         description=description,
-        price=random.randint(30, 600) * 10)
+        price=random.randint(30, 60) * 10)
     db.session.add(newFilm)
     db.session.commit()
     id_f += 1
