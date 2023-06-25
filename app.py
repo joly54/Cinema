@@ -1022,15 +1022,8 @@ class confirm_Payment(Resource):
         username = User.query.filter_by(id=payment.user_id).first().username
         tiket = Tiket(username=username, date=date, title=title, time=time, seats=str(seats), id=get_random_string(16))
         data = {
-            "username": tiket.username,
-            "date": tiket.date,
-            "title": tiket.title,
-            "time": tiket.time,
-            "seats": tiket.seats,
             "id": tiket.id,
-            "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
         }
-
         qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
         qr.add_data(data)
         qr.make(fit=True)
