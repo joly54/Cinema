@@ -730,6 +730,8 @@ class DisplayTikets(Resource):
 class ticket_qr(Resource):
     def get(self, id):
         filename = "tikets/" + id
+        if not os.path.isfile(filename):
+            return {'message': 'Ticket not found'}, 404
         return send_file(filename, mimetype='image/png')
 
 
