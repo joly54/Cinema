@@ -341,6 +341,7 @@ class all_images(BaseView):
         for image in images:
             if image.find(".") == -1:
                 images.remove(image)
+        images.sort()
         return render_template('admin/all_images.html', images=images)
 
     def is_accessible(self):
@@ -365,6 +366,17 @@ def fix_names():
         film.poster = f"{film.title.replace(' ', '_').lower()}.jpg"
         db.session.commit()
     return {"status": "ok"}
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    try:
+        if (e.code == 404):
+            html = render_template('404.html')
+            return make_response(html, 404)
+    except:
+        html = render_template('fail.html', message="Something went wrong. Please try again later.",
+                               description="Error: " + str(e))
+        return make_response(html, 500)
 
 
 @app.route('/adminlog', methods=['GET', 'POST'])
