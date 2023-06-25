@@ -335,8 +335,8 @@ admin.add_view(FilmView(Film, db.session, name="Films"))
 admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
 admin.add_view(PaymentView(Payment, db.session, name="Payments"))
 admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
-admin.add_view(LogoutView(name="Logout"))
 admin.add_view(FillDB(name="Fill Database"))
+admin.add_view(LogoutView(name="Logout"))
 
 
 @app.route('/adminlog', methods=['GET', 'POST'])
