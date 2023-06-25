@@ -19,7 +19,7 @@ export const isAuthenticated = () => {
 }
 
 export const logout = () => {
-    return fetch(`${baseurl}/logout`, {credentials: 'include'})
+    return fetch(`${baseurl}/logout_us`, {credentials: 'include'})
 }
 
 
