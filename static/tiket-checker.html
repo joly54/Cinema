@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Ticket</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3 {
+            color: #333;
+        }
+
+        p {
+            margin: 0 0 10px;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        li {
+            margin-bottom: 5px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .container {
+                max-width: 100%;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check Ticket</h1>
+        {% if data['message'] %}
+        <p>{{ data['message'] }}</p>
+        {% endif %}
+        {% if data['title'] %}
+        <h2>{{ data['title'] }}</h2>
+        {% endif %}
+        {% if data['date'] %}
+        <p>Date: {{ data['date'] }}</p>
+        {% endif %}
+        {% if data['time'] %}
+        <p>Time: {{ data['time'] }}</p>
+        {% endif %}
+        {% if data['seats'] %}
+        <h3>Seats:</h3>
+        <ul>
+            {% for seat in data['seats'] %}
+            <li>{{ seat }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</body>
+</html>

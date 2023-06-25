@@ -5,14 +5,9 @@ from qrcode.image.styles.colormasks import ImageColorMask
 from PIL import Image
 
 qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
-qr.add_data(str(
-{
-      "id": "clrbxrapbybyvvia",
-    }
-))
+qr.add_data('https://vincinemaApi.pythonanywhere.com/tikets/clrbxrapbybyvvia.png')
 qr.make()
 mask = Image.open('mask.jpg')
-#resize to 100x100 pixels
 mask = mask.resize((100, 100))
 img = qr.make_image(
     image_factory=StyledPilImage,
@@ -21,5 +16,5 @@ img = qr.make_image(
         color_mask_image=mask
     )
 )
-img.save('TestQr.png')
+img.show()
 

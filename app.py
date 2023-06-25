@@ -26,6 +26,8 @@ from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
 from qrcode.image.styles.colormasks import ImageColorMask
 from sqlalchemy.orm import backref
+from sqlalchemy import DateTime
+from flask_migrate import Migrate
 
 import config
 
@@ -68,32 +70,34 @@ app.config["SECRET_KEY"] = "secretkey"
 db = SQLAlchemy(app)
 admin = Admin(app, template_mode='bootstrap4', name='Vin-cinema')
 
+# init flask migrate
+migrate = Migrate(app, db)
+migrate.init_app(app, db)
 
-class Payment(db.Model):
+
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    ses_id = db.Column(db.Integer, db.ForeignKey('sessions.id'), nullable=False)
-    seats = db.Column(db.String(500), nullable=False)
-    time = db.Column(db.String(5), db.ForeignKey('sessions.time'), nullable=True)
-    amount = db.Column(db.Integer, nullable=False)
-    expired = db.Column(db.Integer, nullable=False)
-    confirmed = db.Column(db.Boolean, nullable=False)
+    username = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    secret_code = db.Column(db.String(8), nullable=False)
+    codeToConfirmEmail = db.Column(db.String(16), nullable=False)
+    isEmailConfirmed = db.Column(db.Boolean, nullable=False)
+    is_admin = db.Column(db.Boolean, nullable=False, default=False)
 
-    user = db.relationship(
-        'User',
-        backref=backref('payments', cascade='all, delete-orphan'),
-        foreign_keys=[user_id]
-    )
+    def is_active(self):
+        return self.is_admin
 
-    session = db.relationship(
-        'Sessions',
-        backref=backref('payments', cascade='all, delete-orphan'),
-        foreign_keys=[ses_id],
-    )
+    def get_id(self):
+        return self.id
+
+    def is_authenticated(self):
+        return True
+
+    def is_anonymous(self):
+        return False
 
     def __repr__(self):
-        return "Payment: " + str(self.user_id) + " " + str(self.ses_id) + " " + self.seats + " " + str(
-            self.time) + " " + str(self.amount) + " " + str(self.expired) + " " + str(self.confirmed)
+        return "Email: " + self.username
 
 
 class Film(db.Model):
@@ -127,29 +131,31 @@ class Sessions(db.Model):
         return "Session: " + self.title + " Time: " + self.time + " Date: " + self.date + " Seats: " + self.seats
 
 
-class User(db.Model):
+class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    secret_code = db.Column(db.String(8), nullable=False)
-    codeToConfirmEmail = db.Column(db.String(16), nullable=False)
-    isEmailConfirmed = db.Column(db.Boolean, nullable=False)
-    is_admin = db.Column(db.Boolean, nullable=False, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    ses_id = db.Column(db.Integer, db.ForeignKey('sessions.id'), nullable=False)
+    seats = db.Column(db.String(500), nullable=False)
+    time = db.Column(db.String(5), db.ForeignKey('sessions.time'), nullable=True)
+    amount = db.Column(db.Integer, nullable=False)
+    expired = db.Column(db.Integer, nullable=False)
+    confirmed = db.Column(db.Boolean, nullable=False)
 
-    def is_active(self):
-        return self.is_admin
+    user = db.relationship(
+        'User',
+        backref=backref('payments', cascade='all, delete-orphan'),
+        foreign_keys=[user_id]
+    )
 
-    def get_id(self):
-        return self.id
-
-    def is_authenticated(self):
-        return True
-
-    def is_anonymous(self):
-        return False
+    session = db.relationship(
+        'Sessions',
+        backref=backref('payments', cascade='all, delete-orphan'),
+        foreign_keys=[ses_id],
+    )
 
     def __repr__(self):
-        return "Email: " + self.username
+        return "Payment: " + str(self.user_id) + " " + str(self.ses_id) + " " + self.seats + " " + str(
+            self.time) + " " + str(self.amount) + " " + str(self.expired) + " " + str(self.confirmed)
 
 
 class Tiket(db.Model):
@@ -159,6 +165,8 @@ class Tiket(db.Model):
     title = db.Column(db.String(255), db.ForeignKey('sessions.title'), nullable=False)
     seats = db.Column(db.String(255), nullable=False)
     username = db.Column(db.String(255), db.ForeignKey('user.username'), nullable=False)
+
+    checked = db.Column(DateTime, nullable=True)
 
     user = db.relationship(
         'User',
@@ -243,7 +251,7 @@ class SessionsView(BaseViewer):
     column_sortable_list = ['title', 'seats', 'time', 'date']
     column_editable_list = ['seats', 'time', 'date']
 
-    #add film to form
+    # add film to form
     form_columns = ['title', 'seats', 'time', 'date', 'film']
 
 
@@ -262,12 +270,13 @@ class UserView(BaseViewer):
 
 
 class TiketView(BaseViewer):
-    column_list = ('id', 'date', 'time', 'title', 'seats', 'username')
-    column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
+    column_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked')
+    column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked')
     column_filters = ('id', 'date', 'time', 'title', 'seats', 'username')
-    column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
-    #add id in create form
-    form_columns = ('id', "user", "session", "seats")
+    column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked')
+    # add id in create form
+    form_columns = ('id', "user", "session", "seats", "checked")
+
     def on_model_delete(self, model):
         print(model)
         if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
@@ -276,7 +285,7 @@ class TiketView(BaseViewer):
         else:
             flash(f"Image {model.id}.png not found", "danger")
 
-    #make some actions on create
+    # make some actions on create
     def on_model_change(self, form, model, is_created):
 
         print(model.user)
@@ -285,10 +294,7 @@ class TiketView(BaseViewer):
         if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
             os.remove(f"{base_dir}tikets/{model.id}.png")
         qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
-        data = {
-            "id": model.id,
-        }
-        qr.add_data(data)
+        qr.add_data(f"{base_url}/check_ticket/{model.id}")
         qr.make(fit=True)
         mask = Image.open(base_dir + "Posters/mask.jpg")
 
@@ -305,6 +311,7 @@ class TiketView(BaseViewer):
         img.save("tikets/" + model.id + '.png')
         sendTiket(model.user.username, model)
         flash(f"Created Image {model.id}.png Title: {model.title} Username: {model.username} ", "success")
+
 
 class LogoutView(BaseView):
 
@@ -772,7 +779,7 @@ class ticket_qr(Resource):
 
 class send_poster(Resource):
     def get(self, id):
-        filename = base_dir +"Posters/" + id + ".jpg"
+        filename = base_dir + "Posters/" + id + ".jpg"
         ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
         if not os.path.isfile(filename):
             return {'message': 'Poster not found'}, 404
@@ -1056,11 +1063,8 @@ class confirm_Payment(Resource):
         time = ses.time
         username = User.query.filter_by(id=payment.user_id).first().username
         tiket = Tiket(username=username, date=date, title=title, time=time, seats=str(seats), id=get_random_string(16))
-        data = {
-            "id": tiket.id,
-        }
         qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
-        qr.add_data(data)
+        qr.add_data(f"{base_url}/check_ticket/{tiket.id}")
         qr.make(fit=True)
         mask = Image.open(base_dir + "Posters/mask.jpg")
 
@@ -1279,6 +1283,30 @@ class GetSession(Resource):
         ans["duration"] = film.duration
         ans["poster"] = base_url + "/Posters/" + str(film.id)
         return ans, 200
+
+from datetime import datetime
+
+@app.route('/check_ticket/<id>', methods=['GET'])
+def check_ticket(id):
+    if current_user.is_anonymous or not current_user.is_admin:
+        return render_template('404.html'), 404
+    tiket = Tiket.query.filter_by(id=id).first()
+    if tiket is None:
+        return render_template('tiket-checker.html', data={'message': 'Ticket not found'})
+    if tiket.checked:
+        return render_template('tiket-checker.html', data={'message': 'Ticket already checked'})
+    tiket.checked = datetime.now()
+    db.session.commit()
+
+    data = {
+        'message': 'Ticket checked',
+        'title': tiket.session.title,
+        'date': tiket.session.date,
+        'time': tiket.session.time,
+        'seats': json.loads(tiket.seats)
+    }
+
+    return render_template('tiket-checker.html', data=data)
 
 
 class History(Resource):
