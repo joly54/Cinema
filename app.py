@@ -11,6 +11,8 @@ import time as systime
 import uuid
 from email.message import EmailMessage
 
+import qrcode
+from PIL import Image
 from flasgger import Swagger
 from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import request
@@ -20,7 +22,9 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
-from qrcode_styled import QRCodeStyled
+from qrcode.image.styledpil import StyledPilImage
+from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
+from qrcode.image.styles.colormasks import ImageColorMask
 from sqlalchemy.orm import backref
 
 import config
@@ -37,11 +41,8 @@ app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 
 app.config['TIMEZONE'] = 'Europe/Kiev'
-#set app title
+# set app title
 app.config['FLASK_ADMIN_FLUID_LAYOUT'] = True
-
-
-
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'adminlog'
@@ -50,6 +51,7 @@ is_local = config.is_local
 if is_local:
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///base.db"
     base_url = "http://127.0.0.1:5000"
+    base_dir = ""
 else:
     SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
         username="vincinemaApi",
@@ -60,6 +62,7 @@ else:
     base_url = "https://vincinemaApi.pythonanywhere.com"
     app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+    base_dir = "/home/vincinemaApi/Cinema/"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = "secretkey"
 db = SQLAlchemy(app)
@@ -262,6 +265,10 @@ class TiketView(BaseViewer):
     column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_filters = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
+    def on_model_delete(self, model):
+        print(model)
+        if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
+            os.remove(f"{base_dir}tikets/{model.id}.png")
 
 
 class LogoutView(BaseView):
@@ -728,7 +735,7 @@ class ticket_qr(Resource):
 
 class send_poster(Resource):
     def get(self, id):
-        filename = "/home/vincinemaApi/Cinema/Posters/" + id + ".jpg"
+        filename = base_dir +"Posters/" + id + ".jpg"
         ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
         if not os.path.isfile(filename):
             return {'message': 'Poster not found'}, 404
@@ -1022,12 +1029,22 @@ class confirm_Payment(Resource):
             "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
         }
 
-        qr = QRCodeStyled()
-        qr_image = qr.get_image(str(data))
+        qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+        qr.add_data(data)
+        qr.make(fit=True)
+        mask = Image.open(base_dir + "Posters/mask.jpg")
+
+        img = qr.make_image(
+            image_factory=StyledPilImage,
+            module_drawer=RoundedModuleDrawer(),
+            color_mask=ImageColorMask(
+                color_mask_image=mask
+            )
+        )
 
         if not os.path.exists("tikets"):
             os.makedirs("tikets")
-        qr_image.save("tikets/" + tiket.id + '.png', 'PNG', lossless=False, quality=80, method=2)
+        img.save("tikets/" + tiket.id + '.png')
 
         db.session.add(tiket)
         db.session.commit()
@@ -1234,7 +1251,6 @@ class GetSession(Resource):
         return ans, 200
 
 
-
 class History(Resource):
     def get(self):
 
@@ -1291,7 +1307,6 @@ TIME_WINDOW = 60
 us_req = {}
 
 
-
 def send_notification(text):
     bot_token = config.bot_token
     chat_id = '800918003'
@@ -1328,9 +1343,6 @@ class BanMiddleware:
 
         # Remove old requests
         us_req[ip_address] = [t for t in us_req[ip_address] if t > current_time - TIME_WINDOW]
-
-        print("IP: ", ip_address, "Requests: ", len(us_req[ip_address]))
-
         if len(us_req[ip_address]) > REQUEST_THRESHOLD and ip_address not in WHITE_LIST and not (
                 current_user.is_authenticated and current_user.is_admin):
             BANNED_IPS.append(ip_address)
