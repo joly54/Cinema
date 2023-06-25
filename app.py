@@ -1077,12 +1077,12 @@ class confirm_Payment(Resource):
 
         db.session.add(tiket)
         db.session.commit()
-        #sendTiket(username, tiket)
+        sendTiket(username, tiket)
 
         return {"message": "Tickets bought successfully"}, 200
 
 
-@app.route('/buy_ticket_for_all_films', methods=['GET'])
+#@app.route('/buy_ticket_for_all_films', methods=['GET'])
 def buy_ticket_for_all_films():
     films = Film.query.all()
     for film in films:
