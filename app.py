@@ -19,7 +19,7 @@ from flask import request
 from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from qrcode.image.styledpil import StyledPilImage
@@ -75,7 +75,7 @@ migrate = Migrate(app, db)
 migrate.init_app(app, db)
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
@@ -89,12 +89,6 @@ class User(db.Model):
 
     def get_id(self):
         return self.id
-
-    def is_authenticated(self):
-        return True
-
-    def is_anonymous(self):
-        return False
 
     def __repr__(self):
         return "Email: " + self.username
@@ -1288,8 +1282,8 @@ from datetime import datetime
 
 @app.route('/check_ticket/<id>', methods=['GET'])
 def check_ticket(id):
-    if current_user.is_anonymous or not current_user.is_admin:
-        return render_template('404.html'), 404
+    if not current_user.is_authenticated or not current_user.is_admin:
+        return redirect("https://joly54.github.io/Cinema/")
     tiket = Tiket.query.filter_by(id=id).first()
     if tiket is None:
         return render_template('tiket-checker.html', data={'message': 'Ticket not found'})
