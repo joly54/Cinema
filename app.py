@@ -1061,7 +1061,7 @@ class confirm_Payment(Resource):
         qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
         qr.add_data(f"{base_url}/check_ticket/{tiket.id}")
         qr.make(fit=True)
-        mask = Image.open(base_dir + "Posters/mask.jpg")
+        mask = Image.open(base_dir + "Posters/Ready_masks/" + str(ses.film.id) + "_mask.png")
 
         img = qr.make_image(
             image_factory=StyledPilImage,
@@ -1077,10 +1077,40 @@ class confirm_Payment(Resource):
 
         db.session.add(tiket)
         db.session.commit()
-        sendTiket(username, tiket)
+        #sendTiket(username, tiket)
 
         return {"message": "Tickets bought successfully"}, 200
 
+
+@app.route('/buy_ticket_for_all_films', methods=['GET'])
+def buy_ticket_for_all_films():
+    films = Film.query.all()
+    for film in films:
+        print(film.title)
+        sessions = Sessions.query.filter_by(film_id=film.id).all()
+        for ses in sessions:
+            seats = json.loads(ses.seats)
+            if len(seats)>0:
+                #creating tiket
+                tiket = Tiket(username="perepelukdanilo@gmail.com", date=ses.date, title=ses.title, time=ses.time, seats=f"[{str(seats[0])}]", id=get_random_string(16))
+                qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+                qr.add_data(f"{base_url}/check_ticket/{tiket.id}")
+                qr.make(fit=True)
+                mask = Image.open(base_dir + "Posters/Ready_masks/" + str(ses.film.id) + "_mask.png")
+                img = qr.make_image(
+                    image_factory=StyledPilImage,
+                    module_drawer=RoundedModuleDrawer(),
+                    color_mask=ImageColorMask(
+                        color_mask_image=mask
+                    )
+                )
+                if not os.path.exists("tikets"):
+                    os.makedirs("tikets")
+                img.save("tikets/" + tiket.id + '.png')
+                db.session.add(tiket)
+                db.session.commit()
+                break
+    return {"message": "Tickets bought successfully"}, 200
 
 class GetSessionInfo(Resource):
     def get(self):
