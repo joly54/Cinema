@@ -176,7 +176,7 @@ function Profile() {
                                             }}
                                             disabled={ticket.checked}
                                         >
-                                            {ticket.checked ? 'TICKET CHECKED' : 'ADDITIONAL INFO'}
+                                            {ticket.checked ? 'TICKET ALREDY USED' : 'ADDITIONAL INFO'}
                                         </Button>
                                     </CardContent>
                                 </Card>
