@@ -14,7 +14,7 @@ from email.message import EmailMessage
 import qrcode
 from PIL import Image
 from flasgger import Swagger
-from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
+from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash, session
 from flask import request
 from flask_admin import Admin, expose, BaseView
 from flask_admin.contrib.sqla import ModelView
@@ -282,8 +282,8 @@ class TiketView(BaseViewer):
     # make some actions on create
     def on_model_change(self, form, model, is_created):
 
-        print(model.user)
-        print(form)
+        if not is_created:
+            return
 
         if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
             os.remove(f"{base_dir}tikets/{model.id}.png")
@@ -885,6 +885,7 @@ class UserInformation(Resource):
                 "time": tiket.time,
                 "seats": eval(tiket.seats),
                 "id": tiket.id,
+                "checked": True if tiket.checked else False,
                 "urltoqr": base_url + "/tikets/" + tiket.id + '.png'
             }
             res['tikets'].append(data)
@@ -1288,7 +1289,15 @@ def check_ticket(id):
     if tiket is None:
         return render_template('tiket-checker.html', data={'message': 'Ticket not found'})
     if tiket.checked:
-        return render_template('tiket-checker.html', data={'message': 'Ticket already checked'})
+        data = {
+            'message': 'Ticket has already been checked',
+            'title': tiket.session.title,
+            'date': tiket.session.date,
+            'time': tiket.session.time,
+            'seats': json.loads(tiket.seats)
+        }
+
+        return render_template('tiket-checker.html', data=data)
     tiket.checked = datetime.now()
     db.session.commit()
 
@@ -1342,10 +1351,18 @@ class History(Resource):
             return {'message': 'User is not authenticated'}, 400
 
 
+
+
 class logout_us(Resource):
     def get(self):
-        logout_user()
-        return {'message': 'User logged out'}, 200
+        # Create a new response object
+        response = make_response({'message': 'User logged out'}, 200)
+
+        # Clear cookies by setting them to expire immediately
+        for cookie in request.cookies:
+            response.set_cookie(cookie, expires=0, samesite='None', secure=True)
+
+        return response
 
 
 import requests
@@ -1418,7 +1435,7 @@ api.add_resource(ResendEmailValidationCode, '/resendEmailValidationCode')
 api.add_resource(userConfirmEmail, '/userConfirmEmail')
 api.add_resource(GetNav, '/getnav')
 api.add_resource(IsUserAuthenticated, '/isUserAuthenticated')
-api.add_resource(logout_us, '/logout')
+api.add_resource(logout_us, '/logout_us')
 
 # Displaying Information
 api.add_resource(DisplayTikets, '/displayTikets')
