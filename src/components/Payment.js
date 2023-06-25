@@ -9,6 +9,11 @@ import {useNavigate} from "react-router-dom";
 function Payment ({data, moneyFormat}){
     document.title = "Payment";
     const navigate = useNavigate();
+
+    if(data["pay_id"] === undefined){
+        navigate("/");
+        return
+    }
     function confirmPayment() {
         api.confirmPayment(data["pay_id"])
             .then(res => {
