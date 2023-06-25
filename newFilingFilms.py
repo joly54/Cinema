@@ -27,7 +27,7 @@ def randSeats():
     for i in range(1, 61):
         if RandBool(change):
             seat_list.append(i)
-    change *= 0.98
+    change *= 0.96
     return seat_list
 
 
