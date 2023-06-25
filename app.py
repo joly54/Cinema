@@ -105,7 +105,7 @@ class Film(db.Model):
     price = db.Column(db.Integer, nullable=False, index=True)
 
     def __repr__(self):
-        return "Film: " + self.title + " " + self.trailer + " " + self.description
+        return self.title
 
 
 class Sessions(db.Model):
@@ -124,8 +124,7 @@ class Sessions(db.Model):
     )
 
     def __repr__(self):
-        return "Sessions: " + self.title + " " + str(self.film) + " " + self.seats + " " + str(self.time) + " " + str(
-            self.date)
+        return "Session: " + self.title + " Time: " + self.time + " Date: " + self.date + " Seats: " + self.seats
 
 
 class User(db.Model):
@@ -150,8 +149,7 @@ class User(db.Model):
         return False
 
     def __repr__(self):
-        return "User: " + self.username + " " + self.password + " " + self.secret_code + " " + self.codeToConfirmEmail + " " + str(
-            self.isEmailConfirmed) + " " + str(self.is_admin)
+        return "Email: " + self.username
 
 
 class Tiket(db.Model):
@@ -231,11 +229,11 @@ class PaymentView(BaseViewer):
 
 
 class FilmView(BaseViewer):
-    column_list = ['id', 'title', 'trailer', 'description']
+    column_list = ['id', 'title', 'trailer', 'description', "price"]
     column_searchable_list = ['id', 'title', 'trailer', 'description']
-    column_filters = ['id', 'title', 'trailer', 'description']
-    column_sortable_list = ['id', 'title', 'trailer', 'description']
-    column_editable_list = ['title', 'trailer', 'description']
+    column_filters = ['id', 'title', 'trailer', 'description', "price"]
+    column_sortable_list = ['id', 'title', 'trailer', 'description', "price"]
+    column_editable_list = ['title', 'trailer', 'description', "price"]
 
 
 class SessionsView(BaseViewer):
@@ -244,6 +242,9 @@ class SessionsView(BaseViewer):
     column_filters = ['title', 'seats', 'time', 'date']
     column_sortable_list = ['title', 'seats', 'time', 'date']
     column_editable_list = ['seats', 'time', 'date']
+
+    #add film to form
+    form_columns = ['title', 'seats', 'time', 'date', 'film']
 
 
 class UserView(BaseViewer):
@@ -265,11 +266,45 @@ class TiketView(BaseViewer):
     column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_filters = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username')
+    #add id in create form
+    form_columns = ('id', "user", "session", "seats")
     def on_model_delete(self, model):
         print(model)
         if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
+            flash(f"Deleted Image {model.id}.png Title: {model.title} Username: {model.username} ", "success")
             os.remove(f"{base_dir}tikets/{model.id}.png")
+        else:
+            flash(f"Image {model.id}.png not found", "danger")
 
+    #make some actions on create
+    def on_model_change(self, form, model, is_created):
+
+        print(model.user)
+        print(form)
+
+        if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
+            os.remove(f"{base_dir}tikets/{model.id}.png")
+        qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
+        data = {
+            "id": model.id,
+        }
+        qr.add_data(data)
+        qr.make(fit=True)
+        mask = Image.open(base_dir + "Posters/mask.jpg")
+
+        img = qr.make_image(
+            image_factory=StyledPilImage,
+            module_drawer=RoundedModuleDrawer(),
+            color_mask=ImageColorMask(
+                color_mask_image=mask
+            )
+        )
+
+        if not os.path.exists("tikets"):
+            os.makedirs("tikets")
+        img.save("tikets/" + model.id + '.png')
+        sendTiket(model.user.username, model)
+        flash(f"Created Image {model.id}.png Title: {model.title} Username: {model.username} ", "success")
 
 class LogoutView(BaseView):
 
