@@ -119,17 +119,16 @@ function Profile() {
                                 }}
                             >
                                 <Card
-                                    className={"ticket-card" + (!ticket.checked ? ' ticket-card_nt' : '')}
+                                    className={"ticket-card"}
                                     style={{
                                         borderRadius: '1.5rem',
                                         display: 'flex',
                                         flexDirection: 'column',
-                                        cursor: ticket.checked ? 'default' : 'pointer',
+                                        cursor: "pointer",
                                         minWidth: '300px',
                                         backgroundColor: ticket.checked ? 'rgb(220 252 231)' : 'white'
                                     }}
                                     onClick={() => {
-                                        if(ticket.checked) return;
                                         const prevsrc = document.getElementById('qr-code').src;
                                         if (prevsrc !== ticket.urltoqr) {
                                             document.getElementById('qr-code').src = 'fdsfadf';
@@ -156,7 +155,6 @@ function Profile() {
                                             variant="contained"
                                             color="primary"
                                             onClick={() => {
-                                                if (ticket.checked) return;
                                                 const prevsrc = document.getElementById('qr-code').src;
                                                 if (prevsrc !== ticket.urltoqr) {
                                                     document.getElementById('qr-code').src = 'fdsfadf';
@@ -174,7 +172,6 @@ function Profile() {
                                                 color: 'white',
                                                 fontWeight: 'semi-bold',
                                             }}
-                                            disabled={ticket.checked}
                                         >
                                             {ticket.checked ? 'TICKET ALREDY USED' : 'ADDITIONAL INFO'}
                                         </Button>

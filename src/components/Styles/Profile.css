@@ -51,7 +51,7 @@
     transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out !important;
 }
 
-.ticket-card_nt:hover {
+.ticket-card:hover {
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
 }
 
