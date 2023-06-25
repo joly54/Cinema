@@ -16,7 +16,7 @@ from PIL import Image
 from flasgger import Swagger
 from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash, session
 from flask import request
-from flask_admin import Admin, expose, BaseView
+from flask_admin import Admin, expose, BaseView, form
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
@@ -26,8 +26,9 @@ from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
 from qrcode.image.styles.colormasks import ImageColorMask
 from sqlalchemy.orm import backref
-from sqlalchemy import DateTime
+from sqlalchemy import DateTime, CheckConstraint
 from flask_migrate import Migrate
+from wtforms import SelectField
 
 import config
 
@@ -101,6 +102,8 @@ class Film(db.Model):
     trailer = db.Column(db.String(120), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     price = db.Column(db.Integer, nullable=False, index=True)
+
+    pos = db.Column(db.String(120), nullable=False)
 
     def __repr__(self):
         return self.title
@@ -231,11 +234,25 @@ class PaymentView(BaseViewer):
 
 
 class FilmView(BaseViewer):
-    column_list = ['id', 'title', 'trailer', 'description', "price"]
+    column_list = ['id', 'title', 'trailer', 'description', 'price', 'pos']
     column_searchable_list = ['id', 'title', 'trailer', 'description']
-    column_filters = ['id', 'title', 'trailer', 'description', "price"]
-    column_sortable_list = ['id', 'title', 'trailer', 'description', "price"]
-    column_editable_list = ['title', 'trailer', 'description', "price"]
+    column_filters = ['id', 'title', 'trailer', 'description', 'price']
+    column_sortable_list = ['id', 'title', 'trailer', 'description', 'price']
+    column_editable_list = ['title', 'trailer', 'description', 'price']
+
+    form_columns = ['title', 'trailer', 'description', 'price', 'pos']
+
+    def scaffold_form(self):
+        form_class = super().scaffold_form()
+
+        # Define choices for pos field
+        image_list = os.listdir('Posters')
+        image_choices = [(i, i) for i in image_list if i.find('.')!=-1]
+
+        # Create a custom SelectField for pos with choices
+        form_class.pos = SelectField('Pos', choices=image_choices)
+
+        return form_class
 
 
 class SessionsView(BaseViewer):
@@ -330,13 +347,37 @@ class FillDB(BaseView):
         return current_user.is_authenticated and current_user.is_admin
 
 
+class all_images(BaseView):
+    @expose('/')
+    def index(self):
+        images = os.listdir('Posters')
+        for image in images:
+            if image.find(".") == -1:
+                images.remove(image)
+        return render_template('admin/all_images.html', images=images)
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+
+
 admin.add_view(UserView(User, db.session, name="Users"))
 admin.add_view(FilmView(Film, db.session, name="Films"))
 admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
 admin.add_view(PaymentView(Payment, db.session, name="Payments"))
 admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
+admin.add_view(all_images(name="All Images"))
 admin.add_view(FillDB(name="Fill Database"))
 admin.add_view(LogoutView(name="Logout"))
+
+
+@app.route('/fix_names')
+def fix_names():
+    films = Film.query.all()
+    for film in films:
+        os.rename(f"Posters/{film.id}.jpg", f"Posters/{film.title.replace(' ', '_').replace(':', '').lower()}.jpg")
+        film.poster = f"{film.title.replace(' ', '_').lower()}.jpg"
+        db.session.commit()
+    return {"status": "ok"}
 
 
 @app.route('/adminlog', methods=['GET', 'POST'])
@@ -367,18 +408,6 @@ def adminlog():
 def logout():
     logout_user()
     return redirect(url_for('adminlog'))
-
-
-@app.errorhandler(Exception)
-def handle_exception(e):
-    try:
-        if (e.code == 404):
-            html = render_template('404.html')
-            return make_response(html, 404)
-    except:
-        html = render_template('fail.html', message="Something went wrong. Please try again later.",
-                               description="Error: " + str(e))
-        return make_response(html, 500)
 
 
 def send_email(username, code):
@@ -489,6 +518,30 @@ class Login(Resource):
             return {'message': 'Invalid username or password'}, 400
         login_user(user, remember=True)
         return {"message": "Authentication successful"}, 200
+
+
+@app.route('/delete_image/<string:filename>')
+def delete_image(filename):
+    os.remove(base_dir + "Posters/" + filename)
+    flash(f"Image {filename} deleted successfully", "success")
+    return redirect("/admin/all_images/")
+
+
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        flash('No image file selected.', 'error')
+        return redirect('/')
+
+    image = request.files['image']
+    if image.filename == '':
+        flash('No image file selected.', 'error')
+        return redirect('/')
+
+    filename = image.filename
+    image.save(base_dir + "Posters/" + filename.replace(' ', '_').replace(':', '').lower())
+    flash('Image uploaded successfully.', 'success')
+    return redirect('/admin/all_images/')
 
 
 class Register(Resource):
@@ -746,7 +799,7 @@ class Schedule(Resource):
                     "price": session.film.price,
                     "description": session.film.description,
                     "film_id": session.film_id,
-                    "poster": base_url + "/Posters/" + str(session.film_id)
+                    "poster": base_url + "/Posters/" + str(session.film.pos)
                 }
             )
         for date in dates:
@@ -773,7 +826,7 @@ class ticket_qr(Resource):
 
 class send_poster(Resource):
     def get(self, id):
-        filename = base_dir + "Posters/" + id + ".jpg"
+        filename = base_dir + "Posters/" + id
         ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
         if not os.path.isfile(filename):
             return {'message': 'Poster not found'}, 404
@@ -1082,7 +1135,7 @@ class confirm_Payment(Resource):
         return {"message": "Tickets bought successfully"}, 200
 
 
-#@app.route('/buy_ticket_for_all_films', methods=['GET'])
+# @app.route('/buy_ticket_for_all_films', methods=['GET'])
 def buy_ticket_for_all_films():
     films = Film.query.all()
     for film in films:
@@ -1090,9 +1143,10 @@ def buy_ticket_for_all_films():
         sessions = Sessions.query.filter_by(film_id=film.id).all()
         for ses in sessions:
             seats = json.loads(ses.seats)
-            if len(seats)>0:
-                #creating tiket
-                tiket = Tiket(username="perepelukdanilo@gmail.com", date=ses.date, title=ses.title, time=ses.time, seats=f"[{str(seats[0])}]", id=get_random_string(16))
+            if len(seats) > 0:
+                # creating tiket
+                tiket = Tiket(username="perepelukdanilo@gmail.com", date=ses.date, title=ses.title, time=ses.time,
+                              seats=f"[{str(seats[0])}]", id=get_random_string(16))
                 qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
                 qr.add_data(f"{base_url}/check_ticket/{tiket.id}")
                 qr.make(fit=True)
@@ -1111,6 +1165,7 @@ def buy_ticket_for_all_films():
                 db.session.commit()
                 break
     return {"message": "Tickets bought successfully"}, 200
+
 
 class GetSessionInfo(Resource):
     def get(self):
@@ -1208,7 +1263,7 @@ class GetFilms(Resource):
                 "description": film.description,
                 "price": film.price,
                 "trailer": film.trailer,
-                "poster": base_url + "/Posters/" + str(film.id)
+                "poster": base_url + "/Posters/" + film.pos
             }
             response.append(film_data)
 
@@ -1306,10 +1361,12 @@ class GetSession(Resource):
         ans['description'] = film.description
         ans['price'] = film.price
         ans["duration"] = film.duration
-        ans["poster"] = base_url + "/Posters/" + str(film.id)
+        ans["poster"] = base_url + "/Posters/" + film.pos
         return ans, 200
 
+
 from datetime import datetime
+
 
 @app.route('/check_ticket/<id>', methods=['GET'])
 def check_ticket(id):
@@ -1379,8 +1436,6 @@ class History(Resource):
             return response, 200
         else:
             return {'message': 'User is not authenticated'}, 400
-
-
 
 
 class logout_us(Resource):
