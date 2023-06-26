@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>All Images</title>
+    <title>Images</title>
     <style>
         /* Add your custom CSS styles here */
         body {
@@ -176,11 +176,7 @@
         <div>
             <img src="/Posters/{{ image }}" class="image">
             <div class="image-name">
-                {% if image|length < 20 %}
                 {{ image }}
-                {% else %}
-                {{ image[:20] + '...' }}
-                {% endif %}
                 <button class="delete-button" onclick="deleteImage('{{ image }}')">Delete</button>
             </div>
         </div>
