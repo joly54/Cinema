@@ -8,9 +8,7 @@ import './Styles/preloader.css';
 import {Link, useNavigate} from "react-router-dom";
 import Preloader from "./preloader";
 import NotFoundImage from "./img/404.png";
-import {Skeleton} from "@mui/material";
-let loaded = 0
-let mustLoad = 0
+
 function CinemaSchedule() {
     const [schedule, setSchedule] = useState([])
     const navigate = useNavigate()
@@ -19,9 +17,7 @@ function CinemaSchedule() {
         api.schedule()
             .then((res) => {
                 res.json().then(data => {
-                    console.log(data);
                     if (res.ok) {
-                        console.log(data);
                         setSchedule(data)
                         document.getElementById("preloader").style.display = "none"
                     } else {

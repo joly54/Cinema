@@ -1,15 +1,24 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Link, useNavigate} from "react-router-dom";
 import {Button, Grid, Typography} from "@material-ui/core";
 import './Styles/login.css';
+import LoadingBar from "./Progress.js";
+
 
 function Login({
                    handleChangeUsername,
                    handleChangePassword,
                    handleLogin,
+                   isLoggedIn,
+                   Isloading
                }) {
     document.title = "Login";
     const navigate = useNavigate();
+    useEffect(() => {
+        if (isLoggedIn) {
+            navigate("/profile");
+        }
+    }, [isLoggedIn, navigate]);
     return (
         <div className="container"
              style={{
@@ -58,7 +67,12 @@ function Login({
                             style={{fontFamily: "Montserrat"}}
                             className="btn"
                             onClick={handleLogin}
-                        >Log in</Button>
+                            disabled={Isloading}
+                        >
+                            {
+                                Isloading ? <LoadingBar/> : null
+                            }
+                            Log in</Button>
                         <Grid
                             spacing={2}
                             container

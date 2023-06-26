@@ -7,11 +7,12 @@ import * as api from "../utils/Api";
 import "./Styles/SesInfo.css";
 import './Styles/scrollBar.css';
 import './Styles/preloader.css';
-import Preloader from "./preloader";
+import LoadingBar from "./Progress.js";
+
 
 function SesInfo({handlePayData, moneyFormatter}) {
+    const [isLoading, setIsLoading] = useState(false);
 
-    //get current url
     const session = window.location.href.split("/")[window.location.href.split("/").length - 1];
     const navigate = useNavigate();
     const [sessionInfo, setSessionInfo] = useState([]);
@@ -34,7 +35,6 @@ function SesInfo({handlePayData, moneyFormatter}) {
             .then(res => {
                 if (res.ok) {
                     res.json().then(data => {
-                        console.log(data);
                         setSessionInfo(data);
                         setAviSeats(data["seats"])
                         document.title = data["title"] + " - " + data["date"] + " " + data["time"] + " " + moneyFormatter(data["price"]) + "UAH";
@@ -60,7 +60,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                     }
                     );
             });
-    }, []);
+    }, [moneyFormatter, navigate, session]);
     Array.from({length: 49}, (_, i) => i + 1);
 
     function setSelect(id) {
@@ -88,20 +88,20 @@ function SesInfo({handlePayData, moneyFormatter}) {
         setSelected(items);
 
         const seatCountText = items.length === 1 ? " seat" : " seats";
-        document.getElementById("selected").innerHTML = items.length + seatCountText +
-            " Total: " + moneyFormatter(items.length * sessionInfo["price"]) + " UAH";
+        document.getElementById("selected").innerHTML = moneyFormatter(items.length * sessionInfo["price"]) + " UAH";
         if (items.length === 0) {
-            document.getElementById("selected").innerHTML = "";
+            document.getElementById("selected").innerHTML = "0 UAH";
         }
     }
 
 
     function buy() {
+        setIsLoading(true);
         api.buyTicket(session, selected)
             .then(res => {
+                setIsLoading(false);
                 if (res.ok) {
                     res.json().then(data => {
-                        console.log(data);
                         toast.success("Payment created successfully!",{
                             position: "top-center",
                             autoClose: 5000,
@@ -213,7 +213,6 @@ function SesInfo({handlePayData, moneyFormatter}) {
                             width="500"
                             height="315"
                             src={`https://www.youtube.com/embed/${sessionInfo["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
-                            title="YouTube video player"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             allowFullScreen/>
                     </Grid>
@@ -228,6 +227,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                              }}>
                             <img
                                 src={sessionInfo["poster"]}
+                                alt="poster"
                                 className="screen"
                             >
                             </img>
@@ -250,7 +250,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                                         marginRight: "0.5rem"
                                     }}
                                 >
-                                    Selected:
+                                    Total:
                                 </Typography>
                                 <Typography
                                     component="h1"
@@ -265,7 +265,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                                         color: "orange",
                                     }}
                                 >
-                                    {null}
+                                    0 UAH
                                 </Typography>
                             </div>
                             <Grid container spacing={1}>
@@ -298,17 +298,22 @@ function SesInfo({handlePayData, moneyFormatter}) {
                                     </Grid>
                                 ))}
                                 <div className="center-button-container">
-                                    <div className="button">
+                                    <div className="">
                                         <Button
+                                            className="btn"
                                             variant="contained"
                                             color="primary"
                                             onClick={buy}
+                                            disabled={isLoading}
                                             style={{
                                                 width: "150px",
                                                 borderRadius: "10px",
                                                 boxShadow: "0 0 10px rgba(0, 0, 0, 0.9)",
                                             }}
                                         >
+                                            {
+                                                isLoading ? <LoadingBar/> : null
+                                            }
                                             Pay
                                         </Button>
                                     </div>

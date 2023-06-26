@@ -35,6 +35,7 @@
 }
 
 .BackGroundColor {
+  min-height: 100vh;
   background-color: #5C0099;
 }
 

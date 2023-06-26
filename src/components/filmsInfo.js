@@ -4,7 +4,8 @@ import {Grid, Typography} from "@material-ui/core";
 import BackToTopButton from "./BackToTopButton";
 import * as api from "../utils/Api";
 import "./Styles/FIlmInfo.css"
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
+
 function FilmsInfo() {
     const film_id = window.location.href.split("/")[window.location.href.split("/").length - 1];
     const [data, setData] = React.useState(null);
@@ -14,7 +15,6 @@ function FilmsInfo() {
             .then(res => {
                 if (res.ok) {
                     res.json().then(data => {
-                        console.log(data);
                         setData(data);
                         setSessions(data["sessions"]);
                         document.title = data["title"];
@@ -26,7 +26,7 @@ function FilmsInfo() {
                     });
                 }
             });
-    }, []);
+    }, [film_id]);
     return (
         <div
             style={{
@@ -85,7 +85,6 @@ function FilmsInfo() {
                             width="500"
                             height="315"
                             src={`https://www.youtube.com/embed/${data["trailer"].split("v=")[1]}?autoplay=1&mute=1`}
-                            title="YouTube video player"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                             allowFullScreen/>
                     </Grid>

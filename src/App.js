@@ -17,7 +17,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import "../src/components/Styles/App.css";
 import Footer from "./components/footer";
 import NotFound from "./components/404";
-import Pay_history from "./components/pay_history";
 
 function App() {
     const theme = createTheme({
@@ -28,16 +27,16 @@ function App() {
         },
     });
 
-    const money_formatter = (value) =>{
+    const money_formatter = (value) => {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
     }
-
+    const [is_auth_loading, setIsAuthLoading] = useState(false);
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLogin, setIsLogin] = useState(true);
-    const [sessionId, setsession] = useState(null);
+    const [sessionId] = useState(null);
     const [PayData, setPayData] = useState({});
     const [addition, setAddition] = useState([]);
     const md5 = require('md5');
@@ -86,7 +85,6 @@ function App() {
             .then((res) => {
                 res.json()
                     .then(data => {
-                        console.log(data);
                         if (res.ok) {
                             setAddition(data);
                         } else {
@@ -101,7 +99,6 @@ function App() {
 
     function handleChangeUsername(value) {
         setUsername(value);
-        console.log(username);
     }
 
     function handleChangePassword(value) {
@@ -111,13 +108,14 @@ function App() {
     function handleLogin() {
         //hash using bcrypt
         const pass = md5(password)
+        setIsAuthLoading(true);
         api.login(
             username,
             md5(pass)
         ).then(
             (res) => {
                 res.json().then(data => {
-                        console.log(data);
+                        setIsAuthLoading(false);
                         if (res.ok) {
                             setIsLogin(true);
                             handleToastSuc("Welcome back ")
@@ -138,13 +136,14 @@ function App() {
     function handleRegister() {
         //hash using bcrypt
         const pass = md5(password)
+        setIsAuthLoading(true);
         api.register(
             username,
             md5(pass)
         ).then(
             (res) => {
                 res.json().then(data => {
-                        console.log(data);
+                        setIsAuthLoading(false);
                         if (res.ok) {
                             setIsLogin(true);
                             handleToastSuc(data['message'])
@@ -189,19 +188,27 @@ function App() {
                     <Route path="/films/:id" element={<FilmsInfo/>}/>
                     <Route path="/films" element={<Films/>}/>
                     <Route path="/profile" element={<Profile/>}/>
-                    <Route path="/login" element={<Login handleChangeUsername={handleChangeUsername}
-                                                         handleChangePassword={handleChangePassword}
-                                                         handleLogin={handleLogin}/>}/>
-                    <Route path="/register" element={<Register handleRegister={handleRegister}
-                                                               handleChangeUsername={handleChangeUsername}
-                                                               handleChangePassword={handleChangePassword}/>}/>
+                    <Route path="/login" element={<Login
+                        handleChangeUsername={handleChangeUsername}
+                        handleChangePassword={handleChangePassword}
+                        handleLogin={handleLogin}
+                        isLoggedIn={isLogin}
+                        Isloading={is_auth_loading}
+                    />}/>
+                    <Route path="/register" element={<Register
+                        handleRegister={handleRegister}
+                        handleChangeUsername={handleChangeUsername}
+                        handleChangePassword={handleChangePassword}
+                        isLogin={isLogin}
+                        isLoading={is_auth_loading}
+                    />}/>
                     <Route path="/forgotPassword" element={<ForgotPassword handleChangeUsername={handleChangeUsername}
                                                                            handleToastErr={handleToastErr}
                                                                            handleToastSuc={handleToastSuc}/>}/>
                     <Route path="/sessionInfo/:id"
-                           element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData} moneyFormatter={money_formatter}/>}/>
-                    <Route path="/Payment" element={<Payment data={PayData} moneyFormat={money_formatter} />}/>
-                    <Route path="/pay_history" element={<Pay_history setPayData={setPayData} moneyFormat={money_formatter}/>}/>
+                           element={<SesInfo ses_id={sessionId} handlePayData={handleChangePayData}
+                                             moneyFormatter={money_formatter}/>}/>
+                    <Route path="/Payment" element={<Payment data={PayData} moneyFormat={money_formatter}/>}/>
                     <Route path="*" element={<NotFound/>}/>
                 </Routes>
                 <Footer/>

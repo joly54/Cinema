@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
+import React, {useEffect, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import {toast, ToastContainer} from 'react-toastify';
 import {
     Button,
     Card,
@@ -12,21 +12,23 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
-    Slide,
-    Typography
+    Slide
 } from '@material-ui/core';
 import BackToTopButton from './BackToTopButton';
 import * as api from '../utils/Api';
-import { baseurl } from '../utils/Api';
+import {baseurl} from '../utils/Api';
 import 'react-toastify/dist/ReactToastify.css';
 import './Styles/Profile.css';
 import './Styles/scrollBar.css';
+import LoadingBar from "./Progress.js";
+
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 function Profile() {
+    const [isEmailLoading, setIsEmailLoading] = useState(false);
     document.title = 'Profile';
     const [loading, setLoading] = useState(true);
     const [open, setOpen] = React.useState(false);
@@ -43,10 +45,8 @@ function Profile() {
     useEffect(() => {
         api.userInfo(email, token)
             .then((response) => {
-                console.log(response);
                 if (response.ok) {
                     response.json().then((data) => {
-                        console.log(data);
                         setStatus(data['isEmailConfirmed']);
                         setEmail(data['username']);
                         data['tikets'].sort((a, b) => {
@@ -61,12 +61,37 @@ function Profile() {
     }, [email, navigate, token]);
 
     function confirmEmail() {
+        setIsEmailLoading(true);
         fetch(baseurl + `/resendEmailValidationCode?username=${email}`)
             .then((response) => {
+                setTimeout(
+                    function () {
+                        setIsEmailLoading(false);
+                    },
+                    3000
+                )
                 if (response.status === 200) {
-                    toast.success('Email was sent!');
+                    toast.success('Email was sent!',{
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        pauseOnFocusLoss: false,
+                        theme: "colored",
+                        draggable: true
+                    });
                 } else {
-                    toast.error('Error sending email.');
+                    toast.error('Error sending email.',{
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: false,
+                        pauseOnFocusLoss: false,
+                        theme: "colored",
+                        draggable: true
+                    });
                 }
             })
             .catch((error) => {
@@ -81,9 +106,20 @@ function Profile() {
                 <h2>{email}</h2>
                 <h3>My Tickets</h3>
                 {status === false ? (
-                    <button className="btn-confirm" onClick={confirmEmail}>
-                        Confirm email
-                    </button>
+                        <button
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                            disabled={isEmailLoading}
+                            className="btn-confirm" onClick={confirmEmail}>
+                            {isEmailLoading ? (
+                                <LoadingBar />
+                            ) : null}
+                            Confirm email
+                        </button>
                 ) : null}
             </div>
             <div
@@ -99,11 +135,42 @@ function Profile() {
                         container
                         spacing={2}
                         style={{
-                            width: '100%', // Используйте фиксированную ширину вместо minWidth
+                            width: '100vh',
                             display: 'flex',
                             justifyContent: 'center',
                         }}
                     >
+                        {
+                            tickets.length === 0 ? (
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        height: '100%',
+                                    }}
+                                >
+                                    <h2>You don't have any tickets yet.</h2>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        style={{
+                                            marginTop: '20px',
+                                            borderRadius: '10px',
+                                            color: 'white',
+                                            fontWeight: 'bold',
+                                            padding: '10px 20px',
+                                        }}
+                                        onClick={() => {
+                                            navigate('/', { replace: true });
+                                        }}
+                                    >
+                                        Buy tickets
+                                    </Button>
+                                </div>
+                            ) : null
+                        }
                         {tickets.map((ticket) => (
                             <Grid
                                 item

@@ -5,21 +5,45 @@ import * as api from "../utils/Api"
 import './Styles/Payment.css'
 import './Styles/scrollBar.css';
 import {useNavigate} from "react-router-dom";
+import LoadingBar from "./Progress.js";
+
 
 function Payment ({data, moneyFormat}){
     document.title = "Payment";
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = React.useState(false);
 
     if(data["pay_id"] === undefined){
         navigate("/");
         return
     }
     function confirmPayment() {
+        setIsLoading(true);
+        if(
+            document.getElementById("cardNumber").value.length !== 19 ||
+            document.getElementById("cardDate").value.length !== 5 ||
+            document.getElementById("cardCVV").value.length !== 3
+        ){
+            //reqest focus
+            toast.error("Invalid card data", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                pauseOnFocusLoss: false,
+                theme: "colored",
+                draggable: true
+            });
+            document.getElementById("cardNumber").focus();
+            setIsLoading(false);
+            return
+        }
         api.confirmPayment(data["pay_id"])
             .then(res => {
+                setIsLoading(false);
                 if (res.ok) {
                     res.json().then(data => {
-                        console.log(data);
                         toast.success("You successfully bought tickets!",{
                             position: "top-center",
                             autoClose: 5000,
@@ -35,7 +59,6 @@ function Payment ({data, moneyFormat}){
                 }
                 else {
                     res.json().then(data => {
-                        console.log(data);
                         toast.success(data["message"],{
                             position: "top-center",
                             autoClose: 5000,
@@ -110,6 +133,7 @@ function Payment ({data, moneyFormat}){
                         <Typography variant="h6" style={{fontFamily: "Montserrat"}}>Card number:</Typography>
                         <input
                             style={{fontFamily: "Montserrat"}}
+                            id={"cardNumber"}
                             type="text"
                             placeholder="XXXX-XXXX-XXXX-XXXX"
                             maxLength="19"
@@ -133,6 +157,7 @@ function Payment ({data, moneyFormat}){
                             <input
                                 style={{fontFamily: "Montserrat"}}
                                 type="text"
+                                id={"cardDate"}
                                 placeholder="XX/XX"
                                 maxLength="5"
                                 onKeyUp={(event) => {
@@ -152,6 +177,7 @@ function Payment ({data, moneyFormat}){
                         <Grid item xs={2} className="privateInput">
                             <Typography className="" variant="h6" style={{fontFamily: "Montserrat"}}>CVV:</Typography>
                             <input
+                                id={"cardCVV"}
                                 maxLength={3}
                                 style={{fontFamily: "Montserrat"}}
                                 type="text"
@@ -168,7 +194,10 @@ function Payment ({data, moneyFormat}){
                         <Button onClick = {confirmPayment}
                             style={{fontFamily: "Montserrat"}}
                             className="btn"
-                        >PAY</Button>
+                                disabled={isLoading}
+                        >
+                            {isLoading ? <LoadingBar/> : null}
+                            PAY</Button>
                     </Grid>
                 </Grid>
             </div>

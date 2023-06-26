@@ -5,13 +5,11 @@ import './Styles/scrollBar.css';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js.map';
 
 function Header({loggedIn, handleLogout, additionals}) {
-    console.log(additionals);
     const navigate = useNavigate();
     return (
         <Navbar variant="dark" bg="dark" expand="lg">

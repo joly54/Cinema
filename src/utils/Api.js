@@ -13,6 +13,7 @@ export const login = (username, password) => {
         }
     )
 }
+//adasd
 
 export const isAuthenticated = () => {
     return fetch(`${baseurl}/isUserAuthenticated`, {credentials: 'include'})
@@ -48,10 +49,6 @@ export const userInfo = () => {
             },
         }
     )
-}
-
-export const get_history = () => {
-    return fetch(`${baseurl}/history`, {credentials: 'include'})
 }
 export const get_navbar = () => {
     return fetch(`${baseurl}/getnav`, {credentials: 'include'})

@@ -1,17 +1,27 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Button, Grid, Typography} from "@material-ui/core";
 import 'react-toastify/dist/ReactToastify.css';
 import './Styles/login.css'
 import './Styles/scrollBar.css';
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import LoadingBar from "./Progress.js";
+
 function Register(
     {
         handleChangeUsername,
         handleChangePassword,
-        handleRegister
+        handleRegister,
+        isLogin,
+        isLoading,
     }
 ) {
     document.title = "Register";
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (isLogin) {
+            navigate("/profile");
+        }
+    }, [isLogin, navigate]);
     return (
         <div className="container"
              style={{
@@ -60,7 +70,12 @@ function Register(
                             style={{fontFamily: "Montserrat"}}
                             className="btn"
                             onClick={handleRegister}
-                        >SING UP</Button>
+                            disabled={isLoading}
+                        >
+                            {
+                                isLoading ? <LoadingBar/> : null
+                            }
+                            SING UP</Button>
                     </Grid>
                     <Link to={"/login"} style={{textDecoration: "none",
                         paddingLeft: "10px"
