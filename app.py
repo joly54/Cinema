@@ -348,12 +348,14 @@ class FillDB(BaseView):
 
 
 path = op.join(op.dirname(__file__), 'Posters')
+path_t = op.join(op.dirname(__file__), 'tikets')
 admin.add_view(UserView(User, db.session, name="Users"))
 admin.add_view(FilmView(Film, db.session, name="Films"))
 admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
 admin.add_view(PaymentView(Payment, db.session, name="Payments"))
 admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
 admin.add_view(FileAdmin(path, '/Posters/', name='Posters'))
+admin.add_view(FileAdmin(path_t, '/tikets/', name='QrCodes', endpoint='qrcodes'))
 admin.add_view(FillDB(name="Fill Database"))
 admin.add_view(LogoutView(name="Logout"))
 
