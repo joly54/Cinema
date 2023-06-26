@@ -24,6 +24,7 @@ from flask_login import LoginManager, login_user, login_required, logout_user, c
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
+from markupsafe import Markup
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.colormasks import ImageColorMask
 from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
@@ -275,48 +276,56 @@ class UserView(BaseViewer):
     column_editable_list = ('is_admin', 'isEmailConfirmed', 'username')
 
 
-class TiketView(BaseViewer):
-    column_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked')
+class TiketView(ModelView):
+    column_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked', 'qr_code')
     column_searchable_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked')
     column_filters = ('id', 'date', 'time', 'title', 'seats', 'username')
     column_sortable_list = ('id', 'date', 'time', 'title', 'seats', 'username', 'checked')
-    # add id in create form
-    form_columns = ('id', "user", "session", "seats", "checked")
+    form_columns = ('id', 'user', 'session', 'seats', 'checked')
+
+    def _qr_code_formatter(view, context, model, name):
+        qr_code_path = f'{base_dir}tikets/{model.id}.png'
+        if os.path.exists(qr_code_path):
+            return Markup(f'<a href="{base_url + "/tikets/" + model.id+ ".png"}" target="_blank"> open </a>')
+        else:
+            return 'QR Code Not Found'
+
+    column_formatters = {
+        'qr_code': _qr_code_formatter
+    }
 
     def on_model_delete(self, model):
-        print(model)
-        if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
-            flash(f"Deleted Image {model.id}.png Title: {model.title} Username: {model.username} ", "success")
-            os.remove(f"{base_dir}tikets/{model.id}.png")
+        if os.path.exists(f'{base_dir}tikets/{model.id}.png'):
+            flash(f'Deleted Image {model.id}.png Title: {model.title} Username: {model.username}', 'success')
+            os.remove(f'{base_dir}tikets/{model.id}.png')
         else:
-            flash(f"Image {model.id}.png not found", "danger")
+            flash(f'Image {model.id}.png not found', 'danger')
 
-    # make some actions on create
     def on_model_change(self, form, model, is_created):
-
         if not is_created:
             return
 
-        if os.path.exists(f"{base_dir}tikets/{model.id}.png"):
-            os.remove(f"{base_dir}tikets/{model.id}.png")
+        if os.path.exists(f'{base_dir}tikets/{model.id}.png'):
+            os.remove(f'{base_dir}tikets/{model.id}.png')
+
         qr = qrcode.QRCode(error_correction=qrcode.constants.ERROR_CORRECT_L)
-        qr.add_data(f"{base_url}/check_ticket/{model.id}")
+        qr.add_data(f'{base_url}/check_ticket/{model.id}')
         qr.make(fit=True)
-        mask = Image.open(base_dir + "Posters/mask.jpg")
+        mask = Image.open(base_dir + 'Posters/mask.jpg')
 
         img = qr.make_image(
-            image_factory=StyledPilImage,
-            module_drawer=RoundedModuleDrawer(),
-            color_mask=ImageColorMask(
+            image_factory=qrcode.image.pil.PilImage,
+            module_drawer=qrcode.image.drawers.rounded.RoundModuleDrawer(),
+            color_mask=qrcode.image.color.ColorMask(
                 color_mask_image=mask
             )
         )
 
-        if not os.path.exists("tikets"):
-            os.makedirs("tikets")
-        img.save("tikets/" + model.id + '.png')
+        if not os.path.exists('tikets'):
+            os.makedirs('tikets')
+        img.save(f'tikets/{model.id}.png')
         sendTiket(model.user.username, model)
-        flash(f"Created Image {model.id}.png Title: {model.title} Username: {model.username} ", "success")
+        flash(f'Created Image {model.id}.png Title: {model.title} Username: {model.username}', 'success')
 
 
 class LogoutView(BaseView):
