@@ -17,6 +17,7 @@ from flasgger import Swagger
 from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
 from flask import request
 from flask_admin import Admin, expose, BaseView
+from flask_admin._backwards import ObsoleteAttr
 from flask_admin.contrib.sqla import ModelView
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user, UserMixin
@@ -28,6 +29,8 @@ from qrcode.image.styles.colormasks import ImageColorMask
 from qrcode.image.styles.moduledrawers.pil import RoundedModuleDrawer
 from sqlalchemy import DateTime
 from sqlalchemy.orm import backref
+from flask_admin.contrib.fileadmin import FileAdmin
+import os.path as op
 
 import config
 
@@ -200,6 +203,9 @@ def admin_panel():
 class BaseViewer(ModelView):
     can_edit = True
     can_view_details = True
+    column_auto_select_related = ObsoleteAttr('column_auto_select_related',
+                                              'auto_select_related',
+                                              True)
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
@@ -243,11 +249,13 @@ class FilmView(BaseViewer):
 
 
 class SessionsView(BaseViewer):
-    column_list = ['title', 'seats', 'time', 'date']
+    column_list = ['title', 'seats', 'time', 'date', 'film']
     column_searchable_list = ['title', 'seats', 'time', 'date']
     column_filters = ['title', 'seats', 'time', 'date']
     column_sortable_list = ['title', 'seats', 'time', 'date']
     column_editable_list = ['seats', 'time', 'date']
+
+    column_display_all_relations = True
 
     # add film to form
     form_columns = ['title', 'seats', 'time', 'date', 'film']
@@ -334,26 +342,18 @@ class FillDB(BaseView):
         return current_user.is_authenticated and current_user.is_admin
 
 
-class all_images(BaseView):
-    @expose('/')
-    def index(self):
-        images = os.listdir(base_dir + 'Posters')
-        for image in images:
-            if image.find(".") == -1:
-                images.remove(image)
-        images.sort()
-        return render_template('admin/all_images.html', images=images)
 
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
 
 
+path = op.join(op.dirname(__file__), 'Posters')
 admin.add_view(UserView(User, db.session, name="Users"))
 admin.add_view(FilmView(Film, db.session, name="Films"))
 admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
 admin.add_view(PaymentView(Payment, db.session, name="Payments"))
 admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
-admin.add_view(all_images(name="Images"))
+admin.add_view(FileAdmin(path, '/Posters/', name='Posters'))
 admin.add_view(FillDB(name="Fill Database"))
 admin.add_view(LogoutView(name="Logout"))
 
@@ -517,30 +517,6 @@ class Login(Resource):
             return {'message': 'Invalid username or password'}, 400
         login_user(user, remember=True)
         return {"message": "Authentication successful"}, 200
-
-
-@app.route('/delete_image/<string:filename>')
-def delete_image(filename):
-    os.remove(base_dir + "Posters/" + filename)
-    flash(f"Image {filename} deleted successfully", "success")
-    return redirect("/admin/all_images/")
-
-
-@app.route('/upload_image', methods=['POST'])
-def upload_image():
-    if 'image' not in request.files:
-        flash('No image file selected.', 'error')
-        return redirect('/')
-
-    image = request.files['image']
-    if image.filename == '':
-        flash('No image file selected.', 'error')
-        return redirect('/')
-
-    filename = image.filename
-    image.save(base_dir + "Posters/" + filename.replace(' ', '_').replace(':', '').lower())
-    flash('Image uploaded successfully.', 'success')
-    return redirect('/admin/all_images/')
 
 
 class Register(Resource):
