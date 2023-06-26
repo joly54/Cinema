@@ -135,7 +135,7 @@ function Profile() {
                         container
                         spacing={2}
                         style={{
-                            width: '100vh',
+                            width: '100%',
                             display: 'flex',
                             justifyContent: 'center',
                         }}
