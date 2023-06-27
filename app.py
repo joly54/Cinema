@@ -811,7 +811,6 @@ class ticket_qr(Resource):
 class send_poster(Resource):
     def get(self, id):
         filename = base_dir + "Posters/" + id
-        ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
         if not os.path.isfile(filename):
             return {'message': 'Poster not found'}, 404
         return send_file(filename, mimetype='image/png')
@@ -1059,7 +1058,7 @@ class BuyTikets(Resource):
 
 
 @app.route('/files/<path:path>')
-def send_file(path):
+def send_static_files(path):
     return send_from_directory('', path)
 
 
