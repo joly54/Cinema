@@ -446,13 +446,7 @@ def sendTiket(username, tikets):
         seat_list += str(seat) + ", "
     seat_list = seat_list[:-2]
 
-    body = """
-           Your ticket is attached to this email.
-           film: {}
-           date: {}
-           time: {}
-           Seats: {}
-           """.format(tikets.title, tikets.date, tikets.time, seat_list)
+    body = "Your ticket is attached to this email.\nfilm: {}\ndate: {}\ntime: {}\nSeats: {}\n".format(tikets.title, tikets.date, tikets.time, seat_list)
     msg = EmailMessage()
     msg.set_content(body)
     msg['Subject'] = subject
