@@ -10,6 +10,10 @@ import Preloader from "./preloader";
 import NotFoundImage from "./img/404.png";
 
 function CinemaSchedule() {
+    //set scroll to top
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     const [schedule, setSchedule] = useState([])
     const navigate = useNavigate()
     document.title = "Schedule"
@@ -88,7 +92,7 @@ function CinemaSchedule() {
                                         <CardMedia
                                             component="img"
                                             image={scheduleItem.poster}
-                                            title="Card image"
+                                            title={scheduleItem.title}
                                             onError={(e) => {
                                                 e.target.onerror = null;
                                                 e.target.src = NotFoundImage;

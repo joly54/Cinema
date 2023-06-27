@@ -55,9 +55,6 @@ function Header({loggedIn, handleLogout, additionals}) {
                                     <Link to={"/profile"} className="nav-link">Profile</Link>
                                 </Nav.Link>
                                 <Nav.Link>
-                                    <Link to={"/pay_history"} className="nav-link">History</Link>
-                                </Nav.Link>
-                                <Nav.Link>
                                     <Link to={"/login"} className="nav-link" onClick={handleLogout}>Logout</Link>
                                 </Nav.Link>
                             </>

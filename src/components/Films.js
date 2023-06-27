@@ -1,12 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {Grid, ImageList, ImageListItem, ImageListItemBar, Typography} from "@mui/material";
 import * as api from '../utils/Api'
 import './Styles/Films.css';
 import './Styles/preloader.css';
 import Preloader from "./preloader";
 import NotFoundImage from './img/404.png';
+
 function Films() {
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     document.title = "Films";
     const [movies, setMovies] = useState([]);
     useEffect(() => {

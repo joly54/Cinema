@@ -28,6 +28,9 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 function Profile() {
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     const [isEmailLoading, setIsEmailLoading] = useState(false);
     document.title = 'Profile';
     const [loading, setLoading] = useState(true);
@@ -130,7 +133,11 @@ function Profile() {
             >
                 <BackToTopButton />
                 <ToastContainer />
-                <div className="profile-content">
+                <div className="profile-content"
+                style={{
+                    width: '100%',
+                }}
+                >
                     <Grid
                         container
                         spacing={2}

@@ -7,6 +7,9 @@ import "./Styles/FIlmInfo.css"
 import {Link} from "react-router-dom";
 
 function FilmsInfo() {
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     const film_id = window.location.href.split("/")[window.location.href.split("/").length - 1];
     const [data, setData] = React.useState(null);
     const [sessions, setSessions] = React.useState(null);

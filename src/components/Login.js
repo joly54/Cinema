@@ -12,6 +12,9 @@ function Login({
                    isLoggedIn,
                    Isloading
                }) {
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     document.title = "Login";
     const navigate = useNavigate();
     useEffect(() => {

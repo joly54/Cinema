@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import { Button, Grid, Typography } from "@material-ui/core";
 import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
 import './Styles/scrollBar.css';
 import './Styles/ForgotPassword.css';
-import md5 from "md5";
 function ForgotPassword({handleToastErr, handleToastSuc}) {
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     const md5 = require('md5');
     document.title = "Forgot Password";
     const [showConfirmationCode, setShowConfirmationCode] = useState(false);

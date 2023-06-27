@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {toast} from "react-toastify";
 import {Button, Grid, Typography} from '@material-ui/core';
 import * as api from "../utils/Api"
@@ -9,6 +9,9 @@ import LoadingBar from "./Progress.js";
 
 
 function Payment ({data, moneyFormat}){
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     document.title = "Payment";
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = React.useState(false);

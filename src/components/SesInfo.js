@@ -11,6 +11,9 @@ import LoadingBar from "./Progress.js";
 
 
 function SesInfo({handlePayData, moneyFormatter}) {
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
     const [isLoading, setIsLoading] = useState(false);
 
     const session = window.location.href.split("/")[window.location.href.split("/").length - 1];
@@ -87,7 +90,6 @@ function SesInfo({handlePayData, moneyFormatter}) {
 
         setSelected(items);
 
-        const seatCountText = items.length === 1 ? " seat" : " seats";
         document.getElementById("selected").innerHTML = moneyFormatter(items.length * sessionInfo["price"]) + " UAH";
         if (items.length === 0) {
             document.getElementById("selected").innerHTML = "0 UAH";
