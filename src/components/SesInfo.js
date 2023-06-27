@@ -149,7 +149,6 @@ function SesInfo({handlePayData, moneyFormatter}) {
             style={{
                 height: "100%",
                 width: "100%",
-                //centering
 
                 justifyContent: "center",
                 alignItems: "center",

@@ -67,12 +67,7 @@ function Profile() {
         setIsEmailLoading(true);
         fetch(baseurl + `/resendEmailValidationCode?username=${email}`)
             .then((response) => {
-                setTimeout(
-                    function () {
-                        setIsEmailLoading(false);
-                    },
-                    3000
-                )
+                setIsEmailLoading(false)
                 if (response.status === 200) {
                     toast.success('Email was sent!',{
                         position: "top-center",
