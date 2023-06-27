@@ -4,7 +4,12 @@ import { Button, Grid, Typography } from "@material-ui/core";
 import { forgotPasswordConfirm, ResetPassword } from "../utils/Api";
 import './Styles/scrollBar.css';
 import './Styles/ForgotPassword.css';
+import LoadingBar from "./Progress.js";
+
 function ForgotPassword({handleToastErr, handleToastSuc}) {
+
+    const [loading, setLoading] = useState(false);
+
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
@@ -19,8 +24,10 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
     const navigate = useNavigate();
     const handleSendCode = () => {
         if (username !== '') {
+            setLoading(true)
             forgotPasswordConfirm(username)
                 .then(response => {
+                    setLoading(false)
                     if (response.ok) {
                         handleToastSuc("Please check your email for the code");
                         setShowConfirmationCode(true);
@@ -60,8 +67,10 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
         }if (password !== confirmPassword) {
             handleToastErr("Check that the password is entered correctly")
         }else {
+            setLoading(true)
             ResetPassword(username, code, md5(md5(password)))
                 .then(response=>{
+                    setLoading(false)
                     if(response.ok){
                         handleToastSuc("Password reset");
                         navigate('/login');
@@ -138,7 +147,13 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
                             style={{ fontFamily: "Montserrat" }}
                             className="btn"
                             onClick={handleResetPassword}
+                            disabled={loading}
                         >
+                            {
+                                loading ? (
+                                    <LoadingBar/>
+                                ) : null
+                            }
                             Reset Password
                         </Button>
                     ) : (
@@ -146,7 +161,13 @@ function ForgotPassword({handleToastErr, handleToastSuc}) {
                             style={{ fontFamily: "Montserrat" }}
                             className="btn"
                             onClick={handleSendCode}
+                            disabled={loading}
                         >
+                            {
+                                loading ? (
+                                    <LoadingBar/>
+                                ) : null
+                            }
                             Send Code
                         </Button>
                     )}

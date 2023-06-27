@@ -140,7 +140,8 @@ function Payment ({data, moneyFormat}){
                             type="text"
                             placeholder="XXXX-XXXX-XXXX-XXXX"
                             maxLength="19"
-                            onKeyUp={(event) => {
+                            onChange={(event) => {
+                                console.log("123")
                                 const input = event.target;
                                 const inputValue = input.value.replace(/\D/g, '');
                                 let maskedValue = '';
@@ -163,7 +164,8 @@ function Payment ({data, moneyFormat}){
                                 id={"cardDate"}
                                 placeholder="XX/XX"
                                 maxLength="5"
-                                onKeyUp={(event) => {
+                                onChange={(event) => {
+                                    console.log("123")
                                     const input = event.target;
                                     const inputValue = input.value.replace(/\D/g, '');
                                     let maskedValue = '';
@@ -180,17 +182,33 @@ function Payment ({data, moneyFormat}){
                         <Grid item xs={2} className="privateInput">
                             <Typography className="" variant="h6" style={{fontFamily: "Montserrat"}}>CVV:</Typography>
                             <input
-                                id={"cardCVV"}
+                                id="cardCVV"
                                 maxLength={3}
-                                style={{fontFamily: "Montserrat"}}
+                                style={{ fontFamily: "Montserrat" }}
                                 type="text"
                                 placeholder="XXX"
                                 onKeyUp={(event) => {
-                                    const input = event.target;
-                                    const inputValue = input.value.replace(/\D/g, '');
-                                    input.value = inputValue;
+                                    let modifiedValue = event.target.value;
+                                    switch (modifiedValue.length) {
+                                        case 0:
+                                            break;
+                                        case 1:
+                                            modifiedValue = "*";
+                                            break;
+                                        case 2:
+                                            modifiedValue = "**";
+                                            break;
+                                        case 3:
+                                            modifiedValue = "***";
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    event.target.value = modifiedValue;
                                 }}
-                            ></input>
+                            />
+
+
                         </Grid>
                     </Grid>
                     <Grid item xs={12} className="payButton">
