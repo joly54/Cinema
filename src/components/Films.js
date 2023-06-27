@@ -57,7 +57,7 @@ function Films() {
                         }}>
                         Films
                     </Typography>
-                    <ImageList cols={4} rowHeight={500} id="films">
+                    <ImageList cols={4} rowHeight={500} id="films" >
                         {movies.map((item) => (
                             <Link to={`/films/${item.id}`}
                                   style={{
@@ -76,6 +76,7 @@ function Films() {
                                                        justifyContent: 'center',
                                                        alignItems: 'center',
                                                        cursor: 'pointer',
+                                                       borderRadius: '10px',
                                                    }}>
                                         <img src={item.poster} alt={item.title}
                                              className={"movie-image"}
@@ -90,6 +91,7 @@ function Films() {
                                                  borderRadius: '10px',
                                              }}/>
                                         <ImageListItemBar
+                                            style={{borderRadius: '10px'}}
                                             title={item.title}
                                             subtitle={<span>Price: {item.price}UAH</span>}
                                         />

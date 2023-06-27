@@ -47,7 +47,8 @@ function FilmsInfo() {
                           maxWidth: "100%",
                           display: "flex",
                           justifyContent: "center",
-                          alignItems: "center"
+                          alignItems: "center",
+                          marginTop: "20px"
                       }}
                 >
                     <Grid item xs={12} md={6}

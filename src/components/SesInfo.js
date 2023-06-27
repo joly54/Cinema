@@ -143,7 +143,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                 }
             })
     }
-//dasd
+
     return (
         <div
             style={{
@@ -162,8 +162,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                           maxWidth: "100%",
                           justifyContent: "center",
                           alignItems: "center",
-
-
+                            marginTop: "20px",
                       }}
                 >
                     <Grid item xs={12} md={6}
