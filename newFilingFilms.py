@@ -103,18 +103,35 @@ def CreateAllFilms():
         "Top Gun: Maverick",
         144,
         "https://www.youtube.com/watch?v=qSqVVswa420",
-        "After more than thirty years of service as one of the Navy's top aviators, Pete Mitchell is where he belongs, pushing the envelope as a courageous test pilot and dodging the advancement in rank that would ground him."
+        "More than 30 years after graduating from Top Gun,[a] United States Navy Captain Pete Maverick Mitchell is a "
+        "test pilot. Despite many achievements, repeated insubordination has kept him from flag rank;[b] his friend "
+        "and former Top Gun rival, Admiral Tom Iceman Kazansky, now Commander of the U.S. Pacific Fleet, "
+        "often protects Maverick. Rear Admiral Chester Hammer Cain plans to cancel Maverick's hypersonic Darkstar "
+        "scramjet program in favor of funding drones. To save the program, Maverick unilaterally changes the target "
+        "speed for that day's test from Mach 9 to the final contract specification of Mach 10. However, the prototype "
+        "is destroyed when he cannot resist pushing beyond Mach 10. Iceman again saves Maverick's career by assigning "
+        "him to the Top Gun school at NAS North Island for his next assignment, but Cain tells Maverick that the era "
+        "of crewed fighter aircraft will soon be over."
     ), createFilm(
         "Top Gun 1984",
         110,
         "https://www.youtube.com/watch?v=xa_z57UatDY",
-        "As students at the United States Navy's elite fighter weapons school compete to be best in the class, one daring young pilot learns a few things from a civilian instructor that are not taught in the classroom."
+        "U.S. Navy Naval Aviator Lieutenant Pete Maverick Mitchell and his Radar Intercept Officer (RIO) Lieutenant "
+        "Junior Grade Nick Goose Bradshaw, stationed in the Indian Ocean aboard the USS Enterprise, fly the F-14A "
+        "Tomcat. During an interception with two hostile MiG-28s,[a] Maverick missile-locks on one, while the other "
+        "hostile locks onto Maverick's wingman, Cougar. Maverick drives it off, but Cougar is so shaken that Maverick "
+        "defies orders to land and shepherds him back to the carrier. Cougar resigns his commission. Maverick and "
+        "Goose are sent in his place by CAG stinger to attend Top Gun, the Naval Fighter Weapons School at Naval Air "
+        "Station Miramar."
     ), createFilm(
         "Joker",
         122,
         "https://www.youtube.com/watch?v=zAGVQLHvwOY",
-        "In Gotham City, mentally troubled comedian Arthur Fleck is disregarded and mistreated by society. He then "
-        "embarks on a downward spiral of revolution and bloody crime."
+        "A clown and aspiring stand-up comedian named Arthur Fleck lives with his mother, Penny, in crime-ridden "
+        "Gotham City. Arthur suffers from a neurological disorder that causes him to have random, uncontrollable "
+        "laughing fits, requiring medication for which he depends on social services. After Arthur is attacked by "
+        "juvenile delinquents, his co-worker Randall gives him a revolver for self-defense. Arthur pursues a "
+        "relationship with his neighbor, single mother Sophie, and invites her to see his routine at a comedy club."
     ), createFilm(
         "Taxi 3",
         84,
@@ -204,8 +221,14 @@ def CreateAllFilms():
             "Star Wars: The Rise of Skywalker",
             142,
             "https://www.youtube.com/watch?v=8Qn_spdM5Zg",
-            "The surviving members of the resistance face the First Order once again, and the legendary conflict "
-            "between the Jedi and the Sith reaches its peak bringing the Skywalker saga to its end."
+            "Following a threat of revenge by the resurrected Emperor Palpatine, Kylo Ren obtains a Sith wayfinder "
+            "that leads to the planet Exegol. There, he finds Palpatine, who reveals that he created Snoke as a "
+            "puppet to rule the First Order and lure Kylo to the dark side. Palpatine unveils the Final Order—a "
+            "massive armada of Sith Star Destroyers—and offers Kylo command of it if he finds and kills Rey, "
+            "who is continuing her Jedi training under Resistance leader Leia Organa. Poe Dameron and Finn deliver "
+            "intelligence from a spy in the First Order that Palpatine is on Exegol; Rey reads in Luke Skywalker's "
+            "notes that a Sith wayfinder can lead them there. Rey, Finn, Poe, Chewbacca, BB-8, and C-3PO depart in "
+            "the Millennium Falcon to Pasaana, to find a hidden clue leading to a wayfinder."
         )]
     return films
 
