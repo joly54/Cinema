@@ -14,7 +14,8 @@ from email.message import EmailMessage
 import qrcode
 from PIL import Image
 from flasgger import Swagger
-from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash
+from flask import Flask, make_response, send_file, render_template, Response, redirect, url_for, flash, \
+    send_from_directory
 from flask import request
 from flask_admin import Admin, expose, BaseView
 from flask_admin._backwards import ObsoleteAttr
@@ -286,7 +287,7 @@ class TiketView(ModelView):
     def _qr_code_formatter(view, context, model, name):
         qr_code_path = f'{base_dir}tikets/{model.id}.png'
         if os.path.exists(qr_code_path):
-            return Markup(f'<a href="{base_url + "/tikets/" + model.id+ ".png"}" target="_blank"> open </a>')
+            return Markup(f'<a href="{base_url + "/tikets/" + model.id + ".png"}" target="_blank"> open </a>')
         else:
             return 'QR Code Not Found'
 
@@ -350,21 +351,17 @@ class FillDB(BaseView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
 
-
-
     def is_accessible(self):
         return current_user.is_authenticated and current_user.is_admin
 
 
-path = op.join(op.dirname(__file__), 'Posters')
-path_t = op.join(op.dirname(__file__), 'tikets')
+path = op.join(op.dirname(__file__), '')
 admin.add_view(UserView(User, db.session, name="Users"))
 admin.add_view(FilmView(Film, db.session, name="Films"))
 admin.add_view(SessionsView(Sessions, db.session, name="Sessions"))
 admin.add_view(PaymentView(Payment, db.session, name="Payments"))
 admin.add_view(TiketView(Tiket, db.session, name="Tikets"))
-admin.add_view(FileAdmin(path, '/Posters/', name='Posters'))
-admin.add_view(FileAdmin(path_t, '/tikets/', name='QrCodes', endpoint='qrcodes'))
+admin.add_view(FileAdmin(path, '/files/', name='File Management'))
 admin.add_view(FillDB(name="Fill Database"))
 admin.add_view(LogoutView(name="Logout"))
 
@@ -377,6 +374,7 @@ def fix_names():
         film.poster = f"{film.title.replace(' ', '_').lower()}.jpg"
         db.session.commit()
     return {"status": "ok"}
+
 
 @app.errorhandler(Exception)
 def handle_exception(e):
@@ -1056,8 +1054,13 @@ class BuyTikets(Resource):
             'title': ses.title,
             'date': ses.date,
             'time': ses.time,
-            'seats': pay.seats
+            'seats': eval(pay.seats)
         }, 200
+
+
+@app.route('/files/<path:path>')
+def send_file(path):
+    return send_from_directory('', path)
 
 
 class confirm_Payment(Resource):
