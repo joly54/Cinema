@@ -121,7 +121,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                                 pay_title: data["title"],
                                 pay_date: data["date"],
                                 pay_time: data["time"],
-                                pay_seats: data["seats"],
+                                pay_seats: data["seats"].join(", "),
                             }
                         )
                         navigate("/payment");
@@ -143,7 +143,7 @@ function SesInfo({handlePayData, moneyFormatter}) {
                 }
             })
     }
-
+//dasd
     return (
         <div
             style={{
